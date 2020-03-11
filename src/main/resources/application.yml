@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: lms-lti-courselist
+  profiles:
+    active: redis
+  session:
+    store-type: none
+security:
+  oauth2:
+    client:
+      userAuthorizationUri: ${oauth.tokenprovider.url}/oauth/authorize
+      accessTokenUri: ${oauth.tokenprovider.url}/oauth/token
+      clientId: ${oauth.tokenprovider.clientId}
+      clientSecret: ${oauth.tokenprovider.clientSecret}
+      username: ${oauth.tokenprovider.clientId}
+      password: ${oauth.tokenprovider.clientPassword}
+      clientAuthenticationScheme: form
+    resource:
+      jwt:
+        keyUri: ${oauth.tokenprovider.url}/oauth/token_key
+logging:
+  level:
+    edu:
+      iu:
+        uits:
+          lms:
+            courselist: DEBUG
+    org:
+      springframework:
+        security: DEBUG
+
+courselist:
+  canvasBaseUrl: ${canvas.baseUrl}
+  version: ${app.version}
+
+---
+
+spring:
+  profiles: redis
+  session:
+    store-type: redis

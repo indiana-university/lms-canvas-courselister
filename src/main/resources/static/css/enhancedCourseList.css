@@ -1,0 +1,62 @@
+.courseHidden {
+    /* matches rvt-color-black--400 */
+    color: #aaaaaa;
+}
+
+.iconPointer {
+    cursor: pointer;
+}
+
+/* sets the size of rivet icons */
+.rvt-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.searchHighlight {
+    background-color: #f0ad4e;
+}
+
+.showMoreTerms {
+    color: #006298 !important;
+}
+
+.showMoreTerms:hover {
+    color: #ffffff !important;
+}
+
+.tableHeadOverride {
+    /* matches rvt-color-black--150 */
+    background-color: #eaeaea;
+}
+
+.tableSubHeadOverride {
+    /* matches rvt-subtle-gray */
+    background-color: #f7f7f7;
+}
+
+.search-input {
+    min-width: 217px;
+    max-width: 217px;
+}
+
+.no-data {
+
+}
+
+/* if rivet-react gets above 1.3.0, this won't be necessary */
+@media only screen and (min-width: 46.25em) {
+    .rvt-flex-md-up {
+        display: flex !important;
+    }
+
+    .rvt-justify-space-between-md-up {
+        justify-content: space-between;
+    }
+}
+
+/* Have a class that can be used to clear the link decoration stuff that gets applied inside an <a> tag */
+.no-decoration {
+    text-decoration: none;
+    color: black;
+}

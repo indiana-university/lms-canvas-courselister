@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en-US"
+      xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <title>Canvas Course List</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link media="all" rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/css/font-awesome.min.css}" />
+    <link media="all" rel="stylesheet" type="text/css" th:href="@{/css/enhancedCourseList.css}"/>
+</head>
+<body>
+
+<div id="root"></div>
+
+<footer class="rvt-ts-12 rvt-container rvt-m-top-lg">
+    <div id="footer" th:text="${@serverInfo}"></div>
+</footer>
+
+<script th:inline="javascript">
+      /*<![CDATA[*/
+         const rvtSvgBase = /*[[@{/jsreact/lms-lti-courselist/rvt-icons.svg}]]*/;
+         const browseCoursesUrl = /*[[${browseCoursesUrl}]]*/
+         const siteRequestUrl = /*[[${siteRequestUrl}]]*/
+         const canvasBaseUrl = /*[[${canvasBaseUrl}]]*/
+       /*]]>*/
+</script>
+
+<script type="text/javascript" th:src="@{/jsreact/lms-lti-courselist/lms-lti-courselist.js}"></script>
+
+
+</body>
+</html>

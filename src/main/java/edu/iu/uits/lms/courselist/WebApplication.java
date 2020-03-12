@@ -1,11 +1,11 @@
 package edu.iu.uits.lms.courselist;
 
-import edu.iu.uits.lms.common.redis.RedisConfiguration;
 import edu.iu.uits.lms.common.samesite.CookieFilterConfig;
 import edu.iu.uits.lms.common.server.GitRepositoryState;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.common.server.ServerUtils;
 import edu.iu.uits.lms.courselist.config.ToolConfig;
+import edu.iu.uits.lms.redis.config.RedisConfiguration;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;

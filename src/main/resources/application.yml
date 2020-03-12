@@ -5,6 +5,11 @@ spring:
     active: redis
   session:
     store-type: none
+server:
+  servlet:
+    session:
+      cookie:
+        name: LMSSESSION
 security:
   oauth2:
     client:

@@ -69,6 +69,7 @@
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>redis-config</artifactId>
+            <version>4.0.0</version>
         </dependency>
     </dependencies>
 

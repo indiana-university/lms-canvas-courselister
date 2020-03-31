@@ -6,7 +6,7 @@ import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.common.server.ServerUtils;
 import edu.iu.uits.lms.courselist.config.ToolConfig;
 import edu.iu.uits.lms.redis.config.RedisConfiguration;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,7 +24,7 @@ import java.util.Date;
       "${app.fullFilePath}/protected.properties",
       "${app.fullFilePath}/security.properties"}, ignoreResourceNotFound = true)
 @EnableResourceServer
-@Log4j
+@Slf4j
 @Import({GitRepositoryState.class, RedisConfiguration.class, CookieFilterConfig.class})
 public class WebApplication {
 

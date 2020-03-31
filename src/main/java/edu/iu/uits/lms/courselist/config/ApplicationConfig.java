@@ -2,7 +2,7 @@ package edu.iu.uits.lms.courselist.config;
 
 import canvas.config.CanvasClientConfig;
 import edu.iu.uits.lms.lti.config.LtiClientConfig;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @EnableWebMvc
 @EnableGlobalMethodSecurity(securedEnabled = true)
-@Log4j
+@Slf4j
 @Import({LtiClientConfig.class, CanvasClientConfig.class})
 public class ApplicationConfig implements WebMvcConfigurer {
 

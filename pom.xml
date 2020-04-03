@@ -4,7 +4,7 @@
     <artifactId>lms-lti-courselist</artifactId>
     <packaging>jar</packaging>
     <name>lms-lti-courselist</name>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.0.0</version>
 
     <parent>
         <artifactId>lms2Wow</artifactId>

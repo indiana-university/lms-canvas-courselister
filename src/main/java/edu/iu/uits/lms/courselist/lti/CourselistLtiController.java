@@ -4,7 +4,7 @@ import edu.iu.uits.lms.lti.controller.LtiController;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
 import io.jsonwebtoken.Claims;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping({"/lti"})
-@Log4j
+@Slf4j
 public class CourselistLtiController extends LtiController {
 
     private boolean openLaunchUrlInNewWindow = false;

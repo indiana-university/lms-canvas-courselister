@@ -10,7 +10,7 @@ import canvas.client.generated.model.TermOverride;
 import canvas.helpers.CourseHelper;
 import canvas.helpers.EnrollmentHelper;
 import edu.iu.uits.lms.courselist.model.DecoratedCourse;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Assert;
@@ -30,7 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Log4j
+@Slf4j
 @RunWith(SpringRunner.class)
 public class EnrollmentClassificationServiceTest {
 

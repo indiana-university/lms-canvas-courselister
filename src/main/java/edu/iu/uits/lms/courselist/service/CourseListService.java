@@ -13,7 +13,7 @@ import canvas.helpers.CourseHelper;
 import canvas.helpers.EnrollmentHelper;
 import canvas.helpers.TermHelper;
 import edu.iu.uits.lms.courselist.model.DecoratedCourse;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -30,7 +30,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-@Log4j
+@Slf4j
 public class CourseListService {
 
    private static final String CUSTOM_USER_DATA_KEY = "hidden_courses";

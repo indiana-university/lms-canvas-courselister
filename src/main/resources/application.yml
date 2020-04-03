@@ -23,16 +23,6 @@ security:
     resource:
       jwt:
         keyUri: ${oauth.tokenprovider.url}/oauth/token_key
-logging:
-  level:
-    edu:
-      iu:
-        uits:
-          lms:
-            courselist: DEBUG
-    org:
-      springframework:
-        security: DEBUG
 
 courselist:
   canvasBaseUrl: ${canvas.baseUrl}

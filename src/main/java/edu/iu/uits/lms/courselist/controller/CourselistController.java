@@ -3,7 +3,7 @@ package edu.iu.uits.lms.courselist.controller;
 import edu.iu.uits.lms.courselist.config.ToolConfig;
 import edu.iu.uits.lms.lti.controller.LtiAuthenticationTokenAwareController;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@Log4j
+@Slf4j
 public class CourselistController extends LtiAuthenticationTokenAwareController {
 
     @Autowired

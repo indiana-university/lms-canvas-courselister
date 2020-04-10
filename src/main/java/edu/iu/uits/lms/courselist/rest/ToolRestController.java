@@ -27,6 +27,7 @@ public class ToolRestController extends CourselistController {
 
    @GetMapping("/courses")
    public List<DecoratedCourse> getCourses() {
+      log.debug("in /app/courses");
       LtiAuthenticationToken token = getTokenWithoutContext();
 
       return courseListService.getCourses((String)token.getPrincipal());
@@ -34,6 +35,7 @@ public class ToolRestController extends CourselistController {
 
    @PostMapping("/hide/{courseId}")
    public ReturnState hideCourse(@PathVariable String courseId) {
+      log.debug("in /app/hide/{}", courseId);
       LtiAuthenticationToken token = getTokenWithoutContext();
       boolean success = courseListService.setCourseAsHidden((String)token.getPrincipal(), courseId);
       return new ReturnState(success, null);
@@ -41,6 +43,7 @@ public class ToolRestController extends CourselistController {
 
    @PostMapping("/show/{courseId}")
    public ReturnState showCourse(@PathVariable String courseId) {
+      log.debug("in /app/show/{}", courseId);
       LtiAuthenticationToken token = getTokenWithoutContext();
       boolean success = courseListService.setCourseAsShown((String)token.getPrincipal(), courseId);
       return new ReturnState(!success, null);
@@ -48,6 +51,7 @@ public class ToolRestController extends CourselistController {
 
    @PostMapping("/favorite/{courseId}")
    public ReturnState favoriteCourse(@PathVariable String courseId) {
+      log.debug("in /app/favorite/{}", courseId);
       LtiAuthenticationToken token = getTokenWithoutContext();
       Favorite favorite = courseListService.setCourseAsFavorite((String)token.getPrincipal(), courseId);
       boolean success = favorite != null && courseId.equals(favorite.getContextId());
@@ -56,6 +60,7 @@ public class ToolRestController extends CourselistController {
 
    @PostMapping("/unfavorite/{courseId}")
    public ReturnState unfavoriteCourse(@PathVariable String courseId) {
+      log.debug("in /app/unfavorite/{}", courseId);
       LtiAuthenticationToken token = getTokenWithoutContext();
       Favorite favorite = courseListService.removeCourseAsFavorite((String)token.getPrincipal(), courseId);
       boolean success = favorite != null && courseId.equals(favorite.getContextId());

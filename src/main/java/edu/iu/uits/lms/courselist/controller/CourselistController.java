@@ -8,9 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpSession;
 
 @Controller
 @Slf4j
@@ -21,11 +22,15 @@ public class CourselistController extends LtiAuthenticationTokenAwareController 
 
     @RequestMapping("/list")
     @Secured(LtiAuthenticationProvider.LTI_USER_ROLE)
-    public ModelAndView list(Model model, @CookieValue(name = "lmssession", required = false) String cookie) {
+    public ModelAndView list(Model model, HttpSession httpSession) {
+        log.debug("in /list");
         getTokenWithoutContext();
         model.addAttribute("browseCoursesUrl", toolConfig.getCanvasBaseUrl() + "/search/all_courses/");
         model.addAttribute("siteRequestUrl", toolConfig.getCanvasBaseUrl() + toolConfig.getStartANewCourseUrl());
         model.addAttribute("canvasBaseUrl", toolConfig.getCanvasBaseUrl());
+
+        //For session tracking
+        model.addAttribute("customId", httpSession.getId());
         return new ModelAndView("react");
     }
 

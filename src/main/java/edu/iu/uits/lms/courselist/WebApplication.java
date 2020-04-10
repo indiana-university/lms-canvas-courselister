@@ -1,6 +1,5 @@
 package edu.iu.uits.lms.courselist;
 
-import edu.iu.uits.lms.common.samesite.CookieFilterConfig;
 import edu.iu.uits.lms.common.server.GitRepositoryState;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.common.server.ServerUtils;
@@ -25,7 +24,7 @@ import java.util.Date;
       "${app.fullFilePath}/security.properties"}, ignoreResourceNotFound = true)
 @EnableResourceServer
 @Slf4j
-@Import({GitRepositoryState.class, RedisConfiguration.class, CookieFilterConfig.class})
+@Import({GitRepositoryState.class, RedisConfiguration.class})
 public class WebApplication {
 
     @Autowired

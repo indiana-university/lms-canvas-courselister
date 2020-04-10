@@ -23,6 +23,15 @@ class App extends React.Component {
      */
     constructor() {
         super()
+
+        // Set the x-auth-token head for all requests
+        // The customId value got ijected in to the react.html file and is a global variable
+        axios.defaults.headers.common['X-Auth-Token'] = customId;
+//        axios.interceptors.request.use(request => {
+//            console.debug('Starting Request', request)
+//            return request
+//        })
+
         this.state = {
             courses: [],
             allTerms: [],

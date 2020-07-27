@@ -41,7 +41,7 @@ public class WebApplication {
     ServerInfo serverInfo() {
         ServerInfo serverInfo = new ServerInfo();
 //        serverInfo.setServerUrl(filePropertiesService.getLmsHost());
-        serverInfo.setServerName(ServerUtils.getServerHostName());
+        serverInfo.setServerName(ServerUtils.getServerHostName() + "-" + toolConfig.getEnv());
         serverInfo.setBuildDate(new Date());
         serverInfo.setGitInfo(gitRepositoryState.getBranch() + "@" + gitRepositoryState.getCommitIdAbbrev());
         serverInfo.setArtifactVersion(toolConfig.getVersion());

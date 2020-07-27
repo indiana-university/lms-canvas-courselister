@@ -10,11 +10,12 @@
         <artifactId>lms2Wow</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
         <version>4.0.2</version>
+        <relativePath/>
     </parent>
 
     <properties>
         <app.version>${project.version}</app.version>
-        <docker_repository_name>poc_lti_courselist</docker_repository_name>
+        <docker_repository_name>lti_courselist</docker_repository_name>
     </properties>
 
     <dependencies>
@@ -56,7 +57,7 @@
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>common-configuration</artifactId>
-            <version>4.0.1</version>
+            <version>4.0.6</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -122,7 +123,7 @@
                 <groupId>com.spotify</groupId>
                 <artifactId>dockerfile-maven-plugin</artifactId>
                 <configuration>
-                    <repository>${docker_repository_name}</repository>
+                    <repository>localhost:5000/${docker_repository_name}</repository>
                 </configuration>
                 <executions>
                     <execution>
@@ -131,6 +132,7 @@
                         <goals>
                             <goal>build</goal>
                             <goal>tag</goal>
+                            <goal>push</goal>
                         </goals>
                         <configuration>
                             <tag>latest</tag>

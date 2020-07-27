@@ -1,0 +1,20 @@
+
+bootstrapSecret: "protected-properties-2020-07-10"
+
+image:
+  repository: registry-snd.docker.iu.edu/lms/lti_courselist
+
+imagePullSecrets:
+    - name: registry-sand-cred
+
+env:
+  - name: APP_ENV
+    value: snd
+
+activeProfiles: "redis"
+
+ingress:
+  enabled: true
+  hosts:
+    - host: "lms-lti-courselist-snd.apps-snd.iu.edu"
+      paths: []

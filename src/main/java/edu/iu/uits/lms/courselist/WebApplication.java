@@ -1,10 +1,12 @@
 package edu.iu.uits.lms.courselist;
 
+import canvas.config.EnableCanvasClient;
 import edu.iu.uits.lms.common.server.GitRepositoryState;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.common.server.ServerUtils;
 import edu.iu.uits.lms.courselist.config.ToolConfig;
-import edu.iu.uits.lms.redis.config.RedisConfiguration;
+import edu.iu.uits.lms.lti.config.EnableLtiClient;
+import edu.iu.uits.lms.redis.config.EnableRedisConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -24,7 +26,10 @@ import java.util.Date;
       "${app.fullFilePath}/security.properties"}, ignoreResourceNotFound = true)
 @EnableResourceServer
 @Slf4j
-@Import({GitRepositoryState.class, RedisConfiguration.class})
+@Import({GitRepositoryState.class})
+@EnableRedisConfiguration
+@EnableLtiClient
+@EnableCanvasClient
 public class WebApplication {
 
     @Autowired
@@ -39,13 +44,12 @@ public class WebApplication {
 
     @Bean(name = ServerInfo.BEAN_NAME)
     ServerInfo serverInfo() {
-        ServerInfo serverInfo = new ServerInfo();
-//        serverInfo.setServerUrl(filePropertiesService.getLmsHost());
-        serverInfo.setServerName(ServerUtils.getServerHostName() + "-" + toolConfig.getEnv());
-        serverInfo.setBuildDate(new Date());
-        serverInfo.setGitInfo(gitRepositoryState.getBranch() + "@" + gitRepositoryState.getCommitIdAbbrev());
-        serverInfo.setArtifactVersion(toolConfig.getVersion());
-        return serverInfo;
+        return ServerInfo.builder()
+              .serverName(ServerUtils.getServerHostName())
+              .environment(toolConfig.getEnv())
+              .buildDate(new Date())
+              .gitInfo(gitRepositoryState.getBranch() + "@" + gitRepositoryState.getCommitIdAbbrev())
+              .artifactVersion(toolConfig.getVersion()).build();
     }
 
 }

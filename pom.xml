@@ -4,13 +4,13 @@
     <artifactId>lms-lti-courselist</artifactId>
     <packaging>jar</packaging>
     <name>lms-lti-courselist</name>
-    <version>4.0.3-SNAPSHOT</version>
+    <version>4.0.4-SNAPSHOT</version>
 
     <parent>
         <artifactId>lms2Wow</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
         <version>4.0.5</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <properties>

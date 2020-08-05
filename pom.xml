@@ -10,7 +10,7 @@
         <artifactId>lms2Wow</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
         <version>4.0.5</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <properties>

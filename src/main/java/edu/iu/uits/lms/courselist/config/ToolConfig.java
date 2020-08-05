@@ -22,4 +22,5 @@ public class ToolConfig {
    private String canvasBaseUrl;
    private String startANewCourseUrl;
    private String version;
+   private String env;
 }

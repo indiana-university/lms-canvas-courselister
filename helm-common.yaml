@@ -1,0 +1,27 @@
+nameOverride: courselist
+
+namespace: ua-vpit--enterprise-systems--lms
+
+image:
+  repository: registry.docker.iu.edu/lms/lti_courselist
+  tag: latest
+  pullPolicy: Always
+
+replicaCount: 2
+
+resources:
+  requests:
+    cpu: "0"
+    memory: "0"
+  limits:
+    cpu: "1"
+    memory: "1Gi"
+
+imagePullSecrets:
+  - name: registry-prod
+
+activeProfiles: "redis"
+
+service:
+  type: ClusterIP
+  port: 8080

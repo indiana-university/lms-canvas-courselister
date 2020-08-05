@@ -22,6 +22,7 @@ security:
 courselist:
   canvasBaseUrl: ${canvas.baseUrl}
   version: ${app.version}
+  env: ${app.env}
 
 ---
 

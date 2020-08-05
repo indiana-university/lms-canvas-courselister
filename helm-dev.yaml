@@ -1,0 +1,17 @@
+
+bootstrapSecret: "protected-properties-2020-07-10"
+
+image:
+  repository: localhost:5000/lti_courselist
+  pullPolicy: Never
+
+replicaCount: 1
+
+env:
+  - name: APP_ENV
+    value: dev
+
+service:
+  type: NodePort
+
+activeProfiles: "none"

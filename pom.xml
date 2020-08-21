@@ -9,7 +9,7 @@
     <parent>
         <artifactId>lms2Wow</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>4.0.5</version>
+        <version>4.0.6</version>
         <relativePath />
     </parent>
 
@@ -47,17 +47,17 @@
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-lti-web</artifactId>
-            <version>4.0.5</version>
+            <version>4.0.6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-canvas-client</artifactId>
-            <version>4.0.4</version>
+            <version>4.0.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>common-configuration</artifactId>
-            <version>4.0.7</version>
+            <version>4.0.8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -70,7 +70,7 @@
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>redis-config</artifactId>
-            <version>4.0.2</version>
+            <version>4.0.3-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

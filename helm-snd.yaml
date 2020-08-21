@@ -1,5 +1,5 @@
 
-bootstrapSecret: "protected-properties-2020-07-10"
+bootstrapSecret: "properties-2020-08-20"
 
 image:
   repository: registry-snd.docker.iu.edu/lms/lti_courselist

@@ -6,10 +6,10 @@ image:
 
 env:
   - name: APP_ENV
-    value: snd
+    value: stg
 
 ingress:
   enabled: true
   hosts:
-    - host: "lms-lti-courselist-snd.apps-snd.iu.edu"
+    - host: "lms-lti-courselist-stg.apps-test.iu.edu"
       paths: []

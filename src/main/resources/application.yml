@@ -5,24 +5,19 @@ spring:
     active: redis
   session:
     store-type: none
+  output:
+    ansi:
+      enabled: ALWAYS
 security:
   oauth2:
-    client:
-      userAuthorizationUri: ${oauth.tokenprovider.url}/oauth/authorize
-      accessTokenUri: ${oauth.tokenprovider.url}/oauth/token
-      clientId: ${oauth.tokenprovider.clientId}
-      clientSecret: ${oauth.tokenprovider.clientSecret}
-      username: ${oauth.tokenprovider.clientId}
-      password: ${oauth.tokenprovider.clientPassword}
-      clientAuthenticationScheme: form
     resource:
       jwt:
-        keyUri: ${oauth.tokenprovider.url}/oauth/token_key
+        key-uri: ${oauth.tokenprovider.url}/oauth/token_key
 
 courselist:
-  canvasBaseUrl: ${canvas.baseUrl}
   version: ${app.version}
   env: ${app.env}
+  startANewCourseUrl: /users/self/external_tools/100230
 
 ---
 
@@ -30,3 +25,4 @@ spring:
   profiles: redis
   session:
     store-type: redis
+    redis.namespace: courselist-${app.version}:session

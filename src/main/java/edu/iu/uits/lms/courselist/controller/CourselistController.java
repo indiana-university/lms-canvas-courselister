@@ -1,6 +1,7 @@
 package edu.iu.uits.lms.courselist.controller;
 
 import edu.iu.uits.lms.courselist.config.ToolConfig;
+import edu.iu.uits.lms.courselist.service.CourseListService;
 import edu.iu.uits.lms.lti.controller.LtiAuthenticationTokenAwareController;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
 import lombok.extern.slf4j.Slf4j;
@@ -20,14 +21,18 @@ public class CourselistController extends LtiAuthenticationTokenAwareController 
     @Autowired
     private ToolConfig toolConfig = null;
 
+    @Autowired
+    private CourseListService courseListService = null;
+
     @RequestMapping("/list")
     @Secured(LtiAuthenticationProvider.LTI_USER_ROLE)
     public ModelAndView list(Model model, HttpSession httpSession) {
         log.debug("in /list");
         getTokenWithoutContext();
-        model.addAttribute("browseCoursesUrl", toolConfig.getCanvasBaseUrl() + "/search/all_courses/");
-        model.addAttribute("siteRequestUrl", toolConfig.getCanvasBaseUrl() + toolConfig.getStartANewCourseUrl());
-        model.addAttribute("canvasBaseUrl", toolConfig.getCanvasBaseUrl());
+        String canvasBaseUrl = courseListService.getCanvasBaseUrl();
+        model.addAttribute("browseCoursesUrl", canvasBaseUrl + "/search/all_courses/");
+        model.addAttribute("siteRequestUrl", canvasBaseUrl + toolConfig.getStartANewCourseUrl());
+        model.addAttribute("canvasBaseUrl", canvasBaseUrl);
 
         //For session tracking
         model.addAttribute("customId", httpSession.getId());

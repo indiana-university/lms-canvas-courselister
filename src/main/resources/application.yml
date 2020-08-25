@@ -25,3 +25,4 @@ spring:
   profiles: redis
   session:
     store-type: redis
+    redis.namespace: courselist-${app.version}:session

@@ -366,7 +366,7 @@ function ActionBar(props) {
         props.filters.filteredPublished.length > 0 ||
         props.filters.filteredTerms.length > 0) {
             removeFilters = (
-                <a id="removeFilters" className="rvt-link-bold showMoreTerms iconPointer"
+                <a id="removeFilters" className="rvt-link-bold showMoreTerms"
                     onClick={props.handleRemoveAllFilters} href="#">Remove All Filters</a>
         )
     }

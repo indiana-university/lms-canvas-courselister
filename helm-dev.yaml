@@ -4,6 +4,7 @@ bootstrapSecret: "properties-2020-08-20"
 image:
   repository: localhost:5000/lti_courselist
   pullPolicy: Never
+  tag: unstable
 
 replicaCount: 1
 

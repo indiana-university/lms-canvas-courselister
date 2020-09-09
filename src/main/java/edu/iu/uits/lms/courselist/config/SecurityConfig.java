@@ -20,7 +20,7 @@ public class SecurityConfig {
         protected void configure(HttpSecurity http) throws Exception {
             http.authorizeRequests(authorizeRequests ->
                   authorizeRequests
-                        .antMatchers("/lti", "/remote/**").hasAnyRole("ANONYMOUS", LtiAuthenticationProvider.LTI_USER)
+                        .antMatchers("/lti").hasAnyRole("ANONYMOUS", LtiAuthenticationProvider.LTI_USER)
                         .anyRequest().authenticated());
 
             //Need to disable csrf so that we can use POST via REST

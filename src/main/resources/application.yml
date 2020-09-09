@@ -13,15 +13,6 @@ security:
     resource:
       jwt:
         key-uri: ${oauth.tokenprovider.url}/oauth/token_key
-zuul:
-  routes:
-    canvas:
-      path: /remote/canvas-services/**
-      url: ${lms.service.canvas.url.${app.env}}
-    lti:
-      path: /remote/lti-services/**
-      url: ${lms.service.lti.url.${app.env}}
-  sensitive-headers: ~
 courselist:
   version: ${app.version}
   env: ${app.env}

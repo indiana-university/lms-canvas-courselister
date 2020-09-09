@@ -1,8 +1,8 @@
 
-bootstrapSecret: "properties-2020-08-20"
+bootstrapSecret: "properties-2020-09-04"
 
 image:
-  tag: latest
+  tag: unstable-snd
 
 env:
   - name: APP_ENV

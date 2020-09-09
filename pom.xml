@@ -16,6 +16,7 @@
     <properties>
         <app.version>${project.version}</app.version>
         <docker_repository_name>lti_courselist</docker_repository_name>
+        <docker_tag>stable</docker_tag>
     </properties>
 
     <dependencies>
@@ -47,12 +48,12 @@
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-lti-web</artifactId>
-            <version>4.0.7</version>
+            <version>4.0.9</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-canvas-client</artifactId>
-            <version>4.0.7</version>
+            <version>4.0.9</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
@@ -135,7 +136,7 @@
                             <goal>push</goal>
                         </goals>
                         <configuration>
-                            <tag>latest</tag>
+                            <tag>unstable</tag>
                         </configuration>
                     </execution>
                 </executions>
@@ -196,7 +197,7 @@
                         </configuration>
                         <executions>
                             <execution>
-                                <id>push-latest</id>
+                                <id>build-latest</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>build</goal>
@@ -204,7 +205,7 @@
                                     <goal>push</goal>
                                 </goals>
                                 <configuration>
-                                    <tag>latest</tag>
+                                    <tag>${docker_tag}</tag>
                                 </configuration>
                             </execution>
                             <execution>

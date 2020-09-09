@@ -4,7 +4,7 @@ namespace: ua-vpit--enterprise-systems--lms
 
 image:
   repository: registry.docker.iu.edu/lms/lti_courselist
-  tag: latest
+  tag: unstable
   pullPolicy: Always
 
 replicaCount: 2

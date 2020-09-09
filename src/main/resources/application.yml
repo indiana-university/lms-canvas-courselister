@@ -13,7 +13,6 @@ security:
     resource:
       jwt:
         key-uri: ${oauth.tokenprovider.url}/oauth/token_key
-
 courselist:
   version: ${app.version}
   env: ${app.env}

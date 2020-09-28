@@ -5,9 +5,9 @@ spring:
     active: redis
   session:
     store-type: none
-  output:
-    ansi:
-      enabled: ALWAYS
+#  output:
+#    ansi:
+#      enabled: ALWAYS
 security:
   oauth2:
     resource:

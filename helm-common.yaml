@@ -17,6 +17,9 @@ resources:
     cpu: "1"
     memory: "1Gi"
 
+env:
+  JAVA_TOOL_OPTIONS: "-Dlogging.level.edu.iu.uits.lms=DEBUG"
+
 imagePullSecrets:
   - name: registry-prod
 

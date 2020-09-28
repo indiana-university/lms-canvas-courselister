@@ -5,8 +5,7 @@ image:
   tag: stable
 
 env:
-  - name: APP_ENV
-    value: prd
+  APP_ENV: prd
 
 ingress:
   enabled: true

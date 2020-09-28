@@ -5,8 +5,7 @@ image:
   tag: unstable-stg
 
 env:
-  - name: APP_ENV
-    value: stg
+  APP_ENV: stg
 
 ingress:
   enabled: true

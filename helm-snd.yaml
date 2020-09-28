@@ -5,8 +5,7 @@ image:
   tag: unstable-snd
 
 env:
-  - name: APP_ENV
-    value: snd
+  APP_ENV: snd
 
 ingress:
   enabled: true

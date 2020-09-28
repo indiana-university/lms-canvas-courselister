@@ -9,12 +9,15 @@ image:
 replicaCount: 1
 
 env:
-  - name: APP_ENV
-    value: dev
-  - name: JAVA_TOOL_OPTIONS
-    value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Dlogging.level.edu.iu.uits.lms=DEBUG"
+  APP_ENV: dev
+  JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Dlogging.level.edu.iu.uits.lms=DEBUG"
 
 service:
   type: NodePort
+  extraPorts:
+    - port: 5005
+      targetPort: 5005
+      protocol: TCP
+      name: remote-debug
 
 activeProfiles: "none"

@@ -5,8 +5,7 @@ image:
   tag: unstable-reg
 
 env:
-  - name: APP_ENV
-    value: reg
+  APP_ENV: reg
 
 ingress:
   enabled: true

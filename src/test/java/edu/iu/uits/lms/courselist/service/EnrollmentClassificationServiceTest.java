@@ -1,5 +1,6 @@
 package edu.iu.uits.lms.courselist.service;
 
+import canvas.client.generated.api.CanvasApi;
 import canvas.client.generated.api.CoursesApi;
 import canvas.client.generated.api.TermsApi;
 import canvas.client.generated.api.UsersApi;
@@ -60,6 +61,9 @@ public class EnrollmentClassificationServiceTest {
 
    @MockBean
    private UsersApi usersApi = null;
+
+   @MockBean
+   private CanvasApi canvasApi = null;
 
    @Before
    public void setUp() throws Exception {

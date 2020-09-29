@@ -4,18 +4,19 @@
     <artifactId>lms-lti-courselist</artifactId>
     <packaging>jar</packaging>
     <name>lms-lti-courselist</name>
-    <version>4.0.3</version>
+    <version>4.0.4-SNAPSHOT</version>
 
     <parent>
         <artifactId>lms2Wow</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>4.0.5</version>
+        <version>4.0.6</version>
         <relativePath />
     </parent>
 
     <properties>
         <app.version>${project.version}</app.version>
         <docker_repository_name>lti_courselist</docker_repository_name>
+        <docker_tag>stable</docker_tag>
     </properties>
 
     <dependencies>
@@ -47,17 +48,17 @@
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-lti-web</artifactId>
-            <version>4.0.5</version>
+            <version>4.0.10</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-canvas-client</artifactId>
-            <version>4.0.4</version>
+            <version>4.0.10</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>common-configuration</artifactId>
-            <version>4.0.7</version>
+            <version>4.0.9</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -70,7 +71,7 @@
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>redis-config</artifactId>
-            <version>4.0.2</version>
+            <version>4.0.3</version>
         </dependency>
     </dependencies>
 
@@ -135,7 +136,7 @@
                             <goal>push</goal>
                         </goals>
                         <configuration>
-                            <tag>latest</tag>
+                            <tag>unstable</tag>
                         </configuration>
                     </execution>
                 </executions>
@@ -196,7 +197,7 @@
                         </configuration>
                         <executions>
                             <execution>
-                                <id>push-latest</id>
+                                <id>build-latest</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>build</goal>
@@ -204,7 +205,7 @@
                                     <goal>push</goal>
                                 </goals>
                                 <configuration>
-                                    <tag>latest</tag>
+                                    <tag>${docker_tag}</tag>
                                 </configuration>
                             </execution>
                             <execution>

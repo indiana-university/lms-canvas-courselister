@@ -1,5 +1,5 @@
-FROM registry-snd.docker.iu.edu/lms/poc_base:0.0.2-SNAPSHOT
-MAINTAINER Chris Maurer <chmaurer@iu.edu>
+FROM registry.docker.iu.edu/lms/microservices_base:1.0.0
+MAINTAINER LMS Development Team <iu-uits-lms-dev-l@list.iu.edu>
 
 CMD exec java -jar /usr/src/app/lms-lti-courselist.jar
 EXPOSE 5005

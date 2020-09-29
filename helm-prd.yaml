@@ -2,13 +2,13 @@
 bootstrapSecret: "properties-2020-09-04"
 
 image:
-  tag: unstable-snd
+  tag: stable
 
 env:
-  APP_ENV: snd
+  APP_ENV: prd
 
 ingress:
   enabled: true
   hosts:
-    - host: "lms-lti-courselist-snd.apps-snd.iu.edu"
+    - host: "lms-lti-courselist.apps.iu.edu"
       paths: []

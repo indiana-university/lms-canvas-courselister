@@ -50,7 +50,7 @@ class App extends React.Component {
             searchTerms: "",
             filteredEnrollments: [],
             filteredVisibility: [false],
-            filteredPublished: [true, false],
+            filteredPublished: [],
             filteredTerms: [],
             showOnlyActiveTerms: true,
             moreTermsClick: false,
@@ -83,15 +83,13 @@ class App extends React.Component {
                     activeTerms = _.take(allTerms, 5);
                 }
 
-                var filteredTerms = _.map(allTerms, 'id')
-
                 self.setState({
                     courses: courses.data,
                     loading: false,
-                    filteredEnrollments: availableEnrollments,
+                    filteredEnrollments: [],
                     allTerms: allTerms,
                     activeTerms: activeTerms,
-                    filteredTerms: filteredTerms
+                    filteredTerms: []
                 });
             }))
             .catch(error => {
@@ -173,9 +171,8 @@ class App extends React.Component {
 
         // filtering for published and unpublished courses
         filteredCourses = filteredCourses.filter((decoratedCourse) => {
-            if (this.state.filteredPublished.length==0) {
-                return false;
-            } else if (this.state.filteredPublished.length==2) {
+            // if no filters or all filters
+            if (this.state.filteredPublished.length==0 || this.state.filteredPublished.length==2) {
                 return true;
             } else {
                 return decoratedCourse.published==this.state.filteredPublished[0];
@@ -184,9 +181,8 @@ class App extends React.Component {
 
         // filtering for hidden and visible courses
         filteredCourses = filteredCourses.filter((decoratedCourse) => {
-            if (this.state.filteredVisibility.length==0) {
-                return false;
-            } else if (this.state.filteredVisibility.length==2) {
+            // if no filters or all filters
+            if (this.state.filteredVisibility.length==0 || this.state.filteredVisibility.length==2) {
                 return true;
             } else {
                 return decoratedCourse.hidden==this.state.filteredVisibility[0];
@@ -195,12 +191,26 @@ class App extends React.Component {
 
         // filtering for enrollment types
         filteredCourses = filteredCourses.filter((decoratedCourse) => {
-            return this.state.filteredEnrollments.indexOf(decoratedCourse.enrollmentClassification.name) !== -1;
+            var includedEnrollments;
+            if (this.state.filteredEnrollments.length > 0) {
+                includedEnrollments = [...this.state.filteredEnrollments]
+            } else {
+                // if no filters, include all enrollments
+                includedEnrollments = _.chain(this.state.courses).orderBy("enrollmentClassification.order", "asc").map("enrollmentClassification.name").uniq().value();
+            }
+            return includedEnrollments.indexOf(decoratedCourse.enrollmentClassification.name) !== -1;
         });
 
         // filtering for terms
         filteredCourses = filteredCourses.filter((decoratedCourse) => {
-            return this.state.filteredTerms.indexOf(decoratedCourse.term.id) !== -1;
+            var includedTerms;
+            if (this.state.filteredTerms.length > 0) {
+                includedTerms = [...this.state.filteredTerms]
+            } else {
+                includedTerms =  _.map(this.state.allTerms, 'id')
+            }
+
+            return includedTerms.indexOf(decoratedCourse.term.id) !== -1;
         });
 
         var groupedCourses = groupAndSortBuckets(filteredCourses, this.state.grouping, this.state.groupSort, this.state.orderKey)
@@ -218,7 +228,8 @@ class App extends React.Component {
                         showOnlyActiveTerms={this.state.showOnlyActiveTerms}
                         handleShowMoreTermsClick={this.handleShowMoreTermsClick} updateStateBatch={this.updateStateBatch}
                         handleGroupByOptionChange={this.handleGroupByOptionChange} handleSearch={this.handleSearch}
-                        handleSearchKeyPress={this.handleSearchKeyPress} handleFilter={this.handleFilter} handleFilterBatch={this.handleFilterBatch} />
+                        handleSearchKeyPress={this.handleSearchKeyPress} handleFilter={this.handleFilter}
+                        handleFilterBatch={this.handleFilterBatch} handleRemoveAllFilters={this.handleRemoveAllFilters} />
                     <MainTable loading={this.state.loading} groupedCourses={groupedCourses} orderKey={this.state.orderKey}
                         handleOrdering={this.handleOrdering} updateCourseInState={this.updateCourseInState} />
                 </div>
@@ -291,7 +302,7 @@ class App extends React.Component {
             /* Add data! */
             if (stateArray.includes(value)) {
                 filteredEnrollments.splice(0, 0, value);
-            } if ("publishedCourses"==value) {
+            } else if ("publishedCourses"==value) {
                 filteredPublished.splice(0, 0, true);
             } else if ("unpublishedCourses"==value) {
                 filteredPublished.splice(0, 0, false);
@@ -330,6 +341,23 @@ class App extends React.Component {
         this.setState(obj)
     }
 
+    /**
+     * De-select all filters
+     */
+    handleRemoveAllFilters = (event) => {
+        const data = {filteredEnrollments: [],
+                     filteredPublished: [],
+                     filteredVisibility: [],
+                     filteredTerms: []};
+        this.updateStateBatch(data);
+
+        // move keyboard focus to the first filter element
+        const firstFilter = document.getElementsByClassName('filter-input')[0];
+        if (firstFilter) {
+            firstFilter.focus();
+        }
+    };
+
 }
 
 function getCourses() {
@@ -357,12 +385,25 @@ function Header(props) {
 }
 
 function ActionBar(props) {
+
+    let removeFilters;
+    if (props.filters.filteredEnrollments.length > 0 ||
+        props.filters.filteredVisibility.length > 0 ||
+        props.filters.filteredPublished.length > 0 ||
+        props.filters.filteredTerms.length > 0) {
+            removeFilters = (
+                <a id="removeFilters" className="rvt-link-bold showMoreTerms"
+                    onClick={props.handleRemoveAllFilters} href="#">Remove All Filters</a>
+        )
+    }
+
     if (props.loading) {
         return null;
     } else {
         return (
         <div className="rvt-flex-md-up rvt-row">
             <Dropdown label="Filter By" modifier="secondary" className="rvt-m-right-sm-md-up">
+                {removeFilters}
                 <fieldset className="rvt-p-left-sm">
                     <span className="rvt-text-bold">Enrollments</span>
                     <EnrollmentOptions courses={props.courses} filteredEnrollments={props.filters.filteredEnrollments} handleFilter={props.handleFilter} />

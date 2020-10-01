@@ -12,11 +12,11 @@ class FilterTermOptions extends React.Component {
     }
 
     handleShowMoreTermsClick = (event) => {
-        this.props.updateStateBatch({showOnlyActiveTerms: false});
+        this.props.updateStateBatch({showOnlyActiveTerms: false, moreTermsClick: true});
     }
 
     handleShowFewerTermsClick = (event) => {
-        this.props.updateStateBatch({showOnlyActiveTerms: true});
+        this.props.updateStateBatch({showOnlyActiveTerms: true, fewerTermsClick: true});
     }
 
     handleTermClick = (event) => {

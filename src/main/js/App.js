@@ -52,7 +52,9 @@ class App extends React.Component {
             filteredVisibility: [false],
             filteredPublished: [],
             filteredTerms: [],
-            showOnlyActiveTerms: true
+            showOnlyActiveTerms: true,
+            moreTermsClick: false,
+            fewerTermsClick: false
         }
         this.handleGroupByOptionChange.bind(this)
         this.handleOrdering.bind(this)
@@ -109,6 +111,30 @@ class App extends React.Component {
         var instance = new Mark(context);
 
         instance.unmark().mark(this.state.searchTerms);
+
+        // If the user clicked "More terms", we need to manually refocus to the
+        // first "additional" term shown
+        if (this.state.moreTermsClick) {
+            var numActiveTerms = this.state.activeTerms.length
+            var nextTerm = document.querySelectorAll("input[name='termCheckboxes']")[numActiveTerms]
+            if (nextTerm) {
+                nextTerm.focus()
+            }
+
+            this.state.moreTermsClick = false
+        }
+
+        // If ther user clicked "Less terms" we need to manually refocus to the
+        // "More terms" link
+        if (this.state.fewerTermsClick) {
+            // when the user clicks "Less Terms" we refocus on the "More Terms" link
+            var moreTermsLink = document.getElementById("showMoreTerms")
+            if (moreTermsLink) {
+                moreTermsLink.focus()
+            }
+
+            this.state.fewerTermsClick = false
+        }
     }
 
     cloneObject(input) {

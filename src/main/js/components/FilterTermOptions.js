@@ -13,10 +13,16 @@ class FilterTermOptions extends React.Component {
 
     handleShowMoreTermsClick = (event) => {
         this.props.updateStateBatch({showOnlyActiveTerms: false, moreTermsClick: true});
+        // Since this is a link, the default behavior when a link is clicked is to
+        // scroll to the top of the screen. We need to prevent that.
+        event.preventDefault();
     }
 
     handleShowFewerTermsClick = (event) => {
         this.props.updateStateBatch({showOnlyActiveTerms: true, fewerTermsClick: true});
+        // Since this is a link, the default behavior when a link is clicked is to
+        // scroll to the top of the screen. We don't want that
+        event.preventDefault();
     }
 
     handleTermClick = (event) => {

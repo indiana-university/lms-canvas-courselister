@@ -1,5 +1,7 @@
 
-bootstrapSecret: "properties-2020-09-04"
+projectedSecret:
+  - secret:
+      name: "properties-2020-11-30"
 
 image:
   tag: unstable-reg

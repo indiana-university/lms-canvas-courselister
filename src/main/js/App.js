@@ -428,6 +428,7 @@ function ActionBar(props) {
                 </fieldset>
                 <fieldset className="rvt-m-top-sm rvt-p-left-sm">
                     <span className="rvt-text-bold">Published</span>
+                    <legend className="sr-only">Course published filters</legend>
                     <ul className="rvt-plain-list">
                         <li>
                             <input type="checkbox" id="publishedCourses" name="publishedStatusCheckboxes" className="filter-input"

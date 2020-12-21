@@ -60,11 +60,11 @@ class TableRow extends React.Component {
                 <td scope="row">
                     <FavoriteStatus enrollmentClassification={courseModel.enrollmentClassification} isFavorite={this.state.favorited}
                         isFavoritable={courseModel.favoritable} handleFavoriteCourse={this.handleFavoriteCourse}
-                        handleUnfavoriteCourse={this.handleUnfavoriteCourse} />
+                        handleUnfavoriteCourse={this.handleUnfavoriteCourse} courseName={courseModel.courseName} />
                 </td>
                 <td>
                     <HiddenStatus handleShowCourse={this.handleShowCourse} handleHideCourse={this.handleHideCourse}
-                        isHidden={this.state.hidden} />
+                        isHidden={this.state.hidden} courseName={courseModel.courseName} />
                 </td>
                 <td className="searchable">
                     <CourseName courseName={courseModel.courseName} renderUrl={courseModel.linkClickable}
@@ -83,9 +83,11 @@ class TableRow extends React.Component {
 function HiddenStatus(props) {
     const isHidden = props.isHidden;
     if (isHidden) {
-        return <a href="#" onClick={props.handleShowCourse} className="no-decoration"><i className="fa fa-eye-slash courseHidden" title="Click to show the course in the list."></i></a>;
+        const showText = "Show course: " + props.courseName;
+        return <a href="#" aria-label={showText} onClick={props.handleShowCourse} className="no-decoration"><i className="fa fa-eye-slash courseHidden" title="Click to show the course in the list."></i></a>;
     }
-    return <a href="#" onClick={props.handleHideCourse} className="no-decoration"><i className="fa fa-eye" title="Click to make the course hidden in the list."></i></a>;
+    const hideText = "Hide course: " + props.courseName;
+    return <a href="#" aria-label={hideText} onClick={props.handleHideCourse} className="no-decoration"><i className="fa fa-eye" title="Click to make the course hidden in the list."></i></a>;
 }
 
 function FavoriteStatus(props) {
@@ -94,10 +96,12 @@ function FavoriteStatus(props) {
 
     if (props.isFavoritable) {
         if (isFavorite) {
-            return <a href="#" onClick={props.handleUnfavoriteCourse} className="no-decoration"><RvtSvg title="Click to remove from the Courses menu." icon="rvt-icon-star-solid"
+            const unfavorite = "Unfavorite: " + props.courseName;
+            return <a href="#" aria-label={unfavorite} onClick={props.handleUnfavoriteCourse} className="no-decoration"><RvtSvg title="Click to remove from the Courses menu." icon="rvt-icon-star-solid"
                 className="rvt-color-yellow" /></a>;
         }
-        return <a href="#" onClick={props.handleFavoriteCourse} className="no-decoration"><RvtSvg title="Click to add to the Courses menu." icon="rvt-icon-star"/></a>;
+        const favorite = "Favorite: " + props.courseName;
+        return <a href="#" aria-label={favorite} onClick={props.handleFavoriteCourse} className="no-decoration"><RvtSvg title="Click to add to the Courses menu." icon="rvt-icon-star"/></a>;
     }
     return null;
 }

@@ -405,30 +405,28 @@ function ActionBar(props) {
             <Dropdown label="Filter By" modifier="secondary" className="rvt-m-right-sm-md-up">
                 {removeFilters}
                 <fieldset className="rvt-p-left-sm">
-                    <span className="rvt-text-bold">Enrollments</span>
+                    <legend className="rvt-text-bold">Enrollments</legend>
                     <EnrollmentOptions courses={props.courses} filteredEnrollments={props.filters.filteredEnrollments} handleFilter={props.handleFilter} />
                 </fieldset>
                 <fieldset className="rvt-m-top-sm rvt-p-left-sm">
-                    <span className="rvt-text-bold">Course Visibility</span>
-                    <legend className="sr-only">Course visibility filters</legend>
+                    <legend className="rvt-text-bold">Course Visibility</legend>
                     <ul className="rvt-plain-list">
                         <li>
                             <input type="checkbox" id="visibleCourses" name="hiddenStatusCheckboxes" className="filter-input"
                                     value="visibleCourses" onChange={props.handleFilter}
-                                    checked={props.filters.filteredVisibility.includes(false)} />
+                                    checked={props.filters.filteredVisibility.includes(false)} role="menuitemcheckbox" />
                             <label htmlFor="visibleCourses" className="rvt-m-right-sm rvt-text-nobr">Visible (<i className="fa fa-eye" aria-hidden="true" title="Visible icon"></i>)</label>
                         </li>
                         <li>
                             <input type="checkbox" id="hiddenCourses" name="hiddenStatusCheckboxes" className="filter-input"
                                     value="hiddenCourses" onChange={props.handleFilter}
-                                    checked={props.filters.filteredVisibility.includes(true)} />
+                                    checked={props.filters.filteredVisibility.includes(true)} role="menuitemcheckbox" />
                             <label htmlFor="hiddenCourses" className="rvt-m-right-sm rvt-text-nobr">Hidden (<i className="fa fa-eye-slash courseHidden" aria-hidden="true" title="Hidden icon"></i>)</label>
                         </li>
                     </ul>
                 </fieldset>
                 <fieldset className="rvt-m-top-sm rvt-p-left-sm">
-                    <span className="rvt-text-bold">Published</span>
-                    <legend className="sr-only">Course published filters</legend>
+                    <legend className="rvt-text-bold">Published</legend>
                     <ul className="rvt-plain-list">
                         <li>
                             <input type="checkbox" id="publishedCourses" name="publishedStatusCheckboxes" className="filter-input"
@@ -445,7 +443,7 @@ function ActionBar(props) {
                     </ul>
                 </fieldset>
                 <fieldset className="rvt-m-top-sm rvt-p-left-sm">
-                    <span className="rvt-text-bold">Terms</span>
+                    <legend className="rvt-text-bold">Terms</legend>
                     <FilterTermOptions activeTerms={props.activeTerms} allTerms={props.allTerms} filteredTerms={props.filters.filteredTerms}
                         handleFilterBatch={props.handleFilterBatch} updateStateBatch={props.updateStateBatch} showOnlyActiveTerms={props.showOnlyActiveTerms} />
                 </fieldset>
@@ -458,7 +456,7 @@ function ActionBar(props) {
                         <li>
                             <input type="radio" name="group-options" id="group-options-enrl" value="enrollmentClassification.text"
                                 checked={"enrollmentClassification.text" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
-                                data-sort-key="enrollmentClassification.order" />
+                                data-sort-key="enrollmentClassification.order" role="menuitemradio" />
                             <label htmlFor="group-options-enrl" className="rvt-m-right-sm">Enrollments</label>
                         </li>
                         <li>
@@ -529,7 +527,7 @@ function EnrollmentOptions(props) {
     const enrollmentOptions = availableEnrollments.map((enrollmentClassification) => (
             <li key={enrollmentClassification.name}>
                 <input type="checkbox" id={enrollmentClassification.name} name="enrollmentCheckboxes" className="filter-input"
-                    value={enrollmentClassification.name} onChange={props.handleFilter}
+                    value={enrollmentClassification.name} onChange={props.handleFilter} role="menuitemcheckbox"
                     checked={props.filteredEnrollments.includes(enrollmentClassification.name)} />
                 <label htmlFor={enrollmentClassification.name} className="rvt-m-right-sm rvt-text-nobr">{enrollmentClassification.text}</label>
             </li>

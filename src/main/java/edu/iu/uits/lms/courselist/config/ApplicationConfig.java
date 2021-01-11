@@ -26,6 +26,7 @@ public class ApplicationConfig implements WebMvcConfigurer {
       registry.addResourceHandler("/css/**").addResourceLocations("classpath:/static/css/");
       registry.addResourceHandler("/webjars/**").addResourceLocations("/webjars/").resourceChain(true);
       registry.addResourceHandler("/jsreact/**").addResourceLocations("classpath:/META-INF/resources/jsreact/").resourceChain(true);
+      registry.addResourceHandler("/app/jsrivet/**").addResourceLocations("classpath:/META-INF/resources/jsrivet/").resourceChain(true);
    }
 
    /**

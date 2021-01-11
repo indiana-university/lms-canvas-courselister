@@ -8,9 +8,9 @@ const DataGrouping = (props) => {
         const groups = entryArray.map(([key,value]) => (
             <tbody key={key}>
                 <tr>
-                    <th colSpan="8" className="rvt-ts-20 tableSubHeadOverride">{key}</th>
+                    <th colSpan="8" scope="colGroup" id={`group_${key.replace(' ', '_')}`} className="rvt-ts-20 tableSubHeadOverride">{key}</th>
                 </tr>
-                <DataBucket data={value} updateCourseInState={props.updateCourseInState}/>
+                <DataBucket data={value} groupByHeader={`group_${key.replace(' ', '_')}`} updateCourseInState={props.updateCourseInState}/>
             </tbody>
         ))
 

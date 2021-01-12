@@ -37,12 +37,7 @@
     "react-scroll-up-button": "^1.6.4",
     "rivet-clearable-input": "maurercw/rivet-clearable-input#v0.2.0",
     "rivet-icons": "0.1.0",
-    "rivet-uits": "1.1.0",
+    "rivet-uits": "1.7.2",
     "styled-components": "^4.0.2"
-  },
-  "comments": {
-    "dependencies": {
-      "rivet-uits": "Needs to stay at 1.1.0 until rivet-react supports newer stuff"
-    }
   }
 }

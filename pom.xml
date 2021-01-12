@@ -71,11 +71,6 @@
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
-            <artifactId>lms-rivet</artifactId>
-            <version>4.1.7.2</version>
-        </dependency>
-        <dependency>
-            <groupId>edu.iu.uits.lms</groupId>
             <artifactId>redis-config</artifactId>
             <version>4.0.3</version>
         </dependency>

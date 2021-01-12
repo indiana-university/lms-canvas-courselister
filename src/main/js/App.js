@@ -15,6 +15,7 @@ import ClearableInput from 'rivet-clearable-input/dist/js/rivet-clearable-input.
 import Mark from 'mark.js/dist/mark.es6.min.js'
 
 import 'rivet-uits/css/rivet.min.css'
+import 'rivet-uits/js/rivet.min.js'
 
 class App extends React.Component {
     /**

@@ -54,7 +54,7 @@ class TableRow extends React.Component {
 
     render() {
         const courseModel = this.props.courseModel
-        const courseHeaderId = 'id_' + courseModel.course.id
+        const courseHeaderId = 'id-' + courseModel.course.id + '-' + _.kebabCase(courseModel.term.name) + '-' + _.kebabCase(courseModel.enrollment.enrollment_state) + '-' + _.kebabCase(courseModel.roleLabel)
 
         return (
             <tr>

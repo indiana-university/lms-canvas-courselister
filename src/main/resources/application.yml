@@ -18,6 +18,13 @@ courselist:
   env: ${app.env}
   startANewCourseUrl: /users/self/external_tools/100230
 
+server:
+  error:
+    whitelabel:
+      enabled: false
+  servlet:
+    session:
+      timeout: 30m
 ---
 
 spring:

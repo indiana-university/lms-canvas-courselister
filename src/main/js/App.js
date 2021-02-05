@@ -481,19 +481,25 @@ function ActionBar(props) {
                     <ul className="rvt-plain-list">
                         <li>
                             <input type="radio" name="group-options" id="group-options-enrl" value="enrollmentClassification.text"
-                                checked={"enrollmentClassification.text" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
+                                checked={"enrollmentClassification.text" === props.selectedGroup}
+                                onChange={props.handleGroupByOptionChange}
+                                onKeyPress={event => event.stopPropagation()}
                                 data-sort-key="enrollmentClassification.order" />
                             <label htmlFor="group-options-enrl" className="rvt-m-right-sm">Enrollments</label>
                         </li>
                         <li>
                             <input type="radio" name="group-options" id="group-options-term" value="term.name"
-                                checked={"term.name" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
+                                checked={"term.name" === props.selectedGroup}
+                                onChange={props.handleGroupByOptionChange}
+                                onKeyPress={event => event.stopPropagation()}
                                 data-sort-key="termSort" data-sort-dir="desc" />
                             <label htmlFor="group-options-term">Term</label>
                         </li>
                         <li>
                             <input type="radio" name="group-options" id="group-options-role" value="baseRoleLabel"
-                                checked={"baseRoleLabel" === props.selectedGroup} onChange={props.handleGroupByOptionChange} />
+                                checked={"baseRoleLabel" === props.selectedGroup}
+                                onChange={props.handleGroupByOptionChange}
+                                onKeyPress={event => event.stopPropagation()} />
                             <label htmlFor="group-options-role">Role</label>
                         </li>
                     </ul>

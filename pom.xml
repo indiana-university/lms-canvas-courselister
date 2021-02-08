@@ -9,20 +9,20 @@
     <parent>
         <artifactId>lms2Wow</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>4.0.10-SNAPSHOT</version>
+        <version>4.0.10</version>
         <relativePath />
     </parent>
 
     <properties>
         <app.version>${project.version}</app.version>
-        <common-configuration.version>4.0.12-SNAPSHOT</common-configuration.version>
+        <common-configuration.version>4.0.12</common-configuration.version>
         <docker_repository_name>lti_courselist</docker_repository_name>
         <docker_tag>stable</docker_tag>
         <helm_service_name>courselister</helm_service_name>
-        <lms-canvas-client.version>4.0.20-SNAPSHOT</lms-canvas-client.version>
-        <lms-lti-web.version>4.0.18-SNAPSHOT</lms-lti-web.version>
-        <lms-rivet.version>4.1.7.3-SNAPSHOT</lms-rivet.version>
-        <redis-config.version>4.0.4-SNAPSHOT</redis-config.version>
+        <lms-canvas-client.version>4.0.20</lms-canvas-client.version>
+        <lms-lti-web.version>4.0.18</lms-lti-web.version>
+        <lms-rivet.version>4.1.7.2_2</lms-rivet.version>
+        <redis-config.version>4.0.4</redis-config.version>
     </properties>
 
     <dependencies>

@@ -9,7 +9,7 @@
     <parent>
         <artifactId>lms2Wow</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>4.0.10</version>
+        <version>4.0.11-SNAPSHOT</version>
         <relativePath />
     </parent>
 
@@ -21,7 +21,7 @@
         <helm_service_name>courselister</helm_service_name>
         <lms-canvas-client.version>4.0.20</lms-canvas-client.version>
         <lms-lti-web.version>4.0.18</lms-lti-web.version>
-        <lms-rivet.version>4.1.7.2_2</lms-rivet.version>
+        <lms-rivet.version>4.1.7.3-SNAPSHOT</lms-rivet.version>
         <redis-config.version>4.0.4</redis-config.version>
     </properties>
 

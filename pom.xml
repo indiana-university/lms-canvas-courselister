@@ -9,22 +9,29 @@
     <parent>
         <artifactId>lms2Wow</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>4.0.10</version>
+        <version>4.0.11</version>
         <relativePath />
     </parent>
 
     <properties>
         <app.version>${project.version}</app.version>
-        <common-configuration.version>4.0.12</common-configuration.version>
         <docker_repository_name>lti_courselist</docker_repository_name>
         <docker_tag>stable</docker_tag>
         <helm_service_name>courselister</helm_service_name>
-        <lms-canvas-client.version>4.0.20</lms-canvas-client.version>
-        <lms-lti-web.version>4.0.18</lms-lti-web.version>
-        <lms-rivet.version>4.1.7.2_2</lms-rivet.version>
-        <redis-config.version>4.0.4</redis-config.version>
+        <lms-bom.version>4.0.0</lms-bom.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>edu.iu.uits.lms</groupId>
+                <artifactId>lms-bom</artifactId>
+                <version>${lms-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -54,17 +61,14 @@
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-lti-web</artifactId>
-            <version>${lms-lti-web.version}</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-canvas-client</artifactId>
-            <version>${lms-canvas-client.version}</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>common-configuration</artifactId>
-            <version>${common-configuration.version}</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -77,12 +81,10 @@
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-rivet</artifactId>
-            <version>${lms-rivet.version}</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>redis-config</artifactId>
-            <version>${redis-config.version}</version>
         </dependency>
     </dependencies>
 

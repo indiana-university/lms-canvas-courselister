@@ -18,7 +18,7 @@
         <docker_repository_name>lti_courselist</docker_repository_name>
         <docker_tag>stable</docker_tag>
         <helm_service_name>courselister</helm_service_name>
-        <lms-bom.version>4.0.0</lms-bom.version>
+        <lms-bom.version>4.0.1</lms-bom.version>
     </properties>
 
     <dependencyManagement>

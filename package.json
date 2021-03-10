@@ -33,10 +33,12 @@
     "classnames": "2.2.6",
     "dateformat": "3.0.3",
     "react": "16.8.4",
+    "react-display-name": "^0.2.5",
     "react-dom": "16.7.0",
     "react-scroll-up-button": "^1.6.4",
     "rivet-clearable-input": "maurercw/rivet-clearable-input#v0.2.0",
     "rivet-icons": "0.1.0",
+    "rivet-react": "file:../../rivet-react",
     "rivet-uits": "1.7.2",
     "styled-components": "^4.0.2"
   }

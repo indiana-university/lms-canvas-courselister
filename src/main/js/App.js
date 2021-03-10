@@ -14,8 +14,8 @@ import 'rivet-clearable-input/dist/css/rivet-clearable-input.min.css';
 import ClearableInput from 'rivet-clearable-input/dist/js/rivet-clearable-input.js';
 import Mark from 'mark.js/dist/mark.es6.min.js'
 
+import { Dropdown, DropdownGroup } from "rivet-react"
 import 'rivet-uits/css/rivet.min.css'
-import 'rivet-uits/js/rivet.min.js'
 
 class App extends React.Component {
     /**
@@ -405,18 +405,8 @@ function ActionBar(props) {
 
         <h2 className="sr-only">Options to filter, group, and search courses</h2>
 
-        <div className="rvt-dropdown" role="region" aria-label="Filter controls">
-            <button
-                 type="button"
-                className="rvt-button rvt-button--secondary rvt-m-right-sm-md-up"
-                data-dropdown-toggle="dropdown-filters"
-                aria-haspopup="true"
-                aria-expanded="false"
-            >
-                <span className="dropdown__toggle-text">Filter By</span>
-                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M8,12.46a2,2,0,0,1-1.52-.7L1.24,5.65a1,1,0,1,1,1.52-1.3L8,10.46l5.24-6.11a1,1,0,0,1,1.52,1.3L9.52,11.76A2,2,0,0,1,8,12.46Z"></path></svg>
-            </button>
-            <div className="rvt-dropdown__menu" id="dropdown-filters" aria-hidden="true">
+        <div role="region" aria-label="Filter controls">
+            <Dropdown label="Filter By" modifier="secondary" className="rvt-m-right-sm-md-up" excludeMenuRole={true}>
                 {removeFilters}
                 <fieldset className="rvt-p-left-sm">
                     <legend className="rvt-text-bold">Enrollments</legend>
@@ -461,50 +451,34 @@ function ActionBar(props) {
                     <FilterTermOptions activeTerms={props.activeTerms} allTerms={props.allTerms} filteredTerms={props.filters.filteredTerms}
                         handleFilterBatch={props.handleFilterBatch} updateStateBatch={props.updateStateBatch} showOnlyActiveTerms={props.showOnlyActiveTerms} />
                 </fieldset>
-            </div>
+            </Dropdown>
         </div>
 
-        <div className="rvt-dropdown" role="region" aria-label="Controls for grouping courses">
-            <button
-                 type="button"
-                className="rvt-button rvt-button--secondary rvt-m-right-sm-md-up"
-                data-dropdown-toggle="dropdown-grouping"
-                aria-haspopup="true"
-                aria-expanded="false"
-            >
-                <span className="dropdown__toggle-text">Group By</span>
-                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M8,12.46a2,2,0,0,1-1.52-.7L1.24,5.65a1,1,0,1,1,1.52-1.3L8,10.46l5.24-6.11a1,1,0,0,1,1.52,1.3L9.52,11.76A2,2,0,0,1,8,12.46Z"></path></svg>
-            </button>
-            <div className="rvt-dropdown__menu" id="dropdown-grouping" aria-hidden="true">
+        <div role="region" aria-label="Controls for grouping courses">
+            <Dropdown label="Group By" modifier="secondary" className="rvt-m-right-sm-md-up" excludeMenuRole={true}>
                 <fieldset className="rvt-p-left-sm">
                     <legend className="sr-only">Grouping options</legend>
                     <ul className="rvt-plain-list">
                         <li>
                             <input type="radio" name="group-options" id="group-options-enrl" value="enrollmentClassification.text"
-                                checked={"enrollmentClassification.text" === props.selectedGroup}
-                                onChange={props.handleGroupByOptionChange}
-                                onKeyPress={event => event.stopPropagation()}
+                                checked={"enrollmentClassification.text" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
                                 data-sort-key="enrollmentClassification.order" />
                             <label htmlFor="group-options-enrl" className="rvt-m-right-sm">Enrollments</label>
                         </li>
                         <li>
                             <input type="radio" name="group-options" id="group-options-term" value="term.name"
-                                checked={"term.name" === props.selectedGroup}
-                                onChange={props.handleGroupByOptionChange}
-                                onKeyPress={event => event.stopPropagation()}
+                                checked={"term.name" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
                                 data-sort-key="termSort" data-sort-dir="desc" />
                             <label htmlFor="group-options-term">Term</label>
                         </li>
                         <li>
                             <input type="radio" name="group-options" id="group-options-role" value="baseRoleLabel"
-                                checked={"baseRoleLabel" === props.selectedGroup}
-                                onChange={props.handleGroupByOptionChange}
-                                onKeyPress={event => event.stopPropagation()} />
+                                checked={"baseRoleLabel" === props.selectedGroup} onChange={props.handleGroupByOptionChange} />
                             <label htmlFor="group-options-role">Role</label>
                         </li>
                     </ul>
                 </fieldset>
-            </div>
+            </Dropdown>
         </div>
 
 

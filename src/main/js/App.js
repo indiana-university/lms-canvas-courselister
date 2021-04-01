@@ -15,7 +15,8 @@ import ClearableInput from 'rivet-clearable-input/dist/js/rivet-clearable-input.
 import Mark from 'mark.js/dist/mark.es6.min.js'
 
 import 'rivet-uits/css/rivet.min.css'
-import 'rivet-uits/js/rivet.min.js'
+
+// include rivet from react.html
 
 class App extends React.Component {
     /**
@@ -64,6 +65,7 @@ class App extends React.Component {
         this.handleFilterBatch.bind(this)
         this.updateStateBatch.bind(this)
         this.updateCourseInState.bind(this)
+        this.closeGroupByMenuOnTab.bind(this)
     }
 
     /**
@@ -124,7 +126,7 @@ class App extends React.Component {
             this.state.moreTermsClick = false
         }
 
-        // If ther user clicked "Less terms" we need to manually refocus to the
+        // If the user clicked "Less terms" we need to manually refocus to the
         // "More terms" link
         if (this.state.fewerTermsClick) {
             // when the user clicks "Less Terms" we refocus on the "More Terms" link
@@ -229,7 +231,8 @@ class App extends React.Component {
                         handleShowMoreTermsClick={this.handleShowMoreTermsClick} updateStateBatch={this.updateStateBatch}
                         handleGroupByOptionChange={this.handleGroupByOptionChange} handleSearch={this.handleSearch}
                         handleSearchKeyPress={this.handleSearchKeyPress} handleFilter={this.handleFilter}
-                        handleFilterBatch={this.handleFilterBatch} handleRemoveAllFilters={this.handleRemoveAllFilters} />
+                        handleFilterBatch={this.handleFilterBatch} handleRemoveAllFilters={this.handleRemoveAllFilters} 
+                        closeGroupByMenuOnTab={this.closeGroupByMenuOnTab} />
                     <MainTable loading={this.state.loading} groupedCourses={groupedCourses} orderKey={this.state.orderKey}
                         handleOrdering={this.handleOrdering} updateCourseInState={this.updateCourseInState} selectedGroup={this.state.grouping}/>
                 </div>
@@ -277,6 +280,14 @@ class App extends React.Component {
     handleSearchKeyPress = (event) => {
         if (event.key == 'Enter') {
             this.handleSearch(event);
+        }
+    }
+    
+    closeGroupByMenuOnTab(event) {  
+        // If it was a tab, we are moving out of the dropdown and need to close it    
+        if (event.keyCode == 9) {
+            alert("Close this dropdown")
+            rvt.Dropdown.close("dropdown-grouping");
         }
     }
 
@@ -482,13 +493,14 @@ function ActionBar(props) {
                         <li>
                             <input type="radio" name="group-options" id="group-options-enrl" value="enrollmentClassification.text"
                                 checked={"enrollmentClassification.text" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
-                                data-sort-key="enrollmentClassification.order" />
+                                data-sort-key="enrollmentClassification.order"
+                                onKeyDown={props.closeGroupByMenuOnTab} />
                             <label htmlFor="group-options-enrl" className="rvt-m-right-sm">Enrollments</label>
                         </li>
                         <li>
                             <input type="radio" name="group-options" id="group-options-term" value="term.name"
                                 checked={"term.name" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
-                                data-sort-key="termSort" data-sort-dir="desc" />
+                                data-sort-key="termSort" data-sort-dir="desc" onKeyDown={props.closeGroupByMenuOnTab} />
                             <label htmlFor="group-options-term">Term</label>
                         </li>
                         <li>

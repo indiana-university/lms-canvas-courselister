@@ -30,7 +30,6 @@
     "regenerator-runtime": "0.13.7",
     "rivet-clearable-input": "maurercw/rivet-clearable-input#v0.2.0",
     "rivet-icons": "0.4.0",
-    "rivet-uits": "1.7.2",
     "styled-components": "^5.2.1"
   },
   "comments": {

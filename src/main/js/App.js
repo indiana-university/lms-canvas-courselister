@@ -15,8 +15,7 @@ import ClearableInput from 'rivet-clearable-input/dist/js/rivet-clearable-input.
 import Mark from 'mark.js/dist/mark.es6.min.js'
 
 import 'rivet-uits/css/rivet.min.css'
-
-// include rivet from react.html
+import 'rivet-uits/js/rivet.min.js'
 
 class App extends React.Component {
     /**
@@ -284,10 +283,12 @@ class App extends React.Component {
     }
     
     closeGroupByMenuOnTab(event) {  
-        // If it was a tab, we are moving out of the dropdown and need to close it    
+        // If it was a tab, we are moving out of the dropdown and need to close it 
+        // This is due to a bug in rivet dropdown that assumes all inputs are tabbable. This is not
+        // the case for radio buttons which are navigated via arrow keys. If you are focused on the
+        // first or second radio button in the group, tabbing out of the menu will not close it. 
         if (event.keyCode == 9) {
-            alert("Close this dropdown")
-            rvt.Dropdown.close("dropdown-grouping");
+            Dropdown.close("dropdown-grouping");
         }
     }
 
@@ -500,7 +501,8 @@ function ActionBar(props) {
                         <li>
                             <input type="radio" name="group-options" id="group-options-term" value="term.name"
                                 checked={"term.name" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
-                                data-sort-key="termSort" data-sort-dir="desc" onKeyDown={props.closeGroupByMenuOnTab} />
+                                data-sort-key="termSort" data-sort-dir="desc" 
+                                onKeyDown={props.closeGroupByMenuOnTab} />
                             <label htmlFor="group-options-term">Term</label>
                         </li>
                         <li>

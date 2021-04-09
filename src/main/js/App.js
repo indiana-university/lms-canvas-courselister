@@ -14,8 +14,8 @@ import 'rivet-clearable-input/dist/css/rivet-clearable-input.min.css';
 import ClearableInput from 'rivet-clearable-input/dist/js/rivet-clearable-input.js';
 import Mark from 'mark.js/dist/mark.es6.min.js'
 
-import { Dropdown, DropdownGroup } from "rivet-react"
 import 'rivet-uits/css/rivet.min.css'
+import 'rivet-uits/js/rivet.min.js'
 
 class App extends React.Component {
     /**
@@ -405,8 +405,18 @@ function ActionBar(props) {
 
         <h2 className="sr-only">Options to filter, group, and search courses</h2>
 
-        <div role="region" aria-label="Filter controls">
-            <Dropdown label="Filter By" modifier="secondary" className="rvt-m-right-sm-md-up" excludeMenuRole={true}>
+        <div className="rvt-dropdown" role="region" aria-label="Filter controls">
+            <button
+                 type="button"
+                className="rvt-button rvt-button--secondary rvt-m-right-sm-md-up"
+                data-dropdown-toggle="dropdown-filters"
+                aria-haspopup="true"
+                aria-expanded="false"
+            >
+                <span className="dropdown__toggle-text">Filter By</span>
+                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M8,12.46a2,2,0,0,1-1.52-.7L1.24,5.65a1,1,0,1,1,1.52-1.3L8,10.46l5.24-6.11a1,1,0,0,1,1.52,1.3L9.52,11.76A2,2,0,0,1,8,12.46Z"></path></svg>
+            </button>
+            <div className="rvt-dropdown__menu" id="dropdown-filters" aria-hidden="true">
                 {removeFilters}
                 <fieldset className="rvt-p-left-sm">
                     <legend className="rvt-text-bold">Enrollments</legend>
@@ -451,11 +461,21 @@ function ActionBar(props) {
                     <FilterTermOptions activeTerms={props.activeTerms} allTerms={props.allTerms} filteredTerms={props.filters.filteredTerms}
                         handleFilterBatch={props.handleFilterBatch} updateStateBatch={props.updateStateBatch} showOnlyActiveTerms={props.showOnlyActiveTerms} />
                 </fieldset>
-            </Dropdown>
+            </div>
         </div>
 
-        <div role="region" aria-label="Controls for grouping courses">
-            <Dropdown label="Group By" modifier="secondary" className="rvt-m-right-sm-md-up" excludeMenuRole={true}>
+        <div className="rvt-dropdown" role="region" aria-label="Controls for grouping courses">
+            <button
+                 type="button"
+                className="rvt-button rvt-button--secondary rvt-m-right-sm-md-up"
+                data-dropdown-toggle="dropdown-grouping"
+                aria-haspopup="true"
+                aria-expanded="false"
+            >
+                <span className="dropdown__toggle-text">Group By</span>
+                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M8,12.46a2,2,0,0,1-1.52-.7L1.24,5.65a1,1,0,1,1,1.52-1.3L8,10.46l5.24-6.11a1,1,0,0,1,1.52,1.3L9.52,11.76A2,2,0,0,1,8,12.46Z"></path></svg>
+            </button>
+            <div className="rvt-dropdown__menu" id="dropdown-grouping" aria-hidden="true">
                 <fieldset className="rvt-p-left-sm">
                     <legend className="sr-only">Grouping options</legend>
                     <ul className="rvt-plain-list">
@@ -478,7 +498,7 @@ function ActionBar(props) {
                         </li>
                     </ul>
                 </fieldset>
-            </Dropdown>
+            </div>
         </div>
 
 

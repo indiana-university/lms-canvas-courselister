@@ -1,45 +1,42 @@
 {
   "name": "lms-lti-courselist",
   "private": true,
-  "scripts": {
-    "dev": "webpack-dev-server --open"
-  },
+  "scripts": {},
   "devDependencies": {
-    "autoprefixer": "9.4.3",
-    "babel-core": "6.26.3",
-    "babel-loader": "7.1.5",
-    "babel-preset-env": "1.7.0",
-    "babel-preset-react": "6.24.1",
-    "babel-preset-stage-2": "6.24.1",
-    "css-loader": "2.0.1",
-    "file-loader": "2.0.0",
-    "less": "3.9.0",
-    "less-loader": "4.1.0",
-    "lodash": "^4.17.11",
+    "@babel/core": "7.12.13",
+    "@babel/plugin-proposal-class-properties": "^7.12.13",
+    "@babel/preset-env": "7.12.13",
+    "@babel/preset-react": "7.12.13",
+    "autoprefixer": "10.2.4",
+    "babel-loader": "8.2.2",
+    "css-loader": "5.0.2",
+    "file-loader": "6.2.0",
+    "lodash": "^4.17.20",
     "mark.js": "^8.11.1",
     "path": "0.12.7",
-    "postcss-loader": "3.0.0",
-    "postcss-preset-env": "6.5.0",
-    "standard": "12.0.1",
-    "style-loader": "^0.23.1",
-    "terser-webpack-plugin": "1.1.0",
-    "webpack": "4.28.0",
-    "webpack-cli": "3.1.2",
-    "webpack-dev-server": "3.1.10"
+    "standard": "16.0.3",
+    "style-loader": "^2.0.0",
+    "webpack": "5.21.2",
+    "webpack-cli": "4.5.0"
   },
   "dependencies": {
-    "axios": "^0.19.0",
-    "babel-polyfill": "^6.26.0",
+    "axios": "^0.21.1",
     "classnames": "2.2.6",
-    "dateformat": "3.0.3",
-    "react": "16.8.4",
-    "react-display-name": "^0.2.5",
-    "react-dom": "16.7.0",
+    "core-js": "^3.8.3",
+    "dateformat": "4.5.1",
+    "react": "16.14.0",
+    "react-dom": "16.14.0",
     "react-scroll-up-button": "^1.6.4",
+    "regenerator-runtime": "0.13.7",
     "rivet-clearable-input": "maurercw/rivet-clearable-input#v0.2.0",
-    "rivet-icons": "0.1.0",
-    "rivet-react": "file:../../rivet-react",
+    "rivet-icons": "0.4.0",
     "rivet-uits": "1.7.2",
-    "styled-components": "^4.0.2"
+    "styled-components": "^5.2.1"
+  },
+  "comments": {
+    "dependencies": {
+      "react-dom": "Updating to 17.0.1 caused LMSA-7364. Verify any new upgrades do not have this issue.",
+      "react": "react and react-dom must stay on the same major version, so react is also waiting for upgrade until the react-dom issue is resolved"
+    }
   }
 }

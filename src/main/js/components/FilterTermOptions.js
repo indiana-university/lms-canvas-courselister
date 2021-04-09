@@ -5,8 +5,6 @@ class FilterTermOptions extends React.Component {
     constructor(props) {
         super(props);
 
-        this.handleShowMoreTermsClick.bind(this)
-        this.handleShowFewerTermsClick.bind(this)
         this.handleTermClick.bind(this)
         this.getWorkingTermList.bind(this)
     }

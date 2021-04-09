@@ -14,9 +14,6 @@ import 'rivet-clearable-input/dist/css/rivet-clearable-input.min.css';
 import ClearableInput from 'rivet-clearable-input/dist/js/rivet-clearable-input.js';
 import Mark from 'mark.js/dist/mark.es6.min.js'
 
-import 'rivet-uits/css/rivet.min.css'
-import 'rivet-uits/js/rivet.min.js'
-
 class App extends React.Component {
     /**
      * Initialization stuff
@@ -397,17 +394,19 @@ function Header(props) {
 }
 
 function ActionBar(props) {
-
-    let removeFilters;
-    if (props.filters.filteredEnrollments.length > 0 ||
-        props.filters.filteredVisibility.length > 0 ||
-        props.filters.filteredPublished.length > 0 ||
-        props.filters.filteredTerms.length > 0) {
-            removeFilters = (
-                <a id="removeFilters" className="rvt-link-bold showMoreTerms"
-                    onClick={props.handleRemoveAllFilters} href="#">Remove All Filters</a>
-        )
-    }
+    // When a user clicks this link, we need to use display none instead
+    // of not rendering it at all because rivet will listen for the click
+    // event and, if the element doesn't exist in the dropdown, it
+    // closes the dropdown (which we dont want)
+    var showRemoveLink = props.filters.filteredEnrollments.length > 0 ||
+                         props.filters.filteredVisibility.length > 0 ||
+                         props.filters.filteredPublished.length > 0 ||
+                         props.filters.filteredTerms.length > 0;
+    let removeFilters = (
+        <a id="removeFilters" className={"rvt-link-bold showMoreTerms " + (showRemoveLink ? '' : 'rvt-display-none')}
+            onClick={props.handleRemoveAllFilters} href="#">Remove All Filters</a>
+    )
+    
 
     if (props.loading) {
         return null;

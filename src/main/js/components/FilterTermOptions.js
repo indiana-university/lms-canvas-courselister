@@ -10,16 +10,14 @@ class FilterTermOptions extends React.Component {
         this.handleTermClick.bind(this)
         this.getWorkingTermList.bind(this)
     }
-
-    handleShowMoreTermsClick = (event) => {
-        this.props.updateStateBatch({showOnlyActiveTerms: false, moreTermsClick: true});
-        // Since this is a link, the default behavior when a link is clicked is to
-        // scroll to the top of the screen. We need to prevent that.
-        event.preventDefault();
-    }
-
-    handleShowFewerTermsClick = (event) => {
-        this.props.updateStateBatch({showOnlyActiveTerms: true, fewerTermsClick: true});
+    
+    handleShowTermsClick = (event) => {
+        if (this.props.showOnlyActiveTerms) {
+            this.props.updateStateBatch({showOnlyActiveTerms: false, moreTermsClick: true});
+        } else {
+            this.props.updateStateBatch({showOnlyActiveTerms: true, fewerTermsClick: true});
+        }
+            
         // Since this is a link, the default behavior when a link is clicked is to
         // scroll to the top of the screen. We don't want that
         event.preventDefault();
@@ -52,22 +50,13 @@ class FilterTermOptions extends React.Component {
             </li>
         ))
 
-        //Only show the "More" link if there are more terms to show
-        let showMoreTermsLink;
-        if (showOnlyActiveTerms && this.props.allTerms.length != this.props.activeTerms.length) {
-            showMoreTermsLink = (
-                <a id="showMoreTerms" className="rvt-link-bold showMoreTerms iconPointer"
-                    onClick={this.handleShowMoreTermsClick} href="#">Show More</a>
-            )
-        }
-
-        //Only show the "Fewer" link if there were previously more terms to show
-        let showFewerTermsLink;
-        if (!showOnlyActiveTerms && this.props.allTerms.length != this.props.activeTerms.length) {
-            showFewerTermsLink = (
-                <a id="showFewerTerms" className="rvt-link-bold showMoreTerms iconPointer"
-                    onClick={this.handleShowFewerTermsClick} href="#">Show Less</a>
-            )
+        let showTermsLink;
+        if (this.props.allTerms.length != this.props.activeTerms.length) {
+            var linkText = showOnlyActiveTerms ? 'Show More' : 'Show Less';
+            showTermsLink = (
+                        <a id="showTerms" className="rvt-link-bold showMoreTerms iconPointer"
+                            onClick={this.handleShowTermsClick} href="#">{linkText}</a>
+                    )
         }
 
         return (
@@ -75,8 +64,7 @@ class FilterTermOptions extends React.Component {
                 <ul className="rvt-plain-list">
                     {terms}
                 </ul>
-                {showMoreTermsLink}
-                {showFewerTermsLink}
+                {showTermsLink}
             </React.Fragment>
         );
     }

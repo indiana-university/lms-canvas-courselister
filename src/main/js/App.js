@@ -14,9 +14,6 @@ import 'rivet-clearable-input/dist/css/rivet-clearable-input.min.css';
 import ClearableInput from 'rivet-clearable-input/dist/js/rivet-clearable-input.js';
 import Mark from 'mark.js/dist/mark.es6.min.js'
 
-import 'rivet-uits/css/rivet.min.css'
-import 'rivet-uits/js/rivet.min.js'
-
 class App extends React.Component {
     /**
      * Initialization stuff
@@ -64,6 +61,7 @@ class App extends React.Component {
         this.handleFilterBatch.bind(this)
         this.updateStateBatch.bind(this)
         this.updateCourseInState.bind(this)
+        this.closeGroupByMenuOnTab.bind(this)
     }
 
     /**
@@ -124,7 +122,7 @@ class App extends React.Component {
             this.state.moreTermsClick = false
         }
 
-        // If ther user clicked "Less terms" we need to manually refocus to the
+        // If the user clicked "Less terms" we need to manually refocus to the
         // "More terms" link
         if (this.state.fewerTermsClick) {
             // when the user clicks "Less Terms" we refocus on the "More Terms" link
@@ -229,7 +227,8 @@ class App extends React.Component {
                         handleShowMoreTermsClick={this.handleShowMoreTermsClick} updateStateBatch={this.updateStateBatch}
                         handleGroupByOptionChange={this.handleGroupByOptionChange} handleSearch={this.handleSearch}
                         handleSearchKeyPress={this.handleSearchKeyPress} handleFilter={this.handleFilter}
-                        handleFilterBatch={this.handleFilterBatch} handleRemoveAllFilters={this.handleRemoveAllFilters} />
+                        handleFilterBatch={this.handleFilterBatch} handleRemoveAllFilters={this.handleRemoveAllFilters} 
+                        closeGroupByMenuOnTab={this.closeGroupByMenuOnTab} />
                     <MainTable loading={this.state.loading} groupedCourses={groupedCourses} orderKey={this.state.orderKey}
                         handleOrdering={this.handleOrdering} updateCourseInState={this.updateCourseInState} selectedGroup={this.state.grouping}/>
                 </div>
@@ -277,6 +276,16 @@ class App extends React.Component {
     handleSearchKeyPress = (event) => {
         if (event.key == 'Enter') {
             this.handleSearch(event);
+        }
+    }
+    
+    closeGroupByMenuOnTab(event) {  
+        // If it was a tab, we are moving out of the dropdown and need to close it 
+        // This is due to a bug in rivet dropdown that assumes all inputs are tabbable. This is not
+        // the case for radio buttons which are navigated via arrow keys. If you are focused on the
+        // first or second radio button in the group, tabbing out of the menu will not close it. 
+        if (event.keyCode == 9) {
+            Dropdown.close("dropdown-grouping");
         }
     }
 
@@ -385,17 +394,19 @@ function Header(props) {
 }
 
 function ActionBar(props) {
-
-    let removeFilters;
-    if (props.filters.filteredEnrollments.length > 0 ||
-        props.filters.filteredVisibility.length > 0 ||
-        props.filters.filteredPublished.length > 0 ||
-        props.filters.filteredTerms.length > 0) {
-            removeFilters = (
-                <a id="removeFilters" className="rvt-link-bold showMoreTerms"
-                    onClick={props.handleRemoveAllFilters} href="#">Remove All Filters</a>
-        )
-    }
+    // When a user clicks this link, we need to use display none instead
+    // of not rendering it at all because rivet will listen for the click
+    // event and, if the element doesn't exist in the dropdown, it
+    // closes the dropdown (which we dont want)
+    var showRemoveLink = props.filters.filteredEnrollments.length > 0 ||
+                         props.filters.filteredVisibility.length > 0 ||
+                         props.filters.filteredPublished.length > 0 ||
+                         props.filters.filteredTerms.length > 0;
+    let removeFilters = (
+        <a id="removeFilters" className={"rvt-link-bold showMoreTerms " + (showRemoveLink ? '' : 'rvt-display-none')}
+            onClick={props.handleRemoveAllFilters} href="#">Remove All Filters</a>
+    )
+    
 
     if (props.loading) {
         return null;
@@ -482,13 +493,15 @@ function ActionBar(props) {
                         <li>
                             <input type="radio" name="group-options" id="group-options-enrl" value="enrollmentClassification.text"
                                 checked={"enrollmentClassification.text" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
-                                data-sort-key="enrollmentClassification.order" />
+                                data-sort-key="enrollmentClassification.order"
+                                onKeyDown={props.closeGroupByMenuOnTab} />
                             <label htmlFor="group-options-enrl" className="rvt-m-right-sm">Enrollments</label>
                         </li>
                         <li>
                             <input type="radio" name="group-options" id="group-options-term" value="term.name"
                                 checked={"term.name" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
-                                data-sort-key="termSort" data-sort-dir="desc" />
+                                data-sort-key="termSort" data-sort-dir="desc" 
+                                onKeyDown={props.closeGroupByMenuOnTab} />
                             <label htmlFor="group-options-term">Term</label>
                         </li>
                         <li>

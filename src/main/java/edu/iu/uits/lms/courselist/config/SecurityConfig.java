@@ -59,7 +59,7 @@ public class SecurityConfig {
         public void configure(WebSecurity web) throws Exception {
             // ignore everything except paths specified
             web.ignoring().antMatchers("/templates/**", "/jsreact/**", "/static/**", "/webjars/**",
-                  "/resources/**", "/actuator/**", "/css/**", "/js/**");
+                  "/resources/**", "/actuator/**", "/css/**", "/js/**", "/jsrivet/**");
         }
 
     }

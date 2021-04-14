@@ -61,7 +61,7 @@ class App extends React.Component {
         this.handleFilterBatch.bind(this)
         this.updateStateBatch.bind(this)
         this.updateCourseInState.bind(this)
-        this.closeGroupByMenuOnTab.bind(this)
+        this.groupByMenuSpecialHandling.bind(this)
     }
 
     /**
@@ -228,7 +228,7 @@ class App extends React.Component {
                         handleGroupByOptionChange={this.handleGroupByOptionChange} handleSearch={this.handleSearch}
                         handleSearchKeyPress={this.handleSearchKeyPress} handleFilter={this.handleFilter}
                         handleFilterBatch={this.handleFilterBatch} handleRemoveAllFilters={this.handleRemoveAllFilters} 
-                        closeGroupByMenuOnTab={this.closeGroupByMenuOnTab} />
+                        groupByMenuSpecialHandling={this.groupByMenuSpecialHandling} />
                     <MainTable loading={this.state.loading} groupedCourses={groupedCourses} orderKey={this.state.orderKey}
                         handleOrdering={this.handleOrdering} updateCourseInState={this.updateCourseInState} selectedGroup={this.state.grouping}/>
                 </div>
@@ -245,6 +245,10 @@ class App extends React.Component {
         var sortKey = event.target.getAttribute("data-sort-key") || groupKey
         var sortDir = event.target.getAttribute("data-sort-dir") || 'asc'
 
+        this.changeGroupOptions(groupKey, sortKey, sortDir)
+    }
+    
+    changeGroupOptions = (groupKey, sortKey, sortDir) => {
         this.setState({grouping: groupKey, groupSort: {key: sortKey, direction: sortDir}});
     }
 
@@ -279,13 +283,61 @@ class App extends React.Component {
         }
     }
     
-    closeGroupByMenuOnTab(event) {  
+    groupByMenuSpecialHandling = (event) => {  
         // If it was a tab, we are moving out of the dropdown and need to close it 
         // This is due to a bug in rivet dropdown that assumes all inputs are tabbable. This is not
         // the case for radio buttons which are navigated via arrow keys. If you are focused on the
         // first or second radio button in the group, tabbing out of the menu will not close it. 
         if (event.keyCode == 9) {
             Dropdown.close("dropdown-grouping");
+        }
+        
+        // Rivet added key handlers to force nav with up/down arrows. However, radio buttons already navigate with up/down
+        // natively, so Rivet's handler is causing non-standard behavior for radio button navigation. Let's
+        // just prevent Rivet from doing any up/down handling with radio buttons in Firefox. Chrome does not 
+        // have this issue
+        if(navigator.userAgent.indexOf("Firefox") != -1 ) {
+            
+            const UP = 38;
+            const DOWN = 40;
+            
+            if (event.keyCode == UP || event.keyCode == DOWN) {
+                // stop rivet's keyboard handling from happening and we will just handle it ourselves
+                event.preventDefault();
+                
+                // we need to select the correct radio button. If we are at the top we have to select the
+                // bottom and vice versa    
+                var radioInputs = document.getElementsByName('group-options');
+                var currSelection = event.target;
+                var newSelectedIndex;
+
+                for (var i=0; i < radioInputs.length; i++) {
+                    if (currSelection.id === radioInputs[i].id) {
+                        if (event.keyCode == UP) {
+                            if (i == 0) {
+                                newSelectedIndex = radioInputs.length-1;
+                            } else {
+                                newSelectedIndex = i-1;
+                            }
+                        } else if (event.keyCode == DOWN) {
+                            if (i == radioInputs.length-1) {
+                                newSelectedIndex = 0;
+                            } else {
+                                newSelectedIndex = i+1;
+                            }
+                        }
+                        break;
+                    } 
+                }
+
+                radioInputs[newSelectedIndex].checked = true;
+                
+                var groupKey = radioInputs[newSelectedIndex].value
+                var sortKey = radioInputs[newSelectedIndex].getAttribute("data-sort-key") || groupKey
+                var sortDir = radioInputs[newSelectedIndex].getAttribute("data-sort-dir") || 'asc'
+        
+                this.changeGroupOptions(groupKey, sortKey, sortDir)           
+            }
         }
     }
 
@@ -494,19 +546,20 @@ function ActionBar(props) {
                             <input type="radio" name="group-options" id="group-options-enrl" value="enrollmentClassification.text"
                                 checked={"enrollmentClassification.text" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
                                 data-sort-key="enrollmentClassification.order"
-                                onKeyDown={props.closeGroupByMenuOnTab} />
+                                onKeyDown={props.groupByMenuSpecialHandling} />
                             <label htmlFor="group-options-enrl" className="rvt-m-right-sm">Enrollments</label>
                         </li>
                         <li>
                             <input type="radio" name="group-options" id="group-options-term" value="term.name"
                                 checked={"term.name" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
                                 data-sort-key="termSort" data-sort-dir="desc" 
-                                onKeyDown={props.closeGroupByMenuOnTab} />
+                                onKeyDown={props.groupByMenuSpecialHandling} />
                             <label htmlFor="group-options-term">Term</label>
                         </li>
                         <li>
                             <input type="radio" name="group-options" id="group-options-role" value="baseRoleLabel"
-                                checked={"baseRoleLabel" === props.selectedGroup} onChange={props.handleGroupByOptionChange} />
+                                checked={"baseRoleLabel" === props.selectedGroup} onChange={props.handleGroupByOptionChange} 
+                                onKeyDown={props.groupByMenuSpecialHandling} />
                             <label htmlFor="group-options-role">Role</label>
                         </li>
                     </ul>

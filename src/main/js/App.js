@@ -62,6 +62,7 @@ class App extends React.Component {
         this.updateStateBatch.bind(this)
         this.updateCourseInState.bind(this)
         this.groupByMenuSpecialHandling.bind(this)
+        this.handleGroupByMenuOpening.bind(this)
     }
 
     /**
@@ -228,7 +229,8 @@ class App extends React.Component {
                         handleGroupByOptionChange={this.handleGroupByOptionChange} handleSearch={this.handleSearch}
                         handleSearchKeyPress={this.handleSearchKeyPress} handleFilter={this.handleFilter}
                         handleFilterBatch={this.handleFilterBatch} handleRemoveAllFilters={this.handleRemoveAllFilters} 
-                        groupByMenuSpecialHandling={this.groupByMenuSpecialHandling} />
+                        groupByMenuSpecialHandling={this.groupByMenuSpecialHandling}
+                        handleGroupByMenuOpening={this.handleGroupByMenuOpening} />
                     <MainTable loading={this.state.loading} groupedCourses={groupedCourses} orderKey={this.state.orderKey}
                         handleOrdering={this.handleOrdering} updateCourseInState={this.updateCourseInState} selectedGroup={this.state.grouping}/>
                 </div>
@@ -338,6 +340,16 @@ class App extends React.Component {
         
                 this.changeGroupOptions(groupKey, sortKey, sortDir)           
             }
+        }
+    }
+    
+    handleGroupByMenuOpening = (event) => {
+        if(navigator.userAgent.indexOf("Firefox") != -1 && event.keyCode == 40) {
+            // when we use the down arrow to expand the menu, the focus should
+            // move to the first radio button
+            event.preventDefault();
+            var radioInputs = document.getElementsByName('group-options');
+            radioInputs[0].focus(); 
         }
     }
 
@@ -534,6 +546,7 @@ function ActionBar(props) {
                 data-dropdown-toggle="dropdown-grouping"
                 aria-haspopup="true"
                 aria-expanded="false"
+                onKeyDown={props.handleGroupByMenuOpening}
             >
                 <span className="dropdown__toggle-text">Group By</span>
                 <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M8,12.46a2,2,0,0,1-1.52-.7L1.24,5.65a1,1,0,1,1,1.52-1.3L8,10.46l5.24-6.11a1,1,0,0,1,1.52,1.3L9.52,11.76A2,2,0,0,1,8,12.46Z"></path></svg>

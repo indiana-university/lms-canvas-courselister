@@ -5,6 +5,7 @@ import edu.iu.uits.lms.common.server.GitRepositoryState;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.common.server.ServerUtils;
 import edu.iu.uits.lms.courselist.config.ToolConfig;
+import edu.iu.uits.lms.lti.config.EnableGlobalErrorHandler;
 import edu.iu.uits.lms.lti.config.EnableLtiClient;
 import edu.iu.uits.lms.redis.config.EnableRedisConfiguration;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +20,10 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import java.util.Date;
 
 @SpringBootApplication
+@EnableGlobalErrorHandler(rivetPath = "/jsrivet")
 @PropertySource(value = {"classpath:env.properties",
-      "classpath:default.properties",
-      "${app.fullFilePath}/lms.properties",
-      "${app.fullFilePath}/protected.properties",
+      "${app.fullFilePath}/oauth.properties",
+      "${app.fullFilePath}/services.properties",
       "${app.fullFilePath}/security.properties"}, ignoreResourceNotFound = true)
 @EnableResourceServer
 @Slf4j

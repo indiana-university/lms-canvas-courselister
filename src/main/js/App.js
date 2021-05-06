@@ -14,9 +14,6 @@ import 'rivet-clearable-input/dist/css/rivet-clearable-input.min.css';
 import ClearableInput from 'rivet-clearable-input/dist/js/rivet-clearable-input.js';
 import Mark from 'mark.js/dist/mark.es6.min.js'
 
-import { Dropdown, DropdownGroup } from "rivet-react"
-import 'rivet-uits/css/rivet.min.css'
-
 class App extends React.Component {
     /**
      * Initialization stuff
@@ -50,9 +47,11 @@ class App extends React.Component {
             searchTerms: "",
             filteredEnrollments: [],
             filteredVisibility: [false],
-            filteredPublished: [true, false],
+            filteredPublished: [],
             filteredTerms: [],
-            showOnlyActiveTerms: true
+            showOnlyActiveTerms: true,
+            moreTermsClick: false,
+            fewerTermsClick: false
         }
         this.handleGroupByOptionChange.bind(this)
         this.handleOrdering.bind(this)
@@ -62,6 +61,8 @@ class App extends React.Component {
         this.handleFilterBatch.bind(this)
         this.updateStateBatch.bind(this)
         this.updateCourseInState.bind(this)
+        this.groupByMenuSpecialHandling.bind(this)
+        this.handleGroupByMenuOpening.bind(this)
     }
 
     /**
@@ -81,15 +82,13 @@ class App extends React.Component {
                     activeTerms = _.take(allTerms, 5);
                 }
 
-                var filteredTerms = _.map(allTerms, 'id')
-
                 self.setState({
                     courses: courses.data,
                     loading: false,
-                    filteredEnrollments: availableEnrollments,
+                    filteredEnrollments: [],
                     allTerms: allTerms,
                     activeTerms: activeTerms,
-                    filteredTerms: filteredTerms
+                    filteredTerms: []
                 });
             }))
             .catch(error => {
@@ -111,6 +110,30 @@ class App extends React.Component {
         var instance = new Mark(context);
 
         instance.unmark().mark(this.state.searchTerms);
+
+        // If the user clicked "More terms", we need to manually refocus to the
+        // first "additional" term shown
+        if (this.state.moreTermsClick) {
+            var numActiveTerms = this.state.activeTerms.length
+            var nextTerm = document.querySelectorAll("input[name='termCheckboxes']")[numActiveTerms]
+            if (nextTerm) {
+                nextTerm.focus()
+            }
+
+            this.state.moreTermsClick = false
+        }
+
+        // If the user clicked "Less terms" we need to manually refocus to the
+        // "More terms" link
+        if (this.state.fewerTermsClick) {
+            // when the user clicks "Less Terms" we refocus on the "More Terms" link
+            var moreTermsLink = document.getElementById("showMoreTerms")
+            if (moreTermsLink) {
+                moreTermsLink.focus()
+            }
+
+            this.state.fewerTermsClick = false
+        }
     }
 
     cloneObject(input) {
@@ -147,9 +170,8 @@ class App extends React.Component {
 
         // filtering for published and unpublished courses
         filteredCourses = filteredCourses.filter((decoratedCourse) => {
-            if (this.state.filteredPublished.length==0) {
-                return false;
-            } else if (this.state.filteredPublished.length==2) {
+            // if no filters or all filters
+            if (this.state.filteredPublished.length==0 || this.state.filteredPublished.length==2) {
                 return true;
             } else {
                 return decoratedCourse.published==this.state.filteredPublished[0];
@@ -158,9 +180,8 @@ class App extends React.Component {
 
         // filtering for hidden and visible courses
         filteredCourses = filteredCourses.filter((decoratedCourse) => {
-            if (this.state.filteredVisibility.length==0) {
-                return false;
-            } else if (this.state.filteredVisibility.length==2) {
+            // if no filters or all filters
+            if (this.state.filteredVisibility.length==0 || this.state.filteredVisibility.length==2) {
                 return true;
             } else {
                 return decoratedCourse.hidden==this.state.filteredVisibility[0];
@@ -169,12 +190,26 @@ class App extends React.Component {
 
         // filtering for enrollment types
         filteredCourses = filteredCourses.filter((decoratedCourse) => {
-            return this.state.filteredEnrollments.indexOf(decoratedCourse.enrollmentClassification.name) !== -1;
+            var includedEnrollments;
+            if (this.state.filteredEnrollments.length > 0) {
+                includedEnrollments = [...this.state.filteredEnrollments]
+            } else {
+                // if no filters, include all enrollments
+                includedEnrollments = _.chain(this.state.courses).orderBy("enrollmentClassification.order", "asc").map("enrollmentClassification.name").uniq().value();
+            }
+            return includedEnrollments.indexOf(decoratedCourse.enrollmentClassification.name) !== -1;
         });
 
         // filtering for terms
         filteredCourses = filteredCourses.filter((decoratedCourse) => {
-            return this.state.filteredTerms.indexOf(decoratedCourse.term.id) !== -1;
+            var includedTerms;
+            if (this.state.filteredTerms.length > 0) {
+                includedTerms = [...this.state.filteredTerms]
+            } else {
+                includedTerms =  _.map(this.state.allTerms, 'id')
+            }
+
+            return includedTerms.indexOf(decoratedCourse.term.id) !== -1;
         });
 
         var groupedCourses = groupAndSortBuckets(filteredCourses, this.state.grouping, this.state.groupSort, this.state.orderKey)
@@ -192,9 +227,12 @@ class App extends React.Component {
                         showOnlyActiveTerms={this.state.showOnlyActiveTerms}
                         handleShowMoreTermsClick={this.handleShowMoreTermsClick} updateStateBatch={this.updateStateBatch}
                         handleGroupByOptionChange={this.handleGroupByOptionChange} handleSearch={this.handleSearch}
-                        handleSearchKeyPress={this.handleSearchKeyPress} handleFilter={this.handleFilter} handleFilterBatch={this.handleFilterBatch} />
+                        handleSearchKeyPress={this.handleSearchKeyPress} handleFilter={this.handleFilter}
+                        handleFilterBatch={this.handleFilterBatch} handleRemoveAllFilters={this.handleRemoveAllFilters} 
+                        groupByMenuSpecialHandling={this.groupByMenuSpecialHandling}
+                        handleGroupByMenuOpening={this.handleGroupByMenuOpening} />
                     <MainTable loading={this.state.loading} groupedCourses={groupedCourses} orderKey={this.state.orderKey}
-                        handleOrdering={this.handleOrdering} updateCourseInState={this.updateCourseInState} />
+                        handleOrdering={this.handleOrdering} updateCourseInState={this.updateCourseInState} selectedGroup={this.state.grouping}/>
                 </div>
                 <ScrollUpButton />
             </div>
@@ -209,6 +247,10 @@ class App extends React.Component {
         var sortKey = event.target.getAttribute("data-sort-key") || groupKey
         var sortDir = event.target.getAttribute("data-sort-dir") || 'asc'
 
+        this.changeGroupOptions(groupKey, sortKey, sortDir)
+    }
+    
+    changeGroupOptions = (groupKey, sortKey, sortDir) => {
         this.setState({grouping: groupKey, groupSort: {key: sortKey, direction: sortDir}});
     }
 
@@ -242,6 +284,74 @@ class App extends React.Component {
             this.handleSearch(event);
         }
     }
+    
+    groupByMenuSpecialHandling = (event) => {  
+        // If it was a tab, we are moving out of the dropdown and need to close it 
+        // This is due to a bug in rivet dropdown that assumes all inputs are tabbable. This is not
+        // the case for radio buttons which are navigated via arrow keys. If you are focused on the
+        // first or second radio button in the group, tabbing out of the menu will not close it. 
+        if (event.keyCode == 9) {
+            Dropdown.close("dropdown-grouping");
+        }
+        
+        // Rivet added key handlers to force nav with up/down arrows. However, radio buttons already navigate with up/down
+        // natively, so Rivet's handler is causing non-standard behavior for radio button navigation. Let's
+        // just prevent Rivet from doing any up/down handling with radio buttons in Firefox. Chrome does not 
+        // have this issue
+        if(navigator.userAgent.indexOf("Firefox") != -1 ) {
+            
+            const UP = 38;
+            const DOWN = 40;
+            
+            if (event.keyCode == UP || event.keyCode == DOWN) {
+                // stop rivet's keyboard handling from happening and we will just handle it ourselves
+                event.preventDefault();
+                
+                // we need to select the correct radio button. If we are at the top we have to select the
+                // bottom and vice versa    
+                var radioInputs = document.getElementsByName('group-options');
+                var currSelection = event.target;
+                var newSelectedIndex;
+
+                for (var i=0; i < radioInputs.length; i++) {
+                    if (currSelection.id === radioInputs[i].id) {
+                        if (event.keyCode == UP) {
+                            if (i == 0) {
+                                newSelectedIndex = radioInputs.length-1;
+                            } else {
+                                newSelectedIndex = i-1;
+                            }
+                        } else if (event.keyCode == DOWN) {
+                            if (i == radioInputs.length-1) {
+                                newSelectedIndex = 0;
+                            } else {
+                                newSelectedIndex = i+1;
+                            }
+                        }
+                        break;
+                    } 
+                }
+
+                radioInputs[newSelectedIndex].checked = true;
+                
+                var groupKey = radioInputs[newSelectedIndex].value
+                var sortKey = radioInputs[newSelectedIndex].getAttribute("data-sort-key") || groupKey
+                var sortDir = radioInputs[newSelectedIndex].getAttribute("data-sort-dir") || 'asc'
+        
+                this.changeGroupOptions(groupKey, sortKey, sortDir)           
+            }
+        }
+    }
+    
+    handleGroupByMenuOpening = (event) => {
+        if(navigator.userAgent.indexOf("Firefox") != -1 && event.keyCode == 40) {
+            // when we use the down arrow to expand the menu, the focus should
+            // move to the first radio button
+            event.preventDefault();
+            var radioInputs = document.getElementsByName('group-options');
+            radioInputs[0].focus(); 
+        }
+    }
 
     handleFilter = (event) => {
         var value = event.target.value;
@@ -265,7 +375,7 @@ class App extends React.Component {
             /* Add data! */
             if (stateArray.includes(value)) {
                 filteredEnrollments.splice(0, 0, value);
-            } if ("publishedCourses"==value) {
+            } else if ("publishedCourses"==value) {
                 filteredPublished.splice(0, 0, true);
             } else if ("unpublishedCourses"==value) {
                 filteredPublished.splice(0, 0, false);
@@ -304,6 +414,23 @@ class App extends React.Component {
         this.setState(obj)
     }
 
+    /**
+     * De-select all filters
+     */
+    handleRemoveAllFilters = (event) => {
+        const data = {filteredEnrollments: [],
+                     filteredPublished: [],
+                     filteredVisibility: [],
+                     filteredTerms: []};
+        this.updateStateBatch(data);
+
+        // move keyboard focus to the first filter element
+        const firstFilter = document.getElementsByClassName('filter-input')[0];
+        if (firstFilter) {
+            firstFilter.focus();
+        }
+    };
+
 }
 
 function getCourses() {
@@ -331,19 +458,47 @@ function Header(props) {
 }
 
 function ActionBar(props) {
+    // When a user clicks this link, we need to use display none instead
+    // of not rendering it at all because rivet will listen for the click
+    // event and, if the element doesn't exist in the dropdown, it
+    // closes the dropdown (which we dont want)
+    var showRemoveLink = props.filters.filteredEnrollments.length > 0 ||
+                         props.filters.filteredVisibility.length > 0 ||
+                         props.filters.filteredPublished.length > 0 ||
+                         props.filters.filteredTerms.length > 0;
+    let removeFilters = (
+        <a id="removeFilters" className={"rvt-link-bold showMoreTerms " + (showRemoveLink ? '' : 'rvt-display-none')}
+            onClick={props.handleRemoveAllFilters} href="#">Remove All Filters</a>
+    )
+    
+
     if (props.loading) {
         return null;
     } else {
         return (
         <div className="rvt-flex-md-up rvt-row">
-            <Dropdown label="Filter By" modifier="secondary" className="rvt-m-right-sm-md-up">
+
+        <h2 className="sr-only">Options to filter, group, and search courses</h2>
+
+        <div className="rvt-dropdown" role="region" aria-label="Filter controls">
+            <button
+                 type="button"
+                className="rvt-button rvt-button--secondary rvt-m-right-sm-md-up"
+                data-dropdown-toggle="dropdown-filters"
+                aria-haspopup="true"
+                aria-expanded="false"
+            >
+                <span className="dropdown__toggle-text">Filter By</span>
+                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M8,12.46a2,2,0,0,1-1.52-.7L1.24,5.65a1,1,0,1,1,1.52-1.3L8,10.46l5.24-6.11a1,1,0,0,1,1.52,1.3L9.52,11.76A2,2,0,0,1,8,12.46Z"></path></svg>
+            </button>
+            <div className="rvt-dropdown__menu" id="dropdown-filters" aria-hidden="true">
+                {removeFilters}
                 <fieldset className="rvt-p-left-sm">
-                    <span className="rvt-text-bold">Enrollments</span>
+                    <legend className="rvt-text-bold">Enrollments</legend>
                     <EnrollmentOptions courses={props.courses} filteredEnrollments={props.filters.filteredEnrollments} handleFilter={props.handleFilter} />
                 </fieldset>
                 <fieldset className="rvt-m-top-sm rvt-p-left-sm">
-                    <span className="rvt-text-bold">Course Visibility</span>
-                    <legend className="sr-only">Course visibility filters</legend>
+                    <legend className="rvt-text-bold">Course Visibility</legend>
                     <ul className="rvt-plain-list">
                         <li>
                             <input type="checkbox" id="visibleCourses" name="hiddenStatusCheckboxes" className="filter-input"
@@ -360,7 +515,7 @@ function ActionBar(props) {
                     </ul>
                 </fieldset>
                 <fieldset className="rvt-m-top-sm rvt-p-left-sm">
-                    <span className="rvt-text-bold">Published</span>
+                    <legend className="rvt-text-bold">Published</legend>
                     <ul className="rvt-plain-list">
                         <li>
                             <input type="checkbox" id="publishedCourses" name="publishedStatusCheckboxes" className="filter-input"
@@ -377,36 +532,55 @@ function ActionBar(props) {
                     </ul>
                 </fieldset>
                 <fieldset className="rvt-m-top-sm rvt-p-left-sm">
-                    <span className="rvt-text-bold">Terms</span>
+                    <legend className="rvt-text-bold">Terms</legend>
                     <FilterTermOptions activeTerms={props.activeTerms} allTerms={props.allTerms} filteredTerms={props.filters.filteredTerms}
                         handleFilterBatch={props.handleFilterBatch} updateStateBatch={props.updateStateBatch} showOnlyActiveTerms={props.showOnlyActiveTerms} />
                 </fieldset>
-            </Dropdown>
+            </div>
+        </div>
 
-            <Dropdown label="Group By" modifier="secondary" className="rvt-m-right-sm-md-up">
+        <div className="rvt-dropdown" role="region" aria-label="Controls for grouping courses">
+            <button
+                 type="button"
+                className="rvt-button rvt-button--secondary rvt-m-right-sm-md-up"
+                data-dropdown-toggle="dropdown-grouping"
+                aria-haspopup="true"
+                aria-expanded="false"
+                onKeyDown={props.handleGroupByMenuOpening}
+            >
+                <span className="dropdown__toggle-text">Group By</span>
+                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M8,12.46a2,2,0,0,1-1.52-.7L1.24,5.65a1,1,0,1,1,1.52-1.3L8,10.46l5.24-6.11a1,1,0,0,1,1.52,1.3L9.52,11.76A2,2,0,0,1,8,12.46Z"></path></svg>
+            </button>
+            <div className="rvt-dropdown__menu" id="dropdown-grouping" aria-hidden="true">
                 <fieldset className="rvt-p-left-sm">
                     <legend className="sr-only">Grouping options</legend>
                     <ul className="rvt-plain-list">
                         <li>
                             <input type="radio" name="group-options" id="group-options-enrl" value="enrollmentClassification.text"
                                 checked={"enrollmentClassification.text" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
-                                data-sort-key="enrollmentClassification.order" />
+                                data-sort-key="enrollmentClassification.order"
+                                onKeyDown={props.groupByMenuSpecialHandling} />
                             <label htmlFor="group-options-enrl" className="rvt-m-right-sm">Enrollments</label>
                         </li>
                         <li>
                             <input type="radio" name="group-options" id="group-options-term" value="term.name"
                                 checked={"term.name" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
-                                data-sort-key="termSort" data-sort-dir="desc" />
+                                data-sort-key="termSort" data-sort-dir="desc" 
+                                onKeyDown={props.groupByMenuSpecialHandling} />
                             <label htmlFor="group-options-term">Term</label>
                         </li>
                         <li>
                             <input type="radio" name="group-options" id="group-options-role" value="baseRoleLabel"
-                                checked={"baseRoleLabel" === props.selectedGroup} onChange={props.handleGroupByOptionChange} />
+                                checked={"baseRoleLabel" === props.selectedGroup} onChange={props.handleGroupByOptionChange} 
+                                onKeyDown={props.groupByMenuSpecialHandling} />
                             <label htmlFor="group-options-role">Role</label>
                         </li>
                     </ul>
                 </fieldset>
-            </Dropdown>
+            </div>
+        </div>
+
+
 
             <label htmlFor="search" className="rvt-sr-only">Search Courses</label>
             <div className="rvt-input-group rvt-m-bottom-md">
@@ -429,29 +603,41 @@ function MainTable(props) {
     } else if (props.groupedCourses.size == 0) {
         return (<p className="rvt-m-bottom-md rvt-ts-32 rvt-text-center">No results</p>)
     } else {
+        var srOnlyHeading = "Table of courses";
+        if( "enrollmentClassification.text" === props.selectedGroup) {
+            srOnlyHeading += " grouped by enrollment"
+        } else if ("term.name" === props.selectedGroup) {
+            srOnlyHeading += " grouped by term"
+        } else if ("baseRoleLabel" === props.selectedGroup) {
+            srOnlyHeading += " grouped by role"
+        }
+
         return (
+            <React.Fragment>
+            <h2 className="sr-only">{srOnlyHeading}</h2>
             <table className="rvt-m-bottom-md">
                 <caption className="sr-only">Table of courses</caption>
                 <thead className="tableHeadOverride">
                 <tr>
-                    <th scope="col">Favorite</th>
-                    <th scope="col">Visibility</th>
-                    <th scope="col">
+                    <th scope="col" id="courseName">
                         <LinkHeader anchorValue="Course Name" newSortValue="courseName" orderKey={props.orderKey} onClick={props.handleOrdering} />
                     </th>
-                    <th scope="col">
+                    <th scope="col" id="fav">Favorite</th>
+                    <th scope="col" id="vis">Visibility</th>
+                    <th scope="col" id="courseCode">
                         <LinkHeader anchorValue="Course Code/SIS ID" newSortValue="courseCode" orderKey={props.orderKey} onClick={props.handleOrdering} />
                     </th>
-                    <th scope="col">Nickname</th>
-                    <th scope="col">Role</th>
-                    <th scope="col">
+                    <th scope="col" id="nickname">Nickname</th>
+                    <th scope="col" id="role">Role</th>
+                    <th scope="col" id="term">
                         <LinkHeader anchorValue="Term" newSortValue="term.name" orderKey={props.orderKey} onClick={props.handleOrdering} />
                     </th>
-                    <th scope="col">Published</th>
+                    <th scope="col" id="pub">Published</th>
                 </tr>
                 </thead>
                 <DataGrouping data={props.groupedCourses} updateCourseInState={props.updateCourseInState} />
             </table>
+            </React.Fragment>
         );
     }
 }

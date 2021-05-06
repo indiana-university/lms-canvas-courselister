@@ -15,13 +15,12 @@ public class SecurityConfig {
     @Configuration
     @Order(1)
     public static class CourseListLtiSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-        public static final String PATH_TO_OPEN = "/lti";
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.authorizeRequests(authorizeRequests ->
                   authorizeRequests
-                        .antMatchers(PATH_TO_OPEN).hasAnyRole("ANONYMOUS", LtiAuthenticationProvider.LTI_USER)
+                        .antMatchers("/lti").hasAnyRole("ANONYMOUS", LtiAuthenticationProvider.LTI_USER)
                         .anyRequest().authenticated());
 
             //Need to disable csrf so that we can use POST via REST
@@ -60,7 +59,7 @@ public class SecurityConfig {
         public void configure(WebSecurity web) throws Exception {
             // ignore everything except paths specified
             web.ignoring().antMatchers("/templates/**", "/jsreact/**", "/static/**", "/webjars/**",
-                  "/resources/**", "/actuator/**", "/css/**", "/js/**");
+                  "/resources/**", "/actuator/**", "/css/**", "/js/**", "/jsrivet/**");
         }
 
     }

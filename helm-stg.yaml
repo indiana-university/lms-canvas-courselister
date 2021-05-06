@@ -4,13 +4,13 @@ projectedSecret:
       name: "properties-2021-03-18"
 
 image:
-  tag: unstable-snd
+  tag: unstable-stg
 
 env:
-  APP_ENV: snd
+  APP_ENV: stg
 
 ingress:
   enabled: true
   hosts:
-    - host: "lms-lti-courselist-snd.apps-snd.iu.edu"
+    - host: "lms-lti-courselist-stg.apps-test.iu.edu"
       paths: []

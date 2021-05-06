@@ -4,20 +4,34 @@
     <artifactId>lms-lti-courselist</artifactId>
     <packaging>jar</packaging>
     <name>lms-lti-courselist</name>
-    <version>4.0.3</version>
+    <version>4.0.4</version>
 
     <parent>
         <artifactId>lms2Wow</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>4.0.5</version>
+        <version>4.0.11</version>
         <relativePath />
     </parent>
 
     <properties>
         <app.version>${project.version}</app.version>
         <docker_repository_name>lti_courselist</docker_repository_name>
+        <docker_tag>stable</docker_tag>
+        <helm_service_name>courselister</helm_service_name>
+        <lms-bom.version>4.0.1</lms-bom.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>edu.iu.uits.lms</groupId>
+                <artifactId>lms-bom</artifactId>
+                <version>${lms-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -47,17 +61,14 @@
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-lti-web</artifactId>
-            <version>4.0.5</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-canvas-client</artifactId>
-            <version>4.0.4</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>common-configuration</artifactId>
-            <version>4.0.7</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -69,8 +80,11 @@
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
+            <artifactId>lms-rivet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>edu.iu.uits.lms</groupId>
             <artifactId>redis-config</artifactId>
-            <version>4.0.2</version>
         </dependency>
     </dependencies>
 
@@ -135,7 +149,7 @@
                             <goal>push</goal>
                         </goals>
                         <configuration>
-                            <tag>latest</tag>
+                            <tag>unstable</tag>
                         </configuration>
                     </execution>
                 </executions>
@@ -196,7 +210,7 @@
                         </configuration>
                         <executions>
                             <execution>
-                                <id>push-latest</id>
+                                <id>build-latest</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>build</goal>
@@ -204,7 +218,7 @@
                                     <goal>push</goal>
                                 </goals>
                                 <configuration>
-                                    <tag>latest</tag>
+                                    <tag>${docker_tag}</tag>
                                 </configuration>
                             </execution>
                             <execution>
@@ -219,6 +233,20 @@
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>helm-deploy</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>

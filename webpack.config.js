@@ -1,7 +1,6 @@
 /* global __dirname */
 const webpack = require('webpack')
 const path = require('path')
-// const TerserPlugin = require('terser-webpack-plugin')
 
 var packageJSON = require('./package.json');
 
@@ -11,14 +10,12 @@ const paths = {
   src: path.join(__dirname, '/src/main/js'),
   webapp: path.join(__dirname, '/src/main/webapp'),
   dest: path.join(__dirname, '/target/classes/META-INF/resources/jsreact', packageJSON.name),
-  node: path.join(__dirname, '/node_modules'),
-  prototype: path.join(__dirname, '/src/prototype'),
-  devserver: path.join(__dirname, '/node_modules/webpack-dev-server')
+  node: path.join(__dirname, '/node_modules')
 }
 
 module.exports = {
   context: paths.src,
-  entry: ['babel-polyfill', 'index.js'],
+  entry: ['index.js'],
   output: {
       filename: packageJSON.name + '.js',
       path: paths.dest
@@ -35,9 +32,6 @@ module.exports = {
   },
   mode: 'development',
   devtool: 'source-map',
-  // optimization: {
-  //   minimizer: [new TerserPlugin()],
-  // },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
@@ -45,39 +39,26 @@ module.exports = {
       }
     })
   ],
-  devServer: {
-    port: 8001,
-    contentBase: [ paths.prototype, paths.webapp ],
-    historyApiFallback: true
-  },
   module: {
     rules: [
       {
         test: /\.(js)$/,
-        include: [paths.src, paths.devserver],
+        include: [paths.src],
         use: [
           {
             loader: 'babel-loader',
             options: {
-              presets: ['react', 'env', 'stage-2']
+              presets: ['@babel/react', '@babel/env'],
+              plugins: ["@babel/plugin-proposal-class-properties"]
             }
           }
         ]
       }, {
-        test: /\.(less)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: `media/${app}.css`
-            }
-          },
-          'postcss-loader',
-          'less-loader'
-        ]
-      }, {
-            test: /\.css$/,
-            loaders: ['style-loader', 'css-loader']
+        test: /\.css$/,
+          use: [
+            {loader: 'style-loader'},
+            {loader: 'css-loader'}
+          ]
       }, {
         test: /\.(html|gif|jpg|png)$/,
         use: [
@@ -89,16 +70,16 @@ module.exports = {
           }
         ]
       }, {
-               test: /\.(svg)$/,
-               use: [
-                 {
-                   loader: 'file-loader',
-                   options: {
-                     name: '[name].[ext]'
-                   }
-                 }
-               ]
-             }
+        test: /\.(svg)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]'
+            }
+          }
+        ]
+      }
     ]
   }
 }

@@ -54,27 +54,28 @@ class TableRow extends React.Component {
 
     render() {
         const courseModel = this.props.courseModel
+        const courseHeaderId = 'id-' + courseModel.course.id + '-' + _.kebabCase(courseModel.term.name) + '-' + _.kebabCase(courseModel.enrollment.enrollment_state) + '-' + _.kebabCase(courseModel.roleLabel)
 
         return (
             <tr>
-                <td scope="row">
-                    <FavoriteStatus enrollmentClassification={courseModel.enrollmentClassification} isFavorite={this.state.favorited}
-                        isFavoritable={courseModel.favoritable} handleFavoriteCourse={this.handleFavoriteCourse}
-                        handleUnfavoriteCourse={this.handleUnfavoriteCourse} />
-                </td>
-                <td>
-                    <HiddenStatus handleShowCourse={this.handleShowCourse} handleHideCourse={this.handleHideCourse}
-                        isHidden={this.state.hidden} />
-                </td>
-                <td className="searchable">
+                <th id={courseHeaderId} className="searchable" headers={`${this.props.groupByHeader} courseName`}>
                     <CourseName courseName={courseModel.courseName} renderUrl={courseModel.linkClickable}
                         courseId={courseModel.course.id} /> <PendingBadge enrollmentStatus={courseModel.enrollment.enrollment_state} />
+                </th>
+                <td headers={`${this.props.groupByHeader} ${courseHeaderId} fav`}>
+                    <FavoriteStatus enrollmentClassification={courseModel.enrollmentClassification} isFavorite={this.state.favorited}
+                        isFavoritable={courseModel.favoritable} handleFavoriteCourse={this.handleFavoriteCourse}
+                        handleUnfavoriteCourse={this.handleUnfavoriteCourse} courseName={courseModel.courseName} />
                 </td>
-                <td className="searchable">{courseModel.courseCode}</td>
-                <td className="searchable">{courseModel.courseNickName}</td>
-                <td>{courseModel.roleLabel}</td>
-                <td>{courseModel.term.name}</td>
-                <td>{courseModel.published ? 'Yes': 'No'}</td>
+                <td headers={`${this.props.groupByHeader} ${courseHeaderId} vis`}>
+                    <HiddenStatus handleShowCourse={this.handleShowCourse} handleHideCourse={this.handleHideCourse}
+                        isHidden={this.state.hidden} courseName={courseModel.courseName} />
+                </td>
+                <td headers={`${this.props.groupByHeader} ${courseHeaderId} courseCode`} className="searchable">{courseModel.courseCode}</td>
+                <td headers={`${this.props.groupByHeader} ${courseHeaderId} nickname`} className="searchable">{courseModel.courseNickName}</td>
+                <td headers={`${this.props.groupByHeader} ${courseHeaderId} role`}>{courseModel.roleLabel}</td>
+                <td headers={`${this.props.groupByHeader} ${courseHeaderId} term`}>{courseModel.term.name}</td>
+                <td headers={`${this.props.groupByHeader} ${courseHeaderId} pub`}>{courseModel.published ? 'Yes': 'No'}</td>
             </tr>
         );
     }
@@ -83,9 +84,10 @@ class TableRow extends React.Component {
 function HiddenStatus(props) {
     const isHidden = props.isHidden;
     if (isHidden) {
-        return <a href="#" onClick={props.handleShowCourse} className="no-decoration"><i className="fa fa-eye-slash courseHidden" title="Click to show the course in the list."></i></a>;
+        return <a href="#" aria-label={`Show course: ${props.courseName}`} onClick={props.handleShowCourse} className="no-decoration"><i className="fa fa-eye-slash courseHidden" title="Click to show the course in the list."></i></a>;
     }
-    return <a href="#" onClick={props.handleHideCourse} className="no-decoration"><i className="fa fa-eye" title="Click to make the course hidden in the list."></i></a>;
+
+    return <a href="#" aria-label={`Hide course: ${props.courseName}`} onClick={props.handleHideCourse} className="no-decoration"><i className="fa fa-eye" title="Click to make the course hidden in the list."></i></a>;
 }
 
 function FavoriteStatus(props) {
@@ -94,10 +96,11 @@ function FavoriteStatus(props) {
 
     if (props.isFavoritable) {
         if (isFavorite) {
-            return <a href="#" onClick={props.handleUnfavoriteCourse} className="no-decoration"><RvtSvg title="Click to remove from the Courses menu." icon="rvt-icon-star-solid"
+            return <a href="#" aria-label={`Unfavorite: ${props.courseName}`} onClick={props.handleUnfavoriteCourse} className="no-decoration"><RvtSvg title="Click to remove from the Courses menu." icon="rvt-icon-star-solid"
                 className="rvt-color-yellow" /></a>;
         }
-        return <a href="#" onClick={props.handleFavoriteCourse} className="no-decoration"><RvtSvg title="Click to add to the Courses menu." icon="rvt-icon-star"/></a>;
+
+        return <a href="#" aria-label={`Favorite: ${props.courseName}`} onClick={props.handleFavoriteCourse} className="no-decoration"><RvtSvg title="Click to add to the Courses menu." icon="rvt-icon-star"/></a>;
     }
     return null;
 }

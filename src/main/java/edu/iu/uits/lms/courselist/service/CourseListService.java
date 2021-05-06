@@ -1,5 +1,6 @@
 package edu.iu.uits.lms.courselist.service;
 
+import canvas.client.generated.api.CanvasApi;
 import canvas.client.generated.api.CoursesApi;
 import canvas.client.generated.api.TermsApi;
 import canvas.client.generated.api.UsersApi;
@@ -45,6 +46,9 @@ public class CourseListService {
    private UsersApi usersApi = null;
 
    @Autowired
+   private CanvasApi canvasApi = null;
+
+   @Autowired
    private EnrollmentClassificationService enrollmentClassificationService = null;
 
    public List<DecoratedCourse> getCourses(String userLoginId) {
@@ -64,6 +68,10 @@ public class CourseListService {
 
       Set<String> hidden = getHiddenCourseIds(userLoginId);
       return decorateCourses(courses, hidden);
+   }
+
+   public String getCanvasBaseUrl() {
+      return canvasApi.getBaseUrl();
    }
 
    /**

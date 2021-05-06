@@ -5,31 +5,20 @@ class FilterTermOptions extends React.Component {
     constructor(props) {
         super(props);
 
-        this.handleShowMoreTermsClick.bind(this)
-        this.handleShowFewerTermsClick.bind(this)
         this.handleTermClick.bind(this)
-        this.handleCheckUncheckAll.bind(this)
         this.getWorkingTermList.bind(this)
-        this.determineCheckAllText.bind(this)
     }
-
-    determineCheckAllText = (showOnlyActiveTerms) => {
-        var termList = this.getWorkingTermList(showOnlyActiveTerms);
-        var filteredTerms = this.props.filteredTerms;
-
-        var text = 'Select All';
-        if (termList.length <= filteredTerms.length) {
-            text = 'Unselect All'
+    
+    handleShowTermsClick = (event) => {
+        if (this.props.showOnlyActiveTerms) {
+            this.props.updateStateBatch({showOnlyActiveTerms: false, moreTermsClick: true});
+        } else {
+            this.props.updateStateBatch({showOnlyActiveTerms: true, fewerTermsClick: true});
         }
-        return text;
-    }
-
-    handleShowMoreTermsClick = (event) => {
-        this.props.updateStateBatch({showOnlyActiveTerms: false});
-    }
-
-    handleShowFewerTermsClick = (event) => {
-        this.props.updateStateBatch({showOnlyActiveTerms: true});
+            
+        // Since this is a link, the default behavior when a link is clicked is to
+        // scroll to the top of the screen. We don't want that
+        event.preventDefault();
     }
 
     handleTermClick = (event) => {
@@ -41,37 +30,12 @@ class FilterTermOptions extends React.Component {
 
     }
 
-    handleCheckUncheckAll = (event) => {
-        var allTerms = this.props.allTerms;
-
-        let batchedProps;
-
-        var newChecked = 'Select All' === this.determineCheckAllText(this.props.showOnlyActiveTerms);
-
-        for (var i=0; i<allTerms.length; ++i) {
-            var termId = allTerms[i].id;
-            var cb = document.querySelector("input#term_" + termId);
-
-            //Do the visible checkbox
-            if (cb && cb.checked != newChecked) {
-                //But only if the value is going to change
-                cb.checked = newChecked;
-                batchedProps = this.props.handleFilterBatch(cb.value, newChecked, batchedProps)
-            } else if (!cb) {
-                //Do any "hidden" terms too
-                batchedProps = this.props.handleFilterBatch(termId, newChecked, batchedProps)
-            }
-        }
-        this.props.updateStateBatch(batchedProps);
-    }
-
     getWorkingTermList = (showOnlyActiveTerms) => {
         return showOnlyActiveTerms ? this.props.activeTerms : this.props.allTerms;
     }
 
     render() {
         var showOnlyActiveTerms = this.props.showOnlyActiveTerms;
-        var checkAllText = this.determineCheckAllText(showOnlyActiveTerms);
 
         //Which list of terms should we use?
         var termList = this.getWorkingTermList(showOnlyActiveTerms);
@@ -84,41 +48,21 @@ class FilterTermOptions extends React.Component {
             </li>
         ))
 
-        //Only show the "All Terms" option if there is more than one term
-        let allTermsOption;
-        if (termList.length > 1) {
-            allTermsOption = (
-                <a id="checkAllTerms" className="rvt-link-bold showMoreTerms iconPointer"
-                    href="#" onClick={this.handleCheckUncheckAll}>{checkAllText}</a>
-            )
-        }
-
-        //Only show the "More" link if there are more terms to show
-        let showMoreTermsLink;
-        if (showOnlyActiveTerms && this.props.allTerms.length != this.props.activeTerms.length) {
-            showMoreTermsLink = (
-                <a id="showMoreTerms" className="rvt-link-bold showMoreTerms iconPointer"
-                    onClick={this.handleShowMoreTermsClick}>Show More</a>
-            )
-        }
-
-        //Only show the "Fewer" link if there were previously more terms to show
-        let showFewerTermsLink;
-        if (!showOnlyActiveTerms && this.props.allTerms.length != this.props.activeTerms.length) {
-            showFewerTermsLink = (
-                <a id="showFewerTerms" className="rvt-link-bold showMoreTerms iconPointer"
-                    onClick={this.handleShowFewerTermsClick}>Show Less</a>
-            )
+        let showTermsLink;
+        if (this.props.allTerms.length != this.props.activeTerms.length) {
+            var linkText = showOnlyActiveTerms ? 'Show More' : 'Show Less';
+            showTermsLink = (
+                        <a id="showTerms" className="rvt-link-bold showMoreTerms iconPointer"
+                            onClick={this.handleShowTermsClick} href="#">{linkText}</a>
+                    )
         }
 
         return (
             <React.Fragment>
-                {allTermsOption}
                 <ul className="rvt-plain-list">
                     {terms}
                 </ul>
-                {showMoreTermsLink}
-                {showFewerTermsLink}
+                {showTermsLink}
             </React.Fragment>
         );
     }

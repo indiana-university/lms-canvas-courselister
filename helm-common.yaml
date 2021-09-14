@@ -23,7 +23,12 @@ env:
 imagePullSecrets:
   - name: registry-prod
 
-activeProfiles: "redis"
+javaOpts: "-XX:MaxRAMPercentage=90 -XshowSettings:vm"
+
+activeProfiles: "none"
+
+vault:
+  enabled: true
 
 service:
   type: ClusterIP

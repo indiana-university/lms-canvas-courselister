@@ -9,7 +9,7 @@
     <parent>
         <artifactId>lms2Wow</artifactId>
         <groupId>edu.iu.uits.lms</groupId>
-        <version>4.0.11</version>
+        <version>4.0.12</version>
         <relativePath />
     </parent>
 
@@ -18,7 +18,7 @@
         <docker_repository_name>lti_courselist</docker_repository_name>
         <docker_tag>stable</docker_tag>
         <helm_service_name>courselister</helm_service_name>
-        <lms-bom.version>4.0.1</lms-bom.version>
+        <lms-bom.version>4.0.23</lms-bom.version>
     </properties>
 
     <dependencyManagement>
@@ -53,6 +53,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-vault-config</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.security.oauth.boot</groupId>

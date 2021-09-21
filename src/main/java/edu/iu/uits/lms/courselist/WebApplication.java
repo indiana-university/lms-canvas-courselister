@@ -22,8 +22,6 @@ import java.util.Date;
 @SpringBootApplication
 @EnableGlobalErrorHandler(rivetPath = "/jsrivet")
 @PropertySource(value = {"classpath:env.properties",
-      "${app.fullFilePath}/oauth.properties",
-      "${app.fullFilePath}/services.properties",
       "${app.fullFilePath}/security.properties"}, ignoreResourceNotFound = true)
 @EnableResourceServer
 @Slf4j

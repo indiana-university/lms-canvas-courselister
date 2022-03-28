@@ -1,18 +1,18 @@
 package edu.iu.uits.lms.courselist.service;
 
-import canvas.client.generated.api.CanvasApi;
-import canvas.client.generated.api.CoursesApi;
-import canvas.client.generated.api.TermsApi;
-import canvas.client.generated.api.UsersApi;
-import canvas.client.generated.model.CanvasTerm;
-import canvas.client.generated.model.Course;
-import canvas.client.generated.model.Enrollment;
-import canvas.client.generated.model.Favorite;
-import canvas.client.generated.model.UserCustomDataRequest;
-import canvas.helpers.CanvasConstants;
-import canvas.helpers.CourseHelper;
-import canvas.helpers.EnrollmentHelper;
-import canvas.helpers.TermHelper;
+import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
+import edu.iu.uits.lms.canvas.helpers.CourseHelper;
+import edu.iu.uits.lms.canvas.helpers.EnrollmentHelper;
+import edu.iu.uits.lms.canvas.helpers.TermHelper;
+import edu.iu.uits.lms.canvas.model.CanvasTerm;
+import edu.iu.uits.lms.canvas.model.Course;
+import edu.iu.uits.lms.canvas.model.Enrollment;
+import edu.iu.uits.lms.canvas.model.Favorite;
+import edu.iu.uits.lms.canvas.model.UserCustomDataRequest;
+import edu.iu.uits.lms.canvas.services.CanvasService;
+import edu.iu.uits.lms.canvas.services.CourseService;
+import edu.iu.uits.lms.canvas.services.TermService;
+import edu.iu.uits.lms.canvas.services.UserService;
 import edu.iu.uits.lms.courselist.model.DecoratedCourse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,16 +37,16 @@ public class CourseListService {
    private static final String CUSTOM_USER_DATA_KEY = "hidden_courses";
 
    @Autowired
-   private CoursesApi coursesApi = null;
+   private CourseService courseService = null;
 
    @Autowired
-   private TermsApi termsApi = null;
+   private TermService termService = null;
 
    @Autowired
-   private UsersApi usersApi = null;
+   private UserService userService = null;
 
    @Autowired
-   private CanvasApi canvasApi = null;
+   private CanvasService canvasService = null;
 
    @Autowired
    private EnrollmentClassificationService enrollmentClassificationService = null;
@@ -63,7 +63,7 @@ public class CourseListService {
             CourseHelper.WORKFLOW_STATE.UNPUBLISHED.getText(), CourseHelper.WORKFLOW_STATE.COMPLETED.getText());
 
       //Not including the term since it won't have the overrides in it.
-      List<Course> courses = coursesApi.getCoursesForUser(userLoginId, false, false,
+      List<Course> courses = courseService.getCoursesForUser(userLoginId, false, false,
             false, workflowStates);
 
       Set<String> hidden = getHiddenCourseIds(userLoginId);
@@ -71,7 +71,7 @@ public class CourseListService {
    }
 
    public String getCanvasBaseUrl() {
-      return canvasApi.getBaseUrl();
+      return canvasService.getBaseUrl();
    }
 
    /**
@@ -96,7 +96,7 @@ public class CourseListService {
                //In case the user is in more than one section with the same role, we don't need to see multiples of that
                if (!seenRoles.contains(enrollment.getRole())) {
                   CanvasTerm term = termMap.get(course.getEnrollmentTermId());
-                  DecoratedCourse dc = new DecoratedCourse(course, course.getIsFavorite(), hidden.contains(course.getId()),
+                  DecoratedCourse dc = new DecoratedCourse(course, course.isFavorite(), hidden.contains(course.getId()),
                         enrollment, term);
 
                   dc.setPublished(CourseHelper.isPublished(course));
@@ -159,7 +159,7 @@ public class CourseListService {
    }
 
    private Map<String, CanvasTerm> getTerms() {
-      List<CanvasTerm> terms =  termsApi.getEnrollmentTerms();
+      List<CanvasTerm> terms =  termService.getEnrollmentTerms();
       return terms.stream().collect(Collectors.toMap(CanvasTerm::getId, Function.identity()));
    }
 
@@ -171,7 +171,7 @@ public class CourseListService {
       customDataRequest.setField(CanvasConstants.API_FIELD_SIS_LOGIN_ID);
       customDataRequest.setPathParts(pathParts);
       try {
-         Map<String, Map<String, String>> data = (Map) usersApi.getUserCustomData(customDataRequest);
+         Map<String, Map<String, String>> data = (Map) userService.getUserCustomData(customDataRequest);
 
          if (data != null) {
             hiddenCourseIds = data.get("data").keySet();
@@ -189,7 +189,7 @@ public class CourseListService {
       customDataRequest.setField(CanvasConstants.API_FIELD_SIS_LOGIN_ID);
       customDataRequest.setPathParts(pathParts);
       customDataRequest.setData(courseId);
-      Object results = usersApi.setUserCustomData(customDataRequest);
+      Object results = userService.setUserCustomData(customDataRequest);
       return results != null;
    }
 
@@ -199,16 +199,16 @@ public class CourseListService {
       customDataRequest.setUserId(asUserLogin);
       customDataRequest.setField(CanvasConstants.API_FIELD_SIS_LOGIN_ID);
       customDataRequest.setPathParts(pathParts);
-      Object results = usersApi.deleteUserCustomData(customDataRequest);
+      Object results = userService.deleteUserCustomData(customDataRequest);
       return results != null;
    }
 
    public Favorite setCourseAsFavorite(String asUserLogin, String courseId) {
-      return coursesApi.addCourseToFavorites(asUserLogin, courseId);
+      return courseService.addCourseToFavorites(asUserLogin, courseId);
    }
 
    public Favorite removeCourseAsFavorite(String asUserLogin, String courseId) {
-      return coursesApi.removeCourseAsFavorite(asUserLogin, courseId);
+      return courseService.removeCourseAsFavorite(asUserLogin, courseId);
    }
 
    /**

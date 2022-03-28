@@ -1,9 +1,9 @@
 package edu.iu.uits.lms.courselist.service;
 
-import canvas.client.generated.model.TermOverride;
-import canvas.helpers.CourseHelper;
-import canvas.helpers.EnrollmentHelper;
-import canvas.helpers.TermHelper;
+import edu.iu.uits.lms.canvas.helpers.CourseHelper;
+import edu.iu.uits.lms.canvas.helpers.EnrollmentHelper;
+import edu.iu.uits.lms.canvas.helpers.TermHelper;
+import edu.iu.uits.lms.canvas.model.CanvasTerm;
 import edu.iu.uits.lms.courselist.model.DecoratedCourse;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +46,7 @@ public class EnrollmentClassificationService {
     */
    private boolean isPending(DecoratedCourse decoratedCourse) {
       String state = decoratedCourse.getEnrollment().getEnrollmentState();
-      return EnrollmentHelper.STATE.invited.name().equals(state) || EnrollmentHelper.STATE.pending.name().equals(state) ||
-            EnrollmentHelper.STATE.creation_pending.name().equals(state);
+      return EnrollmentHelper.STATE.invited.name().equals(state) || EnrollmentHelper.STATE.creation_pending.name().equals(state);
    }
 
    /**
@@ -109,7 +108,7 @@ public class EnrollmentClassificationService {
       Date date = TermHelper.getStartDate(decoratedCourse.getTerm());
 
       String role = typeTranslater(decoratedCourse.getEnrollment().getType());
-      Map<String, TermOverride> roleOverrides = decoratedCourse.getTerm().getOverrides();
+      Map<String, CanvasTerm.TermOverride> roleOverrides = decoratedCourse.getTerm().getOverrides();
       if (roleOverrides != null && roleOverrides.containsKey(role)) {
          Date roleDate = TermHelper.getStartDate(roleOverrides.get(role));
          if (roleDate != null) {
@@ -117,7 +116,7 @@ public class EnrollmentClassificationService {
          }
       }
 
-      if (decoratedCourse.getCourse().getRestrictEnrollmentsToCourseDates()) {
+      if (decoratedCourse.getCourse().isRestrictEnrollmentsToCourseDates()) {
          Date courseDate = CourseHelper.getStartDate(decoratedCourse.getCourse());
          if (courseDate != null) {
             date = courseDate;
@@ -131,7 +130,7 @@ public class EnrollmentClassificationService {
       Date date = TermHelper.getEndDate(decoratedCourse.getTerm());
 
       String role = typeTranslater(decoratedCourse.getEnrollment().getType());
-      Map<String, TermOverride> roleOverrides = decoratedCourse.getTerm().getOverrides();
+      Map<String, CanvasTerm.TermOverride> roleOverrides = decoratedCourse.getTerm().getOverrides();
       if (roleOverrides != null && roleOverrides.containsKey(role)) {
          Date roleDate = TermHelper.getEndDate(roleOverrides.get(role));
          if (roleDate != null) {
@@ -139,7 +138,7 @@ public class EnrollmentClassificationService {
          }
       }
 
-      if (decoratedCourse.getCourse().getRestrictEnrollmentsToCourseDates()) {
+      if (decoratedCourse.getCourse().isRestrictEnrollmentsToCourseDates()) {
          Date courseDate = CourseHelper.getEndDate(decoratedCourse.getCourse());
          if (courseDate != null) {
             date = courseDate;

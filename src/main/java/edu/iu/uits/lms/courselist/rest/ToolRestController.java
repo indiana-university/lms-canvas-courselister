@@ -1,6 +1,6 @@
 package edu.iu.uits.lms.courselist.rest;
 
-import canvas.client.generated.model.Favorite;
+import edu.iu.uits.lms.canvas.model.Favorite;
 import edu.iu.uits.lms.courselist.controller.CourselistController;
 import edu.iu.uits.lms.courselist.model.DecoratedCourse;
 import edu.iu.uits.lms.courselist.service.CourseListService;

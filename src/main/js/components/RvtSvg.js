@@ -1,6 +1,6 @@
 import React from 'react'
 
-import icons from 'rivet-icons/dist/rvt-icons.svg'
+import icons from 'rivet-icons/dist/rivet-icons.svg'
 
 const RvtSvg = (props) => {
     var title = ""

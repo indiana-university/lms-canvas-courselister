@@ -1,9 +1,9 @@
 package edu.iu.uits.lms.courselist.model;
 
-import canvas.client.generated.model.CanvasTerm;
-import canvas.client.generated.model.Course;
-import canvas.client.generated.model.Enrollment;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import edu.iu.uits.lms.canvas.model.CanvasTerm;
+import edu.iu.uits.lms.canvas.model.Course;
+import edu.iu.uits.lms.canvas.model.Enrollment;
 import edu.iu.uits.lms.courselist.service.EnrollmentClassificationSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;

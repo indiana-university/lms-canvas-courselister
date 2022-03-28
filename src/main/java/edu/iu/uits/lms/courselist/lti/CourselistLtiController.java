@@ -54,7 +54,7 @@ public class CourselistLtiController extends LtiController {
         String courseId = launchParams.get(CUSTOM_CANVAS_COURSE_ID);
 
         LtiAuthenticationToken token = new LtiAuthenticationToken(userId,
-                courseId, systemId, AuthorityUtils.createAuthorityList(LtiAuthenticationProvider.LTI_USER_ROLE, authority), null, getToolContext());
+                courseId, systemId, AuthorityUtils.createAuthorityList(LtiAuthenticationProvider.LTI_USER_ROLE, authority), getToolContext());
         SecurityContextHolder.getContext().setAuthentication(token);
     }
 

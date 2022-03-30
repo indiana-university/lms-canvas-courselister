@@ -2,8 +2,8 @@ package edu.iu.uits.lms.courselist.controller;
 
 import edu.iu.uits.lms.courselist.config.ToolConfig;
 import edu.iu.uits.lms.courselist.service.CourseListService;
-import edu.iu.uits.lms.lti.controller.LtiAuthenticationTokenAwareController;
-import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
+import edu.iu.uits.lms.lti.LTIConstants;
+import edu.iu.uits.lms.lti.controller.OidcTokenAwareController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpSession;
 
 @Controller
 @Slf4j
-public class CourselistController extends LtiAuthenticationTokenAwareController {
+public class CourselistController extends OidcTokenAwareController {
 
     @Autowired
     private ToolConfig toolConfig = null;
@@ -25,7 +25,7 @@ public class CourselistController extends LtiAuthenticationTokenAwareController 
     private CourseListService courseListService = null;
 
     @RequestMapping("/list")
-    @Secured(LtiAuthenticationProvider.LTI_USER_ROLE)
+    @Secured(LTIConstants.BASE_USER_AUTHORITY)
     public ModelAndView list(Model model, HttpSession httpSession) {
         log.debug("in /list");
         getTokenWithoutContext();

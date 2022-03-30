@@ -4,7 +4,7 @@ import edu.iu.uits.lms.canvas.model.Favorite;
 import edu.iu.uits.lms.courselist.controller.CourselistController;
 import edu.iu.uits.lms.courselist.model.DecoratedCourse;
 import edu.iu.uits.lms.courselist.service.CourseListService;
-import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
+import edu.iu.uits.lms.lti.service.OidcTokenUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
 import java.util.List;
 
@@ -28,32 +29,32 @@ public class ToolRestController extends CourselistController {
    @GetMapping("/courses")
    public List<DecoratedCourse> getCourses() {
       log.debug("in /app/courses");
-      LtiAuthenticationToken token = getTokenWithoutContext();
+      OidcAuthenticationToken token = getTokenWithoutContext();
 
-      return courseListService.getCourses((String)token.getPrincipal());
+      return courseListService.getCourses(OidcTokenUtils.getUserLoginId(token));
    }
 
    @PostMapping("/hide/{courseId}")
    public ReturnState hideCourse(@PathVariable String courseId) {
       log.debug("in /app/hide/{}", courseId);
-      LtiAuthenticationToken token = getTokenWithoutContext();
-      boolean success = courseListService.setCourseAsHidden((String)token.getPrincipal(), courseId);
+       OidcAuthenticationToken token = getTokenWithoutContext();
+      boolean success = courseListService.setCourseAsHidden(OidcTokenUtils.getUserLoginId(token), courseId);
       return new ReturnState(success, null);
    }
 
    @PostMapping("/show/{courseId}")
    public ReturnState showCourse(@PathVariable String courseId) {
       log.debug("in /app/show/{}", courseId);
-      LtiAuthenticationToken token = getTokenWithoutContext();
-      boolean success = courseListService.setCourseAsShown((String)token.getPrincipal(), courseId);
+      OidcAuthenticationToken token = getTokenWithoutContext();
+      boolean success = courseListService.setCourseAsShown(OidcTokenUtils.getUserLoginId(token), courseId);
       return new ReturnState(!success, null);
    }
 
    @PostMapping("/favorite/{courseId}")
    public ReturnState favoriteCourse(@PathVariable String courseId) {
       log.debug("in /app/favorite/{}", courseId);
-      LtiAuthenticationToken token = getTokenWithoutContext();
-      Favorite favorite = courseListService.setCourseAsFavorite((String)token.getPrincipal(), courseId);
+      OidcAuthenticationToken token = getTokenWithoutContext();
+      Favorite favorite = courseListService.setCourseAsFavorite(OidcTokenUtils.getUserLoginId(token), courseId);
       boolean success = favorite != null && courseId.equals(favorite.getContextId());
       return new ReturnState(null, success);
    }
@@ -61,8 +62,8 @@ public class ToolRestController extends CourselistController {
    @PostMapping("/unfavorite/{courseId}")
    public ReturnState unfavoriteCourse(@PathVariable String courseId) {
       log.debug("in /app/unfavorite/{}", courseId);
-      LtiAuthenticationToken token = getTokenWithoutContext();
-      Favorite favorite = courseListService.removeCourseAsFavorite((String)token.getPrincipal(), courseId);
+      OidcAuthenticationToken token = getTokenWithoutContext();
+      Favorite favorite = courseListService.removeCourseAsFavorite(OidcTokenUtils.getUserLoginId(token), courseId);
       boolean success = favorite != null && courseId.equals(favorite.getContextId());
       return new ReturnState(null, !success);
    }

@@ -1,7 +1,6 @@
 package edu.iu.uits.lms.courselist;
 
 import edu.iu.uits.lms.canvas.config.EnableCanvasClient;
-import edu.iu.uits.lms.common.samesite.EnableCookieFilter;
 import edu.iu.uits.lms.common.server.GitRepositoryState;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.common.server.ServerUtils;
@@ -22,8 +21,7 @@ import java.util.Date;
 @EnableGlobalErrorHandler(rivetPath = "/jsrivet")
 @Slf4j
 @EnableRedisConfiguration
-@EnableCookieFilter
-@EnableLtiClient
+@EnableLtiClient(toolKeys = {"lms_lti_courselist"})
 @EnableCanvasClient
 @EnableConfigurationProperties(GitRepositoryState.class)
 public class WebApplication {

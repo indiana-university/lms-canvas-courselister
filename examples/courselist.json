@@ -1,0 +1,27 @@
+{
+  "title": "Canvas Course List",
+  "description": "Canvas Course List",
+  "oidc_initiation_url": "http://localhost:8080/lti/login_initiation/lms_lti_courselist",
+  "target_link_uri": "http://localhost:8080/app/launch",
+  "extensions": [
+    {
+      "domain": "localhost",
+      "platform": "canvas.instructure.com",
+      "privacy_level": "public",
+      "settings": {
+        "placements": [
+          {
+            "enabled": true,
+            "placement": "course_navigation",
+            "message_type": "LtiResourceLinkRequest",
+            "windowTarget": "_blank"
+          }
+        ]
+      }
+    }
+  ],
+  "public_jwk_url": "http://localhost:8080/.well-known/jwks.json",
+  "custom_fields": {
+    "canvas_user_login_id": "$Canvas.user.loginId"
+  }
+}

@@ -1,6 +1,6 @@
 {
-  "title": "Canvas Course List",
-  "description": "Canvas Course List",
+  "title": "Search, Filter, and Manage Courses",
+  "description": "",
   "oidc_initiation_url": "http://localhost:8080/lti/login_initiation/lms_lti_courselist",
   "target_link_uri": "http://localhost:8080/app/launch",
   "extensions": [
@@ -12,9 +12,8 @@
         "placements": [
           {
             "enabled": true,
-            "placement": "course_navigation",
-            "message_type": "LtiResourceLinkRequest",
-            "windowTarget": "_blank"
+            "placement": "user_navigation",
+            "message_type": "LtiResourceLinkRequest"
           }
         ]
       }
@@ -22,6 +21,7 @@
   ],
   "public_jwk_url": "http://localhost:8080/.well-known/jwks.json",
   "custom_fields": {
+    "canvas_membership_roles": "$Canvas.membership.roles",
     "canvas_user_login_id": "$Canvas.user.loginId"
   }
 }

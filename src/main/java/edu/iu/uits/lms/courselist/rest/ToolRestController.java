@@ -30,15 +30,18 @@ public class ToolRestController extends CourselistController {
    public List<DecoratedCourse> getCourses() {
       log.debug("in /app/courses");
       OidcAuthenticationToken token = getTokenWithoutContext();
+      OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
-      return courseListService.getCourses(OidcTokenUtils.getUserLoginId(token));
+      return courseListService.getCourses(oidcTokenUtils.getUserLoginId());
    }
 
    @PostMapping("/hide/{courseId}")
    public ReturnState hideCourse(@PathVariable String courseId) {
       log.debug("in /app/hide/{}", courseId);
-       OidcAuthenticationToken token = getTokenWithoutContext();
-      boolean success = courseListService.setCourseAsHidden(OidcTokenUtils.getUserLoginId(token), courseId);
+      OidcAuthenticationToken token = getTokenWithoutContext();
+      OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+
+      boolean success = courseListService.setCourseAsHidden(oidcTokenUtils.getUserLoginId(), courseId);
       return new ReturnState(success, null);
    }
 
@@ -46,7 +49,9 @@ public class ToolRestController extends CourselistController {
    public ReturnState showCourse(@PathVariable String courseId) {
       log.debug("in /app/show/{}", courseId);
       OidcAuthenticationToken token = getTokenWithoutContext();
-      boolean success = courseListService.setCourseAsShown(OidcTokenUtils.getUserLoginId(token), courseId);
+      OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+
+      boolean success = courseListService.setCourseAsShown(oidcTokenUtils.getUserLoginId(), courseId);
       return new ReturnState(!success, null);
    }
 
@@ -54,7 +59,9 @@ public class ToolRestController extends CourselistController {
    public ReturnState favoriteCourse(@PathVariable String courseId) {
       log.debug("in /app/favorite/{}", courseId);
       OidcAuthenticationToken token = getTokenWithoutContext();
-      Favorite favorite = courseListService.setCourseAsFavorite(OidcTokenUtils.getUserLoginId(token), courseId);
+      OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+
+      Favorite favorite = courseListService.setCourseAsFavorite(oidcTokenUtils.getUserLoginId(), courseId);
       boolean success = favorite != null && courseId.equals(favorite.getContextId());
       return new ReturnState(null, success);
    }
@@ -63,7 +70,9 @@ public class ToolRestController extends CourselistController {
    public ReturnState unfavoriteCourse(@PathVariable String courseId) {
       log.debug("in /app/unfavorite/{}", courseId);
       OidcAuthenticationToken token = getTokenWithoutContext();
-      Favorite favorite = courseListService.removeCourseAsFavorite(OidcTokenUtils.getUserLoginId(token), courseId);
+      OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+
+      Favorite favorite = courseListService.removeCourseAsFavorite(oidcTokenUtils.getUserLoginId(), courseId);
       boolean success = favorite != null && courseId.equals(favorite.getContextId());
       return new ReturnState(null, !success);
    }

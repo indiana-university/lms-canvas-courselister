@@ -1,5 +1,5 @@
 # lms-canvas-courselist
-App for posting scores, feedback, or other types of data for students to view.
+Search, Filter, and Manage Courses app offers a powerful alternative to the All Courses tool in Canvas.
 
 ## Running standalone
 Add env vars or system properties as desired.

@@ -228,7 +228,7 @@
 
 
     <build>
-        <finalName>lms-lti-courselister</finalName>
+        <finalName>lms-lti-courselist</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

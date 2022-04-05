@@ -2,6 +2,7 @@ package edu.iu.uits.lms.courselist.config;
 
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,12 +16,15 @@ import static edu.iu.uits.lms.lti.LTIConstants.WELL_KNOWN_ALL;
 
 @Configuration
 @Slf4j
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 public class SecurityConfig {
 
     @Configuration
     @Order(2)
     public static class CourseListWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+
+        @Autowired
+        private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
@@ -34,7 +38,7 @@ public class SecurityConfig {
 
             //Setup the LTI handshake
             Lti13Configurer lti13Configurer = new Lti13Configurer()
-                    .grantedAuthoritiesMapper(new LmsDefaultGrantedAuthoritiesMapper());
+                    .grantedAuthoritiesMapper(lmsDefaultGrantedAuthoritiesMapper);
 
             http.apply(lti13Configurer);
 

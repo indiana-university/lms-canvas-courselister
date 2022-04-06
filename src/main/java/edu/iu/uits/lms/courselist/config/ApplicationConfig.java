@@ -1,10 +1,10 @@
 package edu.iu.uits.lms.courselist.config;
 
+import edu.iu.uits.lms.common.session.DualSessionIdResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.HttpSessionIdResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -30,10 +30,11 @@ public class ApplicationConfig implements WebMvcConfigurer {
    }
 
    /**
-    * Uses an x-auth-token header value instead of a cookie for tracking the session
+    * Uses a custom resolver that either uses an x-auth-token header for the passed request path,
+    * otherwise uses a cookie for tracking the session
     */
    @Bean
    public HttpSessionIdResolver httpSessionIdResolver() {
-      return HeaderHttpSessionIdResolver.xAuthToken();
+      return new DualSessionIdResolver("/app/");
    }
 }

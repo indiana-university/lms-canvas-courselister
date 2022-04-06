@@ -2,7 +2,7 @@
   "title": "Search, Filter, and Manage Courses",
   "description": "",
   "oidc_initiation_url": "http://localhost:8080/lti/login_initiation/lms_lti_courselist",
-  "target_link_uri": "http://localhost:8080/app/launch",
+  "target_link_uri": "http://localhost:8080/list",
   "extensions": [
     {
       "domain": "localhost",

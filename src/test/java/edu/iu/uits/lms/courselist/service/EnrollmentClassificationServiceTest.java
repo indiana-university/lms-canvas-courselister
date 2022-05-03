@@ -1,30 +1,61 @@
 package edu.iu.uits.lms.courselist.service;
 
-import canvas.client.generated.api.CanvasApi;
-import canvas.client.generated.api.CoursesApi;
-import canvas.client.generated.api.TermsApi;
-import canvas.client.generated.api.UsersApi;
-import canvas.client.generated.model.CanvasTerm;
-import canvas.client.generated.model.Course;
-import canvas.client.generated.model.Enrollment;
-import canvas.client.generated.model.TermOverride;
-import canvas.helpers.CourseHelper;
-import canvas.helpers.EnrollmentHelper;
+/*-
+ * #%L
+ * lms-lti-courselist
+ * %%
+ * Copyright (C) 2015 - 2022 Indiana University
+ * %%
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the Indiana University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
+import edu.iu.uits.lms.canvas.helpers.CourseHelper;
+import edu.iu.uits.lms.canvas.helpers.EnrollmentHelper;
+import edu.iu.uits.lms.canvas.model.CanvasTerm;
+import edu.iu.uits.lms.canvas.model.Course;
+import edu.iu.uits.lms.canvas.model.Enrollment;
+import edu.iu.uits.lms.canvas.services.CanvasService;
+import edu.iu.uits.lms.canvas.services.CourseService;
+import edu.iu.uits.lms.canvas.services.TermService;
+import edu.iu.uits.lms.canvas.services.UserService;
+import edu.iu.uits.lms.courselist.config.ToolConfig;
 import edu.iu.uits.lms.courselist.model.DecoratedCourse;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.context.annotation.Import;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -32,7 +63,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@RunWith(SpringRunner.class)
+@WebMvcTest(properties = {"oauth.tokenprovider.url=http://foo"})
+@Import({ToolConfig.class})
 public class EnrollmentClassificationServiceTest {
 
    protected CanvasTerm fa19Term;
@@ -54,21 +86,19 @@ public class EnrollmentClassificationServiceTest {
    private CourseListService courseListService = null;
 
    @MockBean
-   private CoursesApi coursesApi = null;
+   private CourseService courseService = null;
 
    @MockBean
-   private TermsApi termsApi = null;
+   private TermService termService = null;
 
    @MockBean
-   private UsersApi usersApi = null;
+   private UserService userService = null;
 
    @MockBean
-   private CanvasApi canvasApi = null;
+   private CanvasService canvasService = null;
 
-   @Before
+   @BeforeEach
    public void setUp() throws Exception {
-      DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ssZ");
-
       fa19Term = new CanvasTerm();
       fa19Term.setId("6462");
       fa19Term.setName("Fall 2019");
@@ -77,7 +107,7 @@ public class EnrollmentClassificationServiceTest {
       fa19Term.setStartAt("2019-07-03T04:00:00Z");
       fa19Term.setEndAt("2019-12-30T05:00:00Z");
 
-      Map<String, TermOverride> overridesA = new HashMap<>();
+      Map<String, CanvasTerm.TermOverride> overridesA = new HashMap<>();
       overridesA.put("StudentEnrollment", newOverride("2019-08-01T04:00:00Z", "2019-12-30T05:00:00Z"));
       overridesA.put("TeacherEnrollment", newOverride("2019-07-03T04:00:00Z", null));
       overridesA.put("TaEnrollment", newOverride("2019-07-03T04:00:00Z", "2019-12-30T05:00:00Z"));
@@ -112,8 +142,8 @@ public class EnrollmentClassificationServiceTest {
 
    }
 
-   private TermOverride newOverride(String start, String end) {
-      TermOverride override = new TermOverride();
+   private CanvasTerm.TermOverride newOverride(String start, String end) {
+      CanvasTerm.TermOverride override = new CanvasTerm.TermOverride();
       override.setStartAt(start);
       override.setEndAt(end);
       return override;
@@ -138,57 +168,53 @@ public class EnrollmentClassificationServiceTest {
    }
 
    @Test
-   @Ignore
+   @Disabled
    public void testCourseA() {
       Enrollment enrollment = newEnrollment(EnrollmentHelper.TYPE.teacher.name(), EnrollmentHelper.TYPE_TEACHER, EnrollmentHelper.STATE.active.name());
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, fa19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-//      Assert.assertEquals("Link not in the correct state", true, dc.isLinkClickable());
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
    }
 
    @Test
-   @Ignore
+   @Disabled
    public void testCourseB() {
       Enrollment enrollment = newEnrollment(EnrollmentHelper.TYPE.teacher.name(), "Co-Instructor", EnrollmentHelper.STATE.active.name());
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, fa19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-//      Assert.assertEquals("Link not in the correct state", true, dc.isLinkClickable());
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
    }
 
    @Test
-   @Ignore
+   @Disabled
    public void testCourseC() {
       Enrollment enrollment = newEnrollment(EnrollmentHelper.TYPE.teacher.name(), "Librarian", EnrollmentHelper.STATE.active.name());
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, fa19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-//      Assert.assertEquals("Link not in the correct state", true, dc.isLinkClickable());
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
    }
 
    @Test
-   @Ignore
+   @Disabled
    public void testCourseD() {
       Enrollment enrollment = newEnrollment(EnrollmentHelper.TYPE.teacher.name(), EnrollmentHelper.TYPE_TA, EnrollmentHelper.STATE.active.name());
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, fa19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-//      Assert.assertEquals("Link not in the correct state", true, dc.isLinkClickable());
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
    }
 
    @Test
-   @Ignore
+   @Disabled
    public void testCourseE() {
       Enrollment enrollment = newEnrollment(EnrollmentHelper.TYPE.teacher.name(), "Grader", EnrollmentHelper.STATE.active.name());
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, fa19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
    }
 
    @Test
@@ -198,8 +224,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
 
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
    @Test
@@ -208,8 +234,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, fa19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification());
-      Assert.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
    @Test
@@ -218,8 +244,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, fa19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification());
-      Assert.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
    @Test
@@ -228,19 +254,19 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, fa19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification());
-      Assert.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
 
    @Test
-   @Ignore
+   @Disabled
    public void testCourseJ() {
       Enrollment enrollment = newEnrollment(EnrollmentHelper.TYPE.teacher.name(), EnrollmentHelper.TYPE_TEACHER, EnrollmentHelper.STATE.invited.name());
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, fa19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
    }
 
 
@@ -250,8 +276,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, fa19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PENDING, dc.getEnrollmentClassification());
-      Assert.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PENDING, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
    @Test
@@ -260,8 +286,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, fa19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -270,8 +296,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
    @Test
@@ -280,8 +306,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
    @Test
@@ -290,8 +316,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
    @Test
@@ -300,8 +326,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
    @Test
@@ -310,8 +336,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
    @Test
@@ -321,8 +347,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
 
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
    @Test
@@ -331,8 +357,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
    @Test
@@ -341,8 +367,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
    @Test
@@ -351,8 +377,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
 
@@ -362,8 +388,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PENDING, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PENDING, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
 
@@ -373,8 +399,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PENDING, dc.getEnrollmentClassification());
-      Assert.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PENDING, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertFalse(courseListService.hasClickableLink(unpublishedCourse, enrollment));
    }
 
    @Test
@@ -383,8 +409,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -393,8 +419,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -403,8 +429,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -413,8 +439,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -423,8 +449,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -434,8 +460,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
 
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -444,8 +470,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -454,8 +480,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -464,8 +490,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.CURRENT, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
 
@@ -475,8 +501,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PENDING, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PENDING, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
 
@@ -486,8 +512,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PENDING, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PENDING, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -496,8 +522,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedFutureCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
    }
 
    @Test
@@ -506,8 +532,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedFutureCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
    }
 
    @Test
@@ -516,8 +542,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedFutureCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
    }
 
    @Test
@@ -526,8 +552,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedFutureCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
    }
 
    @Test
@@ -536,8 +562,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedFutureCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
    }
 
    @Test
@@ -547,8 +573,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
 
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
    }
 
    @Test
@@ -557,8 +583,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedFutureCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
    }
 
    @Test
@@ -567,8 +593,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedFutureCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
    }
 
    @Test
@@ -577,8 +603,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedFutureCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.FUTURE, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
    }
 
 
@@ -588,8 +614,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedFutureCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PENDING, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PENDING, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
    }
 
 
@@ -599,8 +625,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedFutureCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PENDING, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PENDING, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedFutureCourse, enrollment));
    }
 
    @Test
@@ -609,8 +635,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedPastCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
    }
 
    @Test
@@ -619,8 +645,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedPastCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
    }
 
    @Test
@@ -629,8 +655,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedPastCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
    }
 
    @Test
@@ -639,8 +665,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedPastCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
    }
 
    @Test
@@ -649,8 +675,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedPastCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
    }
 
    @Test
@@ -660,8 +686,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
 
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
    }
 
    @Test
@@ -670,8 +696,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedPastCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
    }
 
    @Test
@@ -680,8 +706,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedPastCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
    }
 
    @Test
@@ -690,8 +716,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedPastCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
    }
 
 
@@ -701,8 +727,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedPastCourse, false, false, enrollment, su19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedPastCourse, enrollment));
    }
 
    @Test
@@ -711,8 +737,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, sp19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -721,8 +747,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, sp19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -731,8 +757,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, sp19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -741,8 +767,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, sp19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -751,8 +777,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, sp19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -762,8 +788,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
 
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -772,8 +798,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, sp19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -782,8 +808,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, sp19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @Test
@@ -792,8 +818,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, sp19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
 
@@ -803,8 +829,8 @@ public class EnrollmentClassificationServiceTest {
       DecoratedCourse dc = new DecoratedCourse(publishedCourse, false, false, enrollment, sp19Term);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
-      Assert.assertEquals("Wrong enrollment classification", DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification());
-      Assert.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
+      Assertions.assertEquals(DecoratedCourse.CLASSIFICATION.PAST, dc.getEnrollmentClassification(), "Wrong enrollment classification");
+      Assertions.assertTrue(courseListService.hasClickableLink(publishedCourse, enrollment));
    }
 
    @TestConfiguration

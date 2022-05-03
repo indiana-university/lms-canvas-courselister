@@ -1,9 +1,42 @@
 package edu.iu.uits.lms.courselist.service;
 
-import canvas.client.generated.model.TermOverride;
-import canvas.helpers.CourseHelper;
-import canvas.helpers.EnrollmentHelper;
-import canvas.helpers.TermHelper;
+/*-
+ * #%L
+ * lms-lti-courselist
+ * %%
+ * Copyright (C) 2015 - 2022 Indiana University
+ * %%
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the Indiana University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
+import edu.iu.uits.lms.canvas.helpers.CourseHelper;
+import edu.iu.uits.lms.canvas.helpers.EnrollmentHelper;
+import edu.iu.uits.lms.canvas.helpers.TermHelper;
+import edu.iu.uits.lms.canvas.model.CanvasTerm;
 import edu.iu.uits.lms.courselist.model.DecoratedCourse;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +79,7 @@ public class EnrollmentClassificationService {
     */
    private boolean isPending(DecoratedCourse decoratedCourse) {
       String state = decoratedCourse.getEnrollment().getEnrollmentState();
-      return EnrollmentHelper.STATE.invited.name().equals(state) || EnrollmentHelper.STATE.pending.name().equals(state) ||
-            EnrollmentHelper.STATE.creation_pending.name().equals(state);
+      return EnrollmentHelper.STATE.invited.name().equals(state) || EnrollmentHelper.STATE.creation_pending.name().equals(state);
    }
 
    /**
@@ -109,7 +141,7 @@ public class EnrollmentClassificationService {
       Date date = TermHelper.getStartDate(decoratedCourse.getTerm());
 
       String role = typeTranslater(decoratedCourse.getEnrollment().getType());
-      Map<String, TermOverride> roleOverrides = decoratedCourse.getTerm().getOverrides();
+      Map<String, CanvasTerm.TermOverride> roleOverrides = decoratedCourse.getTerm().getOverrides();
       if (roleOverrides != null && roleOverrides.containsKey(role)) {
          Date roleDate = TermHelper.getStartDate(roleOverrides.get(role));
          if (roleDate != null) {
@@ -117,7 +149,7 @@ public class EnrollmentClassificationService {
          }
       }
 
-      if (decoratedCourse.getCourse().getRestrictEnrollmentsToCourseDates()) {
+      if (decoratedCourse.getCourse().isRestrictEnrollmentsToCourseDates()) {
          Date courseDate = CourseHelper.getStartDate(decoratedCourse.getCourse());
          if (courseDate != null) {
             date = courseDate;
@@ -131,7 +163,7 @@ public class EnrollmentClassificationService {
       Date date = TermHelper.getEndDate(decoratedCourse.getTerm());
 
       String role = typeTranslater(decoratedCourse.getEnrollment().getType());
-      Map<String, TermOverride> roleOverrides = decoratedCourse.getTerm().getOverrides();
+      Map<String, CanvasTerm.TermOverride> roleOverrides = decoratedCourse.getTerm().getOverrides();
       if (roleOverrides != null && roleOverrides.containsKey(role)) {
          Date roleDate = TermHelper.getEndDate(roleOverrides.get(role));
          if (roleDate != null) {
@@ -139,7 +171,7 @@ public class EnrollmentClassificationService {
          }
       }
 
-      if (decoratedCourse.getCourse().getRestrictEnrollmentsToCourseDates()) {
+      if (decoratedCourse.getCourse().isRestrictEnrollmentsToCourseDates()) {
          Date courseDate = CourseHelper.getEndDate(decoratedCourse.getCourse());
          if (courseDate != null) {
             date = courseDate;

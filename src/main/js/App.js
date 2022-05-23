@@ -252,7 +252,7 @@ class App extends React.Component {
 
         return (
             <div>
-                <div className="rvt-container" id="main-container" role="main">
+                <div className="rvt-container" id="main-container">
                     <Loading loading={this.state.loading} />
                     <Header loading={this.state.loading} />
                     <ActionBar loading={this.state.loading} selectedGroup={this.state.grouping} courses={this.state.courses}

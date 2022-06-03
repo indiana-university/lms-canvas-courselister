@@ -247,6 +247,11 @@ class App extends React.Component {
 
         var groupedCourses = groupAndSortBuckets(filteredCourses, this.state.grouping, this.state.groupSort, this.state.orderKey)
 
+        var numCourses = 0;
+        groupedCourses.forEach((value, key) => {
+            numCourses += value.length;
+        })
+
         var filters = {filteredEnrollments: this.state.filteredEnrollments, filteredPublished: this.state.filteredPublished,
             filteredVisibility: this.state.filteredVisibility, filteredTerms: this.state.filteredTerms}
 
@@ -264,6 +269,7 @@ class App extends React.Component {
                         handleFilterBatch={this.handleFilterBatch} handleRemoveAllFilters={this.handleRemoveAllFilters} 
                         groupByMenuSpecialHandling={this.groupByMenuSpecialHandling}
                         handleGroupByMenuOpening={this.handleGroupByMenuOpening} />
+                    <SearchResults resultsCount={numCourses} searchTerm={this.state.searchTerms} />
                     <MainTable loading={this.state.loading} groupedCourses={groupedCourses} orderKey={this.state.orderKey}
                         handleOrdering={this.handleOrdering} updateCourseInState={this.updateCourseInState} selectedGroup={this.state.grouping}/>
                 </div>
@@ -634,7 +640,7 @@ function MainTable(props) {
     if (props.loading) {
         return null;
     } else if (props.groupedCourses.size == 0) {
-        return (<p className="rvt-m-bottom-md rvt-ts-32 rvt-text-center">No results</p>)
+        return (<p aria-live="polite" className="rvt-m-top-xs rvt-ts-23">No results</p>)
     } else {
         var srOnlyHeading = "Table of courses";
         if( "enrollmentClassification.text" === props.selectedGroup) {
@@ -647,7 +653,8 @@ function MainTable(props) {
 
         return (
             <React.Fragment>
-            <h2 className="sr-only">{srOnlyHeading}</h2>
+            <p className="sr-only" id="srMessaging" aria-live="polite"></p>
+            <h2 className="sr-only" aria-live="polite">{srOnlyHeading}</h2>
             <table className="rvt-m-bottom-md">
                 <caption className="sr-only">Table of courses</caption>
                 <thead className="tableHeadOverride">
@@ -740,5 +747,17 @@ function LinkHeader(props) {
         );
     }
 }
+
+    function SearchResults(props) {
+        if (props.searchTerm && props.resultsCount > 0) {
+            var resultText = props.resultsCount == 1 ? " result " : " results ";
+            let searchText = props.resultsCount + resultText + 'for search term "' + props.searchTerm + '"';
+            return (
+                <div className="rvt-ts-20 rvt-m-bottom-sm" aria-live="polite">{searchText}</div>
+            )
+        }
+
+        return null;
+  }
 
 export default App

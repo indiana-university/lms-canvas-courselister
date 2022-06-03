@@ -41,7 +41,7 @@ const DataGrouping = (props) => {
         const groups = entryArray.map(([key,value]) => (
             <tbody key={key}>
                 <tr>
-                    <th colSpan="8" scope="colGroup" id={`group-${_.kebabCase(key)}`} className="rvt-ts-20 tableSubHeadOverride">{key}</th>
+                    <th colSpan="8" scope="colGroup" id={`group-${_.kebabCase(key)}`} className="rvt-ts-20 tableSubHeadOverride"><h3>{key}</h3></th>
                 </tr>
                 <DataBucket data={value} groupByHeader={`group-${_.kebabCase(key)}`} updateCourseInState={props.updateCourseInState}/>
             </tbody>

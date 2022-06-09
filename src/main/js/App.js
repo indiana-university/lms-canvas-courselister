@@ -670,7 +670,7 @@ function MainTable(props) {
                     <th scope="col" id="nickname">Nickname</th>
                     <th scope="col" id="role">Role</th>
                     <th scope="col" id="term">
-                        <LinkHeader anchorValue="Term" newSortValue="term.name" orderKey={props.orderKey} onClick={props.handleOrdering} />
+                        <LinkHeader anchorValue="Term" newSortValue="termSort" orderKey={props.orderKey} onClick={props.handleOrdering} />
                     </th>
                     <th scope="col" id="pub">Published</th>
                 </tr>

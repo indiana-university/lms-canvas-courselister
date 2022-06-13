@@ -158,7 +158,7 @@ public class CourseListService {
                   }
 
                   //Figure out how a term would sort
-                  Date dateToOrder = TermHelper.getEndDate(term);
+                  Date dateToOrder = TermHelper.getStartDate(term);
                   long orderTime = dateToOrder != null ? dateToOrder.getTime() : 0;
                   dc.setTermSort(Long.toString(orderTime));
 

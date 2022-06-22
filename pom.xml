@@ -78,7 +78,7 @@
         <jquery.version>3.5.1</jquery.version>
         <lms-canvas-services.version>5.0.7</lms-canvas-services.version>
         <lms-canvas-common-configuration.version>5.0.3</lms-canvas-common-configuration.version>
-        <lms-canvas-lti-framework.version>5.1.7</lms-canvas-lti-framework.version>
+        <lms-canvas-lti-framework.version>5.1.9</lms-canvas-lti-framework.version>
         <lms-canvas-rivet.version>5.1.8.2_1</lms-canvas-rivet.version>
         <lms-canvas-redis-config.version>5.0.7</lms-canvas-redis-config.version>
         <nimbus-jose-jwt.version>9.10.1</nimbus-jose-jwt.version>

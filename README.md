@@ -75,12 +75,12 @@ They can be set in a properties file, or overridden as environment variables.
 The following properties need to be set to configure the communication with a database.
 They can be set in a properties file, or overridden as environment variables.
 
-| Property             | Description                                                                   |
-|----------------------|-------------------------------------------------------------------------------|
-| `lms.db.user`        | Username used to access the database                                          |
-| `lms.db.url`         | JDBC URL of the database.  Will have the form `jdbc:<host>:<port>/<database>` |
-| `lms.db.driverClass` | JDBC Driver class name                                                        |
-| `lms.db.password`    | Password for the user accessing the database                                  |
+| Property             | Description                                                                                                            |
+|----------------------|------------------------------------------------------------------------------------------------------------------------|
+| `lms.db.user`        | Username used to access the database                                                                                   |
+| `lms.db.url`         | JDBC URL of the database.  Will have the form `jdbc:<dbtype>://<host>:<port>/<database>`                               |
+| `lms.db.password`    | Password for the user accessing the database                                                                           |
+| `lms.db.poolType`    | Fully qualified name of the connection pool implementation to use. By default, it is auto-detected from the classpath. |
 
 ### Configure support contact information
 The following properties need to be set to configure the contact information on the global error page.

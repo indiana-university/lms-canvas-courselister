@@ -749,15 +749,17 @@ function LinkHeader(props) {
 }
 
     function SearchResults(props) {
+        let searchText = "";
+        let searchClasses= "";
         if (props.searchTerm && props.resultsCount > 0) {
             var resultText = props.resultsCount == 1 ? " result " : " results ";
-            let searchText = props.resultsCount + resultText + 'for search term "' + props.searchTerm + '"';
-            return (
-                <div className="rvt-ts-20 rvt-m-bottom-sm" aria-live="polite">{searchText}</div>
-            )
+            searchText = props.resultsCount + resultText + 'for search term "' + props.searchTerm + '"';
+            searchClasses="rvt-ts-20 rvt-m-bottom-sm";
         }
 
-        return null;
+        return (
+            <div id="searchResults" className={searchClasses} aria-live="polite">{searchText}</div>
+        )
   }
 
 export default App

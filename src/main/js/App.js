@@ -750,7 +750,7 @@ function LinkHeader(props) {
 
     function SearchResults(props) {
         let searchText = "";
-        let searchClasses= "rvt-display-none";
+        let searchClasses= "";
         if (props.searchTerm && props.resultsCount > 0) {
             var resultText = props.resultsCount == 1 ? " result " : " results ";
             searchText = props.resultsCount + resultText + 'for search term "' + props.searchTerm + '"';

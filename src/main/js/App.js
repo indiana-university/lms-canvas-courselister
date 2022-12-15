@@ -38,7 +38,7 @@ import DataGrouping from 'components/DataGrouping'
 import Loading from 'components/Loading'
 import RvtSvg from 'components/RvtSvg'
 import FilterTermOptions from 'components/FilterTermOptions'
-import {CircleArrow as ScrollUpButton} from 'react-scroll-up-button'
+import ScrollToTop from "react-scroll-to-top";
 
 import { chain, groupBy, sortBy } from 'lodash';
 
@@ -273,7 +273,7 @@ class App extends React.Component {
                     <MainTable loading={this.state.loading} groupedCourses={groupedCourses} orderKey={this.state.orderKey}
                         handleOrdering={this.handleOrdering} updateCourseInState={this.updateCourseInState} selectedGroup={this.state.grouping}/>
                 </div>
-                <ScrollUpButton />
+                <ScrollToTop />
             </div>
         );
     }

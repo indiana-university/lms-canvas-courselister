@@ -82,8 +82,8 @@
         <lms-canvas-rivet.version>5.1.8.2_1</lms-canvas-rivet.version>
         <lms-canvas-redis-config.version>5.0.7</lms-canvas-redis-config.version>
         <nimbus-jose-jwt.version>9.10.1</nimbus-jose-jwt.version>
-        <nodejs.version>v18.12.1</nodejs.version>
-        <npm.version>8.19.2</npm.version>
+        <nodejs.version>v16.19.0</nodejs.version>
+        <npm.version>8.19.3</npm.version>
         <spring-cloud-starter-vault-config.version>3.0.5</spring-cloud-starter-vault-config.version>
         <spring-security-bom.version>5.5.2</spring-security-bom.version>
         <webjars-locator.version>0.42</webjars-locator.version>

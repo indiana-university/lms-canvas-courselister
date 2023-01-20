@@ -36,7 +36,7 @@ spring:
 courselist:
   version: @app.version@
   env: ${app.env}
-  startANewCourseUrl: /users/self/external_tools/100230
+  startANewCourseUrl: /users/self/external_tools/437553
 
 server:
   error:

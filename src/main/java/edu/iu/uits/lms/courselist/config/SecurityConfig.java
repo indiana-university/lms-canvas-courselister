@@ -33,6 +33,7 @@ package edu.iu.uits.lms.courselist.config;
  * #L%
  */
 
+import edu.iu.uits.lms.common.it12logging.LmsFilterSecurityInterceptorObjectPostProcessor;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,8 @@ public class SecurityConfig {
                     .and()
                     .authorizeRequests()
                     .antMatchers(WELL_KNOWN_ALL, "/error").permitAll()
-                    .antMatchers("/**").hasRole(BASE_USER_ROLE);
+                    .antMatchers("/**").hasRole(BASE_USER_ROLE)
+                    .withObjectPostProcessor(new LmsFilterSecurityInterceptorObjectPostProcessor());
 
             //Setup the LTI handshake
             Lti13Configurer lti13Configurer = new Lti13Configurer()
@@ -82,7 +84,7 @@ public class SecurityConfig {
         public void configure(WebSecurity web) throws Exception {
             // ignore everything except paths specified
             web.ignoring().antMatchers("/templates/**", "/jsreact/**", "/static/**", "/webjars/**",
-                  "/resources/**", "/actuator/**", "/css/**", "/js/**", "/jsrivet/**");
+                  "/resources/**", "/css/**", "/js/**", "/jsrivet/**");
         }
 
     }

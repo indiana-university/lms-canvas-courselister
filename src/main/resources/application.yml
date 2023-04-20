@@ -86,7 +86,6 @@ spring:
 spring:
   config:
     activate.on-profile: swagger
-    import: classpath:lti-api-config.properties
 springdoc:
   swagger-ui:
     oauth:

@@ -29,9 +29,8 @@ In the `Message` section, set the following:
 <tr><td>Custom parameters</td><td>
 
 ```
-canvas_course_id=123456
 canvas_user_login_id=johnsmith
-canvas_membership_roles=Instructor
+instructure_membership_roles=http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor
 ```
 
 </td></tr>

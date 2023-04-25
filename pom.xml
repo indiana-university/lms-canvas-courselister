@@ -67,15 +67,15 @@
 
     <properties>
         <app.version>${project.version}</app.version>
-        <commons-io.version>2.8.0</commons-io.version>
+        <commons-io.version>2.11.0</commons-io.version>
         <font-awesome.version>4.7.0</font-awesome.version>
         <frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
         <git-commit-id-maven-plugin.version>5.0.0</git-commit-id-maven-plugin.version>
-        <hibernate5-ddl-maven-plugin.version>2.3.0</hibernate5-ddl-maven-plugin.version>
+        <hibernate5-ddl-maven-plugin.version>2.5.0</hibernate5-ddl-maven-plugin.version>
         <java.version>17</java.version>
         <jdk.source>17</jdk.source>
         <jdk.target>17</jdk.target>
-        <jquery.version>3.5.1</jquery.version>
+        <jquery.version>3.6.4</jquery.version>
         <lms-embedded-services.version>5.2.5</lms-embedded-services.version>
         <lms-team-spring-boot-it12>4.8</lms-team-spring-boot-it12>
 

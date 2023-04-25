@@ -44,6 +44,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import uk.ac.ox.ctl.lti13.Lti13Configurer;
 
 import static edu.iu.uits.lms.lti.LTIConstants.BASE_USER_ROLE;
@@ -69,6 +70,12 @@ public class SecurityConfig {
                     .authorizeRequests()
                     .antMatchers(WELL_KNOWN_ALL, "/error").permitAll()
                     .antMatchers("/**").hasRole(BASE_USER_ROLE)
+                    .and()
+                    .headers()
+                    .contentSecurityPolicy("style-src 'self'; form-action 'self'; frame-ancestors 'self' https://*.instructure.com")
+                    .and()
+                    .referrerPolicy(referrer -> referrer
+                            .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN))
                     .withObjectPostProcessor(new LmsFilterSecurityInterceptorObjectPostProcessor());
 
             //Setup the LTI handshake

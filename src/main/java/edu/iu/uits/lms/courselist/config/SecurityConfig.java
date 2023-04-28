@@ -73,7 +73,7 @@ public class SecurityConfig {
                     .withObjectPostProcessor(new LmsFilterSecurityInterceptorObjectPostProcessor())
                     .and()
                     .headers()
-                    .contentSecurityPolicy("style-src 'self'; form-action 'self'; frame-ancestors 'self' https://*.instructure.com")
+                    .contentSecurityPolicy("form-action 'self'; frame-ancestors 'self' https://*.instructure.com")
                     .and()
                     .referrerPolicy(referrer -> referrer
                             .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN));

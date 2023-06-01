@@ -74,9 +74,11 @@ class FilterTermOptions extends React.Component {
 
         const terms = termList.map((term) => (
             <li key={term.id}>
-                <input type="checkbox" id={`term_${term.id}`} name="termCheckboxes" className="filter-input" value={term.id}
-                    onChange={this.handleTermClick} checked={this.props.filteredTerms.includes(term.id)} />
-                <label htmlFor={`term_${term.id}`} className="rvt-m-right-sm rvt-text-nobr">{term.name}</label>
+                <div class="rvt-checkbox">
+                    <input type="checkbox" id={`term_${term.id}`} name="termCheckboxes" className="filter-input" value={term.id}
+                        onChange={this.handleTermClick} checked={this.props.filteredTerms.includes(term.id)} />
+                    <label htmlFor={`term_${term.id}`} className="rvt-m-right-sm rvt-text-nobr">{term.name}</label>
+                </div>
             </li>
         ))
 
@@ -91,7 +93,7 @@ class FilterTermOptions extends React.Component {
 
         return (
             <React.Fragment>
-                <ul className="rvt-plain-list">
+                <ul className="rvt-list-plain">
                     {terms}
                 </ul>
                 {showTermsLink}

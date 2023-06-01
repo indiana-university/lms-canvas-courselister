@@ -257,7 +257,7 @@ class App extends React.Component {
 
         return (
             <div>
-                <div className="rvt-container" id="main-container">
+                <div className="rvt-container-xl" id="main-container">
                     <Loading loading={this.state.loading} />
                     <Header loading={this.state.loading} />
                     <ActionBar loading={this.state.loading} selectedGroup={this.state.grouping} courses={this.state.courses}
@@ -515,62 +515,70 @@ function ActionBar(props) {
         return null;
     } else {
         return (
-        <div className="rvt-flex-md-up rvt-row">
+        <div className="rvt-flex-md-up">
 
-        <h2 className="sr-only">Options to filter, group, and search courses</h2>
+        <h2 className="rvt-sr-only">Options to filter, group, and search courses</h2>
 
-        <div className="rvt-dropdown" role="region" aria-label="Filter controls">
+        <div className="rvt-dropdown" data-rvt-dropdown="dropdown-filters" role="region" aria-label="Filter controls">
             <button
-                 type="button"
+                type="button"
                 className="rvt-button rvt-button--secondary rvt-m-right-sm-md-up"
-                data-dropdown-toggle="dropdown-filters"
+                data-rvt-dropdown-toggle="dropdown-filters"
                 aria-haspopup="true"
                 aria-expanded="false"
             >
-                <span className="dropdown__toggle-text">Filter By</span>
-                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M8,12.46a2,2,0,0,1-1.52-.7L1.24,5.65a1,1,0,1,1,1.52-1.3L8,10.46l5.24-6.11a1,1,0,0,1,1.52,1.3L9.52,11.76A2,2,0,0,1,8,12.46Z"></path></svg>
+                <span className="rvt-dropdown__toggle-text">Filter By</span>
+                <svg aria-hidden="true" role="img" fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="m15.146 6.263-1.292-1.526L8 9.69 2.146 4.737.854 6.263 8 12.31l7.146-6.047Z"></path></svg>
             </button>
-            <div className="rvt-dropdown__menu" id="dropdown-filters" aria-hidden="true">
+            <div className="rvt-dropdown__menu" id="dropdown-filters" hidden data-rvt-dropdown-menu>
                 {removeFilters}
-                <fieldset className="rvt-p-left-sm">
+                <fieldset className="rvt-fieldset rvt-p-left-sm">
                     <legend className="rvt-text-bold">Enrollments</legend>
                     <EnrollmentOptions courses={props.courses} filteredEnrollments={props.filters.filteredEnrollments} handleFilter={props.handleFilter} />
                 </fieldset>
-                <fieldset className="rvt-m-top-sm rvt-p-left-sm">
+                <fieldset className="rvt-fieldset rvt-m-top-sm rvt-p-left-sm">
                     <legend className="rvt-text-bold">Course Visibility</legend>
-                    <ul className="rvt-plain-list">
+                    <ul className="rvt-list-plain">
                         <li>
-                            <input type="checkbox" id="visibleCourses" name="hiddenStatusCheckboxes" className="filter-input"
-                                    value="visibleCourses" onChange={props.handleFilter}
-                                    checked={props.filters.filteredVisibility.includes(false)} />
-                            <label htmlFor="visibleCourses" className="rvt-m-right-sm rvt-text-nobr">Visible (<i className="fa fa-eye" aria-hidden="true" title="Visible icon"></i>)</label>
+                            <div class="rvt-checkbox">
+                                <input type="checkbox" id="visibleCourses" name="hiddenStatusCheckboxes" className="filter-input"
+                                        value="visibleCourses" onChange={props.handleFilter}
+                                        checked={props.filters.filteredVisibility.includes(false)} />
+                                <label htmlFor="visibleCourses" className="rvt-m-right-sm rvt-text-nobr">Visible (<i className="fa fa-eye" aria-hidden="true" title="Visible icon"></i>)</label>
+                            </div>
                         </li>
                         <li>
-                            <input type="checkbox" id="hiddenCourses" name="hiddenStatusCheckboxes" className="filter-input"
-                                    value="hiddenCourses" onChange={props.handleFilter}
-                                    checked={props.filters.filteredVisibility.includes(true)} />
-                            <label htmlFor="hiddenCourses" className="rvt-m-right-sm rvt-text-nobr">Hidden (<i className="fa fa-eye-slash courseHidden" aria-hidden="true" title="Hidden icon"></i>)</label>
+                            <div class="rvt-checkbox">
+                                <input type="checkbox" id="hiddenCourses" name="hiddenStatusCheckboxes" className="filter-input"
+                                        value="hiddenCourses" onChange={props.handleFilter}
+                                        checked={props.filters.filteredVisibility.includes(true)} />
+                                <label htmlFor="hiddenCourses" className="rvt-m-right-sm rvt-text-nobr">Hidden (<i className="fa fa-eye-slash courseHidden" aria-hidden="true" title="Hidden icon"></i>)</label>
+                            </div>
                         </li>
                     </ul>
                 </fieldset>
-                <fieldset className="rvt-m-top-sm rvt-p-left-sm">
+                <fieldset className="rvt-fieldset rvt-m-top-sm rvt-p-left-sm">
                     <legend className="rvt-text-bold">Published</legend>
-                    <ul className="rvt-plain-list">
+                    <ul className="rvt-list-plain">
                         <li>
-                            <input type="checkbox" id="publishedCourses" name="publishedStatusCheckboxes" className="filter-input"
-                                value="publishedCourses" onChange={props.handleFilter}
-                                 checked={props.filters.filteredPublished.includes(true)} />
-                            <label htmlFor="publishedCourses" className="rvt-m-right-sm rvt-text-nobr">Yes</label>
+                            <div class="rvt-checkbox">
+                                <input type="checkbox" id="publishedCourses" name="publishedStatusCheckboxes" className="filter-input"
+                                    value="publishedCourses" onChange={props.handleFilter}
+                                     checked={props.filters.filteredPublished.includes(true)} />
+                                <label htmlFor="publishedCourses" className="rvt-m-right-sm rvt-text-nobr">Yes</label>
+                            </div>
                         </li>
                         <li>
-                            <input type="checkbox" id="unpublishedCourses" name="publishedStatusCheckboxes" className="filter-input"
-                                value="unpublishedCourses" onChange={props.handleFilter}
-                                 checked={props.filters.filteredPublished.includes(false)} />
-                            <label htmlFor="unpublishedCourses" className="rvt-m-right-sm rvt-text-nobr">No</label>
+                            <div class="rvt-checkbox">
+                                <input type="checkbox" id="unpublishedCourses" name="publishedStatusCheckboxes" className="filter-input"
+                                    value="unpublishedCourses" onChange={props.handleFilter}
+                                     checked={props.filters.filteredPublished.includes(false)} />
+                                <label htmlFor="unpublishedCourses" className="rvt-m-right-sm rvt-text-nobr">No</label>
+                            </div>
                         </li>
                     </ul>
                 </fieldset>
-                <fieldset className="rvt-m-top-sm rvt-p-left-sm">
+                <fieldset className="rvt-fieldset rvt-m-top-sm rvt-p-left-sm">
                     <legend className="rvt-text-bold">Terms</legend>
                     <FilterTermOptions activeTerms={props.activeTerms} allTerms={props.allTerms} filteredTerms={props.filters.filteredTerms}
                         handleFilterBatch={props.handleFilterBatch} updateStateBatch={props.updateStateBatch} showOnlyActiveTerms={props.showOnlyActiveTerms} />
@@ -578,41 +586,47 @@ function ActionBar(props) {
             </div>
         </div>
 
-        <div className="rvt-dropdown" role="region" aria-label="Controls for grouping courses">
+        <div className="rvt-dropdown" data-rvt-dropdown="dropdown-grouping" role="region" aria-label="Controls for grouping courses">
             <button
-                 type="button"
+                type="button"
                 className="rvt-button rvt-button--secondary rvt-m-right-sm-md-up"
-                data-dropdown-toggle="dropdown-grouping"
+                data-rvt-dropdown-toggle="dropdown-grouping"
                 aria-haspopup="true"
                 aria-expanded="false"
                 onKeyDown={props.handleGroupByMenuOpening}
             >
-                <span className="dropdown__toggle-text">Group By</span>
-                <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M8,12.46a2,2,0,0,1-1.52-.7L1.24,5.65a1,1,0,1,1,1.52-1.3L8,10.46l5.24-6.11a1,1,0,0,1,1.52,1.3L9.52,11.76A2,2,0,0,1,8,12.46Z"></path></svg>
+                <span className="rvt-dropdown__toggle-text">Group By</span>
+                <svg aria-hidden="true" role="img" fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="m15.146 6.263-1.292-1.526L8 9.69 2.146 4.737.854 6.263 8 12.31l7.146-6.047Z"></path></svg>
             </button>
-            <div className="rvt-dropdown__menu" id="dropdown-grouping" aria-hidden="true">
-                <fieldset className="rvt-p-left-sm">
-                    <legend className="sr-only">Grouping options</legend>
-                    <ul className="rvt-plain-list">
+            <div className="rvt-dropdown__menu" id="dropdown-grouping" hidden data-rvt-dropdown-menu>
+                <fieldset className="rvt-fieldset rvt-p-left-sm">
+                    <legend className="rvt-sr-only">Grouping options</legend>
+                    <ul className="rvt-list-plain">
                         <li>
-                            <input type="radio" name="group-options" id="group-options-enrl" value="enrollmentClassification.text"
-                                checked={"enrollmentClassification.text" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
-                                data-sort-key="enrollmentClassification.order"
-                                onKeyDown={props.groupByMenuSpecialHandling} />
-                            <label htmlFor="group-options-enrl" className="rvt-m-right-sm">Enrollments</label>
+                            <div class="rvt-radio">
+                                <input type="radio" name="group-options" id="group-options-enrl" value="enrollmentClassification.text"
+                                    checked={"enrollmentClassification.text" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
+                                    data-sort-key="enrollmentClassification.order"
+                                    onKeyDown={props.groupByMenuSpecialHandling} />
+                                <label htmlFor="group-options-enrl" className="rvt-m-right-sm">Enrollments</label>
+                            </div>
                         </li>
                         <li>
-                            <input type="radio" name="group-options" id="group-options-term" value="term.name"
-                                checked={"term.name" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
-                                data-sort-key="termSort" data-sort-dir="desc" 
-                                onKeyDown={props.groupByMenuSpecialHandling} />
-                            <label htmlFor="group-options-term">Term</label>
+                            <div class="rvt-radio">
+                                <input type="radio" name="group-options" id="group-options-term" value="term.name"
+                                    checked={"term.name" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
+                                    data-sort-key="termSort" data-sort-dir="desc"
+                                    onKeyDown={props.groupByMenuSpecialHandling} />
+                                <label htmlFor="group-options-term">Term</label>
+                            </div>
                         </li>
                         <li>
-                            <input type="radio" name="group-options" id="group-options-role" value="baseRoleLabel"
-                                checked={"baseRoleLabel" === props.selectedGroup} onChange={props.handleGroupByOptionChange} 
-                                onKeyDown={props.groupByMenuSpecialHandling} />
-                            <label htmlFor="group-options-role">Role</label>
+                            <div class="rvt-radio">
+                                <input type="radio" name="group-options" id="group-options-role" value="baseRoleLabel"
+                                    checked={"baseRoleLabel" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
+                                    onKeyDown={props.groupByMenuSpecialHandling} />
+                                <label htmlFor="group-options-role">Role</label>
+                            </div>
                         </li>
                     </ul>
                 </fieldset>
@@ -624,11 +638,13 @@ function ActionBar(props) {
             <label htmlFor="search" className="rvt-sr-only">Search Courses</label>
             <div className="rvt-input-group rvt-m-bottom-md">
                 <div className="rvt-clearable-input-group search-input">
-                    <input className="rvt-input-group__input rvt-clearable-input search-input" type="text" id="search"
+                    <input className="rvt-input rvt-input-group__input rvt-clearable-input search-input" type="text" id="search"
                         onKeyPress={props.handleSearchKeyPress} />
                 </div>
                 <div className="rvt-input-group__append">
-                    <button className="rvt-button" onClick={props.handleSearch}>Search courses</button>
+                    <button type="button" className="rvt-button" onClick={props.handleSearch}>
+                        <span>Search courses</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -653,10 +669,10 @@ function MainTable(props) {
 
         return (
             <React.Fragment>
-            <p className="sr-only" id="srMessaging" aria-live="polite"></p>
-            <h2 className="sr-only" aria-live="polite">{srOnlyHeading}</h2>
-            <table className="rvt-m-bottom-md">
-                <caption className="sr-only">Table of courses</caption>
+            <p className="rvt-sr-only" id="srMessaging" aria-live="polite"></p>
+            <h2 className="rvt-sr-only" aria-live="polite">{srOnlyHeading}</h2>
+            <table className="rvt-table rvt-m-bottom-md">
+                <caption className="rvt-sr-only">Table of courses</caption>
                 <thead className="tableHeadOverride">
                 <tr>
                     <th scope="col" id="courseName">
@@ -686,16 +702,18 @@ function EnrollmentOptions(props) {
     var availableEnrollments = _.chain(props.courses).map("enrollmentClassification").uniqBy("name").orderBy("order", "asc").value();
     const enrollmentOptions = availableEnrollments.map((enrollmentClassification) => (
             <li key={enrollmentClassification.name}>
-                <input type="checkbox" id={enrollmentClassification.name} name="enrollmentCheckboxes" className="filter-input"
-                    value={enrollmentClassification.name} onChange={props.handleFilter}
-                    checked={props.filteredEnrollments.includes(enrollmentClassification.name)} />
-                <label htmlFor={enrollmentClassification.name} className="rvt-m-right-sm rvt-text-nobr">{enrollmentClassification.text}</label>
+                <div class="rvt-checkbox">
+                    <input type="checkbox" id={enrollmentClassification.name} name="enrollmentCheckboxes" className="filter-input"
+                        value={enrollmentClassification.name} onChange={props.handleFilter}
+                        checked={props.filteredEnrollments.includes(enrollmentClassification.name)} />
+                    <label htmlFor={enrollmentClassification.name} className="rvt-m-right-sm rvt-text-nobr">{enrollmentClassification.text}</label>
+                </div>
             </li>
         ))
 
 
     return (
-            <ul className="rvt-plain-list">
+            <ul className="rvt-list-plain">
                 {enrollmentOptions}
             </ul>
     );

@@ -42,13 +42,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link media="all" rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/css/font-awesome.min.css}" />
     <link media="all" rel="stylesheet" type="text/css" th:href="@{/css/enhancedCourseList.css}"/>
-    <link media="all" rel="stylesheet" type="text/css" th:href="@{/jsrivet/rivet-bundle.min.css}" />
+    <link media="all" rel="stylesheet" type="text/css" th:href="@{/jsrivet/rivet.min.css}" />
 </head>
 <body>
 
 <div id="root"></div>
 
-<footer class="rvt-ts-12 rvt-container rvt-m-top-lg">
+<footer class="rvt-ts-12 rvt-container-xl rvt-m-top-lg">
     <div id="footer" th:text="${@serverInfo}"></div>
 </footer>
 
@@ -65,8 +65,10 @@
 </script>
 
 <script type="text/javascript" th:src="@{/jsreact/lms-lti-courselist/lms-lti-courselist.js}"></script>
-<script type="text/javascript" th:src="@{/jsrivet/rivet-bundle.min.js}"></script>
-
+<script type="text/javascript" th:src="@{/jsrivet/rivet.min.js}"></script>
+<script>
+  Rivet.init();
+</script>
 
 </body>
 </html>

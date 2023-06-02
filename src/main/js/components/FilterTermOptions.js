@@ -74,7 +74,7 @@ class FilterTermOptions extends React.Component {
 
         const terms = termList.map((term) => (
             <li key={term.id}>
-                <div class="rvt-checkbox">
+                <div className="rvt-checkbox">
                     <input type="checkbox" id={`term_${term.id}`} name="termCheckboxes" className="filter-input" value={term.id}
                         onChange={this.handleTermClick} checked={this.props.filteredTerms.includes(term.id)} />
                     <label htmlFor={`term_${term.id}`} className="rvt-m-right-sm rvt-text-nobr">{term.name}</label>

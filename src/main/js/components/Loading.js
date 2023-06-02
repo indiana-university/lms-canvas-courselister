@@ -48,7 +48,7 @@ const Loading = (props) => {
                         </line>
                     </svg>
                 </div>
-                <span class="rvt-ts-md rvt-m-left-sm">Loading...</span>
+                <span className="rvt-ts-md rvt-m-left-sm">Loading...</span>
             </div>
         )
     } else {

@@ -330,7 +330,8 @@ class App extends React.Component {
         // the case for radio buttons which are navigated via arrow keys. If you are focused on the
         // first or second radio button in the group, tabbing out of the menu will not close it. 
         if (event.keyCode == 9) {
-            Dropdown.close("dropdown-grouping");
+            const groupingDropdown = document.querySelector('[data-rvt-dropdown="dropdown-grouping"]');
+            groupingDropdown.close();
         }
         
         // Rivet added key handlers to force nav with up/down arrows. However, radio buttons already navigate with up/down
@@ -540,7 +541,7 @@ function ActionBar(props) {
                     <legend className="rvt-text-bold">Course Visibility</legend>
                     <ul className="rvt-list-plain">
                         <li>
-                            <div class="rvt-checkbox">
+                            <div className="rvt-checkbox">
                                 <input type="checkbox" id="visibleCourses" name="hiddenStatusCheckboxes" className="filter-input"
                                         value="visibleCourses" onChange={props.handleFilter}
                                         checked={props.filters.filteredVisibility.includes(false)} />
@@ -548,7 +549,7 @@ function ActionBar(props) {
                             </div>
                         </li>
                         <li>
-                            <div class="rvt-checkbox">
+                            <div className="rvt-checkbox">
                                 <input type="checkbox" id="hiddenCourses" name="hiddenStatusCheckboxes" className="filter-input"
                                         value="hiddenCourses" onChange={props.handleFilter}
                                         checked={props.filters.filteredVisibility.includes(true)} />
@@ -561,7 +562,7 @@ function ActionBar(props) {
                     <legend className="rvt-text-bold">Published</legend>
                     <ul className="rvt-list-plain">
                         <li>
-                            <div class="rvt-checkbox">
+                            <div className="rvt-checkbox">
                                 <input type="checkbox" id="publishedCourses" name="publishedStatusCheckboxes" className="filter-input"
                                     value="publishedCourses" onChange={props.handleFilter}
                                      checked={props.filters.filteredPublished.includes(true)} />
@@ -569,7 +570,7 @@ function ActionBar(props) {
                             </div>
                         </li>
                         <li>
-                            <div class="rvt-checkbox">
+                            <div className="rvt-checkbox">
                                 <input type="checkbox" id="unpublishedCourses" name="publishedStatusCheckboxes" className="filter-input"
                                     value="unpublishedCourses" onChange={props.handleFilter}
                                      checked={props.filters.filteredPublished.includes(false)} />
@@ -603,7 +604,7 @@ function ActionBar(props) {
                     <legend className="rvt-sr-only">Grouping options</legend>
                     <ul className="rvt-list-plain">
                         <li>
-                            <div class="rvt-radio">
+                            <div className="rvt-radio">
                                 <input type="radio" name="group-options" id="group-options-enrl" value="enrollmentClassification.text"
                                     checked={"enrollmentClassification.text" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
                                     data-sort-key="enrollmentClassification.order"
@@ -612,7 +613,7 @@ function ActionBar(props) {
                             </div>
                         </li>
                         <li>
-                            <div class="rvt-radio">
+                            <div className="rvt-radio">
                                 <input type="radio" name="group-options" id="group-options-term" value="term.name"
                                     checked={"term.name" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
                                     data-sort-key="termSort" data-sort-dir="desc"
@@ -621,7 +622,7 @@ function ActionBar(props) {
                             </div>
                         </li>
                         <li>
-                            <div class="rvt-radio">
+                            <div className="rvt-radio">
                                 <input type="radio" name="group-options" id="group-options-role" value="baseRoleLabel"
                                     checked={"baseRoleLabel" === props.selectedGroup} onChange={props.handleGroupByOptionChange}
                                     onKeyDown={props.groupByMenuSpecialHandling} />
@@ -702,7 +703,7 @@ function EnrollmentOptions(props) {
     var availableEnrollments = _.chain(props.courses).map("enrollmentClassification").uniqBy("name").orderBy("order", "asc").value();
     const enrollmentOptions = availableEnrollments.map((enrollmentClassification) => (
             <li key={enrollmentClassification.name}>
-                <div class="rvt-checkbox">
+                <div className="rvt-checkbox">
                     <input type="checkbox" id={enrollmentClassification.name} name="enrollmentCheckboxes" className="filter-input"
                         value={enrollmentClassification.name} onChange={props.handleFilter}
                         checked={props.filteredEnrollments.includes(enrollmentClassification.name)} />

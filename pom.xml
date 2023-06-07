@@ -76,22 +76,22 @@
         <jdk.source>17</jdk.source>
         <jdk.target>17</jdk.target>
         <jquery.version>3.6.4</jquery.version>
-        <lms-embedded-services.version>5.2.5</lms-embedded-services.version>
+        <lms-embedded-services.version>5.2.7</lms-embedded-services.version>
         <lms-team-spring-boot-it12>4.8</lms-team-spring-boot-it12>
 
         <lms-canvas-rivet.version>5.1.8.2_1</lms-canvas-rivet.version>
         <nodejs.version>v14.21.2</nodejs.version>
         <npm.version>6.14.17</npm.version>
-        <spring-cloud.version>2021.0.5</spring-cloud.version>
+        <spring-cloud.version>2021.0.7</spring-cloud.version>
         <webjars-locator.version>0.46</webjars-locator.version>
 
-        <plugins.compiler.version>3.10.1</plugins.compiler.version>
+        <plugins.compiler.version>3.11.0</plugins.compiler.version>
         <plugins.gpg.version>3.0.1</plugins.gpg.version>
         <plugins.javadoc.version>3.5.0</plugins.javadoc.version>
         <plugins.license.version>2.0.0</plugins.license.version>
         <plugins.nexus-staging.version>1.6.13</plugins.nexus-staging.version>
-        <plugins.release.version>2.5.3</plugins.release.version>
-        <plugins.source.version>3.0.1</plugins.source.version>
+        <plugins.release.version>3.0.0</plugins.release.version>
+        <plugins.source.version>3.2.1</plugins.source.version>
     </properties>
 
     <dependencyManagement>

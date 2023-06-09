@@ -85,7 +85,7 @@
 /* overriding clearable input to not have extra borders */
 .buttonX {
     border-right: 1px solid #75838f !important;
-    border-bottom: none !important;
+    /* border-bottom: none !important; */
 }
 
 /* if rivet-react gets above 1.3.0, this won't be necessary */

@@ -95,7 +95,6 @@ class App extends React.Component {
         this.updateStateBatch.bind(this)
         this.updateCourseInState.bind(this)
         this.groupByMenuSpecialHandling.bind(this)
-        this.handleGroupByMenuOpening.bind(this)
     }
 
     /**
@@ -267,8 +266,7 @@ class App extends React.Component {
                         handleGroupByOptionChange={this.handleGroupByOptionChange} handleSearch={this.handleSearch}
                         handleSearchKeyPress={this.handleSearchKeyPress} handleFilter={this.handleFilter}
                         handleFilterBatch={this.handleFilterBatch} handleRemoveAllFilters={this.handleRemoveAllFilters} 
-                        groupByMenuSpecialHandling={this.groupByMenuSpecialHandling}
-                        handleGroupByMenuOpening={this.handleGroupByMenuOpening} />
+                        groupByMenuSpecialHandling={this.groupByMenuSpecialHandling} />
                     <SearchResults resultsCount={numCourses} searchTerm={this.state.searchTerms} />
                     <MainTable loading={this.state.loading} groupedCourses={groupedCourses} orderKey={this.state.orderKey}
                         handleOrdering={this.handleOrdering} updateCourseInState={this.updateCourseInState} selectedGroup={this.state.grouping}/>
@@ -333,64 +331,7 @@ class App extends React.Component {
             const groupingDropdown = document.querySelector('[data-rvt-dropdown="dropdown-grouping"]');
             groupingDropdown.close();
         }
-        
-        // Rivet added key handlers to force nav with up/down arrows. However, radio buttons already navigate with up/down
-        // natively, so Rivet's handler is causing non-standard behavior for radio button navigation. Let's
-        // just prevent Rivet from doing any up/down handling with radio buttons in Firefox. Chrome does not 
-        // have this issue
-        if(navigator.userAgent.indexOf("Firefox") != -1 ) {
-            
-            const UP = 38;
-            const DOWN = 40;
-            
-            if (event.keyCode == UP || event.keyCode == DOWN) {
-                // stop rivet's keyboard handling from happening and we will just handle it ourselves
-                event.preventDefault();
-                
-                // we need to select the correct radio button. If we are at the top we have to select the
-                // bottom and vice versa    
-                var radioInputs = document.getElementsByName('group-options');
-                var currSelection = event.target;
-                var newSelectedIndex;
 
-                for (var i=0; i < radioInputs.length; i++) {
-                    if (currSelection.id === radioInputs[i].id) {
-                        if (event.keyCode == UP) {
-                            if (i == 0) {
-                                newSelectedIndex = radioInputs.length-1;
-                            } else {
-                                newSelectedIndex = i-1;
-                            }
-                        } else if (event.keyCode == DOWN) {
-                            if (i == radioInputs.length-1) {
-                                newSelectedIndex = 0;
-                            } else {
-                                newSelectedIndex = i+1;
-                            }
-                        }
-                        break;
-                    } 
-                }
-
-                radioInputs[newSelectedIndex].checked = true;
-                
-                var groupKey = radioInputs[newSelectedIndex].value
-                var sortKey = radioInputs[newSelectedIndex].getAttribute("data-sort-key") || groupKey
-                var sortDir = radioInputs[newSelectedIndex].getAttribute("data-sort-dir") || 'asc'
-        
-                this.changeGroupOptions(groupKey, sortKey, sortDir)           
-            }
-        }
-    }
-    
-    handleGroupByMenuOpening = (event) => {
-        if(navigator.userAgent.indexOf("Firefox") != -1 && event.keyCode == 40) {
-            // when we use the down arrow to expand the menu, the focus should
-            // move to the first radio button
-            event.preventDefault();
-            var radioInputs = document.getElementsByName('group-options');
-            radioInputs[0].focus(); 
-        }
     }
 
     handleFilter = (event) => {
@@ -594,7 +535,6 @@ function ActionBar(props) {
                 data-rvt-dropdown-toggle="dropdown-grouping"
                 aria-haspopup="true"
                 aria-expanded="false"
-                onKeyDown={props.handleGroupByMenuOpening}
             >
                 <span className="rvt-dropdown__toggle-text">Group By</span>
                 <svg aria-hidden="true" role="img" fill="currentColor" width="16" height="16" viewBox="0 0 16 16"><path d="m15.146 6.263-1.292-1.526L8 9.69 2.146 4.737.854 6.263 8 12.31l7.146-6.047Z"></path></svg>

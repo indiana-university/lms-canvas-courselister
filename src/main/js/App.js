@@ -267,6 +267,7 @@ class App extends React.Component {
                         handleSearchKeyPress={this.handleSearchKeyPress} handleFilter={this.handleFilter}
                         handleFilterBatch={this.handleFilterBatch} handleRemoveAllFilters={this.handleRemoveAllFilters} 
                         groupByMenuSpecialHandling={this.groupByMenuSpecialHandling} />
+                    <FilterResults resultsCount={numCourses} searchTerm={this.state.searchTerms} filters={filters} terms={this.state.allTerms} />
                     <SearchResults resultsCount={numCourses} searchTerm={this.state.searchTerms} />
                     <MainTable loading={this.state.loading} groupedCourses={groupedCourses} orderKey={this.state.orderKey}
                         handleOrdering={this.handleOrdering} updateCourseInState={this.updateCourseInState} selectedGroup={this.state.grouping}/>
@@ -717,8 +718,49 @@ function LinkHeader(props) {
         }
 
         return (
-            <div id="searchResults" className={searchClasses} aria-live="polite">{searchText}</div>
+            <div id="searchResults" className={searchClasses}>{searchText}</div>
         )
   }
+
+function FilterResults(props) {
+    let filterText = "";
+    if (props.resultsCount > 0) {
+        var resultText = props.resultsCount == 1 ? " course " : " courses ";
+        filterText = props.resultsCount + resultText + " listed. ";
+
+        const filterAddOn = [];
+        if (props.searchTerm) {
+            filterAddOn.push(" Search term: " + props.searchTerm);
+        }
+
+        if (props.filters) {
+            if (props.filters.filteredEnrollments.length > 0) {
+                for (const enrFilter of props.filters.filteredEnrollments) {
+                    filterAddOn.push(enrFilter + " enrollments");
+                }
+            }
+            if (props.filters.filteredPublished.length == 1) {
+                filterAddOn.push(props.filters.filteredPublished[0] ? " published courses" : " unpublished courses");
+            }
+            if (props.filters.filteredVisibility.length == 1) {
+                filterAddOn.push(props.filters.filteredVisibility[0] ? " hidden courses" : " visible courses");
+            }
+            if (props.filters.filteredTerms.length > 0) {
+                var filteredTermNames = [];
+                var currFilteredTerms = props.terms.filter(term => props.filters.filteredTerms.includes(term.id));
+                var termNames = currFilteredTerms.map(thisTerm => thisTerm.name);
+                filterAddOn.push("terms: " + String(termNames));
+            }
+
+            if (filterAddOn.length > 0) {
+                filterText += "Current filters: " + String(filterAddOn);
+            }
+        }
+    }
+
+    return (
+        <div id="filterResults" className="rvt-sr-only" aria-live="polite">{filterText}</div>
+    )
+}
 
 export default App

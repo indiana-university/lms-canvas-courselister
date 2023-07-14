@@ -71,9 +71,4 @@ public class CourselistController extends OidcTokenAwareController {
         model.addAttribute("customId", httpSession.getId());
         return new ModelAndView("react");
     }
-
-    @RequestMapping(value = "/accessDenied")
-    public String accessDenied() {
-        return "accessDenied";
-    }
 }

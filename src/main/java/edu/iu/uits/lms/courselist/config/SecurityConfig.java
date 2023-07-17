@@ -83,8 +83,6 @@ public class SecurityConfig {
                     .grantedAuthoritiesMapper(lmsDefaultGrantedAuthoritiesMapper);
 
             http.apply(lti13Configurer);
-
-            http.exceptionHandling().accessDeniedPage("/accessDenied");
         }
 
         @Override

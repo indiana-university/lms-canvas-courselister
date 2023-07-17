@@ -54,7 +54,7 @@ import org.springframework.context.annotation.Bean;
 import java.util.Date;
 
 @SpringBootApplication
-@EnableGlobalErrorHandler(accessDeniedViewName = "accessDenied")
+@EnableGlobalErrorHandler
 @Slf4j
 @EnableRedisConfiguration
 @EnableLtiClient(toolKeys = {"lms_lti_courselist"})

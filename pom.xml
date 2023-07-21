@@ -13,7 +13,7 @@
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
-    <version>5.0.4</version>
+    <version>5.0.5-SNAPSHOT</version>
     <description>Search, Filter, and Manage Courses app offers a powerful alternative to the All Courses tool in Canvas.</description>
     <url>https://github.com/indiana-university/lms-canvas-courselister</url>
     <inceptionYear>2015</inceptionYear>
@@ -62,7 +62,7 @@
         <connection>scm:git:https://github.com/indiana-university/lms-canvas-courselister.git</connection>
         <developerConnection>scm:git:https://github.com/indiana-university/lms-canvas-courselister.git</developerConnection>
         <url>https://github.com/indiana-university/lms-canvas-courselister</url>
-        <tag>lms-lti-courselist-5.0.4</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>

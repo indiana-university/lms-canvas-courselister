@@ -42,8 +42,6 @@ import ScrollToTop from "react-scroll-to-top";
 
 import { chain, groupBy, sortBy } from 'lodash';
 
-import 'rivet-clearable-input/dist/css/rivet-clearable-input.min.css';
-import ClearableInput from 'rivet-clearable-input/dist/js/rivet-clearable-input.js';
 import Mark from 'mark.js/dist/mark.es6.min.js'
 
 class App extends React.Component {
@@ -126,15 +124,6 @@ class App extends React.Component {
             .catch(error => {
                 alert(error);
             });
-
-        //Initialize the clearable input
-        ClearableInput.init()
-        //Setup the listener for when the text is cleared
-        window.addEventListener('inputCleared', this.handleSearch);
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('inputCleared', this.handleSearch);
     }
 
     componentDidUpdate() {
@@ -579,10 +568,8 @@ function ActionBar(props) {
 
             <label htmlFor="search" className="rvt-sr-only">Search Courses</label>
             <div className="rvt-input-group rvt-m-bottom-md">
-                <div className="rvt-clearable-input-group search-input">
-                    <input className="rvt-input rvt-input-group__input rvt-clearable-input search-input" type="text" id="search"
-                        onKeyPress={props.handleSearchKeyPress} />
-                </div>
+                <input className="rvt-input rvt-input-group__input search-input" type="text" id="search"
+                    onKeyPress={props.handleSearchKeyPress} />
                 <div className="rvt-input-group__append">
                     <button type="button" className="rvt-button" onClick={props.handleSearch}>
                         <span>Search courses</span>

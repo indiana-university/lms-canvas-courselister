@@ -29,7 +29,6 @@
     "react-dom": "18.2.0",
     "react-scroll-to-top": "^3.0.0",
     "regenerator-runtime": "0.13.11",
-    "rivet-clearable-input": "maurercw/rivet-clearable-input#v0.2.0",
     "rivet-icons": "1.0.3",
     "styled-components": "^5.3.10"
   }

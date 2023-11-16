@@ -38,7 +38,6 @@ import DataGrouping from 'components/DataGrouping'
 import Loading from 'components/Loading'
 import RvtSvg from 'components/RvtSvg'
 import FilterTermOptions from 'components/FilterTermOptions'
-import ScrollToTop from "react-scroll-to-top";
 
 import { chain, groupBy, sortBy } from 'lodash';
 
@@ -272,7 +271,7 @@ class App extends React.Component {
                     <MainTable loading={this.state.loading} groupedCourses={groupedCourses} orderKey={this.state.orderKey}
                         handleOrdering={this.handleOrdering} updateCourseInState={this.updateCourseInState} selectedGroup={this.state.grouping}/>
                 </div>
-                <ScrollToTop />
+                <scroll-to-top rivetpath="/jsrivet" focusid="main-header"></scroll-to-top>
             </div>
         );
     }
@@ -426,7 +425,7 @@ function Header(props) {
         return (
         <div className="rvt-flex-md-up rvt-justify-space-between-md-up rvt-p-top-sm rvt-m-bottom-md">
             <div>
-                <h1 className="rvt-ts-36">Canvas Course List</h1>
+                <h1 id="main-header" className="rvt-ts-36">Canvas Course List</h1>
             </div>
             <div>
                 <div className="rvt-button-group rvt-button-group--right">

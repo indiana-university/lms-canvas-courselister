@@ -53,6 +53,8 @@ jobs:
     runs-on: self-hosted
     container:
       image: maven:3.9.4-eclipse-temurin-17
+    volumes:
+      - /opt/actions/cache/npm_cache/iu-uits-es/lms-lti-courselist:/tmp/npm_cache
     environment: ${{ github.event.inputs.server_env }}
     steps:
       - name: Clone GitHub root repository
@@ -69,9 +71,15 @@ jobs:
           path: tools/${{ env.DEPLOY_DIR }}
       - name: mvn setup
         run: mkdir /root/.m2
+      - name: NPM configuration
+        run: |
+          touch /tmp/.npmrc
+          echo 'cache=/tmp/npm_cache' >> /tmp/.npmrc
       - name: Create maven settings.xml
         run: echo -n '${{ secrets.LMS_MAVEN_SETTINGS }}' | base64 -d > /root/.m2/settings.xml
       - name: Maven Build
+        env:
+          NPM_CONFIG_GLOBALCONFIG: /tmp/.npmrc
         run: mvn clean install -P 'it12'
         working-directory: tools/${{ env.DEPLOY_DIR }}
       - name: copy jar file

@@ -53,8 +53,8 @@ jobs:
     runs-on: self-hosted
     container:
       image: maven:3.9.4-eclipse-temurin-17
-    volumes:
-      - /opt/actions/cache/npm_cache/iu-uits-es/lms-lti-courselist:/tmp/npm_cache
+      volumes:
+        - /opt/actions/cache/npm_cache/iu-uits-es/lms-lti-courselist:/tmp/npm_cache
     environment: ${{ github.event.inputs.server_env }}
     steps:
       - name: Clone GitHub root repository

@@ -155,7 +155,7 @@ function HiddenStatus(props) {
                         <i aria-hidden="true" className="fa fa-eye-slash courseHidden" title="Click to show this course in the list."></i>
                         <span className="sr-only">Show {props.courseName} in your course list.</span>
                     </button>
-                    <span id={`visibility-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm"></span>
+                    <span id={`visibility-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm loading-spinner"></span>
                     <p id={`hide-status-${props.courseId}`} hidden>This course is currently hidden in your course list.</p>
                 </React.Fragment>;
     }
@@ -165,7 +165,7 @@ function HiddenStatus(props) {
                  <i aria-hidden="true" className="fa fa-eye" title="Click to hide this course in the list."></i>
                  <span className="sr-only">Hide {props.courseName} in your course list.</span>
                </button>
-               <span id={`visibility-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm"></span>
+               <span id={`visibility-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm loading-spinner"></span>
                <p id={`hide-status-${props.courseId}`} hidden>This course is currently included in your course list.</p>
            </React.Fragment>;
 }
@@ -182,7 +182,7 @@ function FavoriteStatus(props) {
                                 className="rvt-color-yellow" />
                             <span className="sr-only">Remove {props.courseName} from the Courses menu.</span>
                         </button>
-                        <span id={`fav-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm"></span>
+                        <span id={`fav-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm loading-spinner"></span>
                         <p id={`fav-status-${props.courseId}`} hidden>This course is currently set as a favorite.</p>
                    </React.Fragment>;
         }
@@ -192,7 +192,7 @@ function FavoriteStatus(props) {
                         <RvtSvg aria-hidden="true" title="Click to add to the Courses menu." icon="rvt-icon-star"/>
                         <span className="sr-only">Add {props.courseName} to the Courses menu.</span>
                     </button>
-                    <span id={`fav-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm"></span>
+                    <span id={`fav-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm loading-spinner"></span>
                     <p id={`fav-status-${props.courseId}`} hidden>This course is not currently a favorite.</p>
                 </React.Fragment>;
     }

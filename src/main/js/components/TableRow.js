@@ -60,12 +60,26 @@ class TableRow extends React.Component {
         const courseId = this.props.courseModel.course.id
         const courseName = this.props.courseModel.courseName;
         const hideText = action === "hide" ? courseName + ' was hidden in your course list.' : courseName + ' is now included in your course list.';
+
+        // Add a loading spinner since the action to show/hide can take some time
+        var loader = document.getElementById("visibility-loader-" + courseId);
+        var visibilityBtn = document.getElementById("visibility-" + courseId);
+        if (loader && visibilityBtn) {
+            visibilityBtn.classList.add("rvt-display-none");
+            loader.classList.remove("rvt-display-none");
+        }
+
         axios.post("app/" + action + "/" + courseId)
                 .then(response => response.data)
                 .then((data) => {
                     this.setState({hidden: data.hidden})
                     this.props.updateCourseInState(courseId, {value: data.hidden}, null)
                     document.getElementById("srMessaging").innerHTML = hideText;
+
+                    if (visibilityBtn && loader) {
+                        visibilityBtn.classList.remove("rvt-display-none");
+                        loader.classList.add("rvt-display-none");
+                    }
                 })
     }
 
@@ -81,12 +95,26 @@ class TableRow extends React.Component {
         const courseId = this.props.courseModel.course.id
         const courseName = this.props.courseModel.courseName;
         const favText = action === "favorite" ?  courseName + ' was added to the Courses menu.' : courseName + ' was removed from the Courses menu.';
+
+        // add a loading spinner since the favoriting call can be slow
+        var loader = document.getElementById("fav-loader-" + courseId);
+        var favBtn = document.getElementById("fav-" + courseId);
+        if (loader && favBtn) {
+            favBtn.classList.add("rvt-display-none");
+            loader.classList.remove("rvt-display-none");
+        }
+
         axios.post("app/" + action + "/" + courseId)
                 .then(response => response.data)
                 .then((data) => {
                     this.setState({favorited: data.favorited})
                     this.props.updateCourseInState(courseId, null, {value: data.favorited})
                     document.getElementById("srMessaging").innerHTML = favText;
+
+                    if (favBtn && loader) {
+                        favBtn.classList.remove("rvt-display-none");
+                        loader.classList.add("rvt-display-none");
+                    }
                 })
     }
 
@@ -123,19 +151,21 @@ function HiddenStatus(props) {
     const isHidden = props.isHidden;
     if (isHidden) {
         return <React.Fragment>
-                    <button onClick={props.handleShowCourse} className="rvt-button rvt-button--plain" aria-describedby={`hide-status-${props.courseId}`}>
+                    <button id={`visibility-${props.courseId}`} onClick={props.handleShowCourse} className="rvt-button rvt-button--plain" aria-describedby={`hide-status-${props.courseId}`}>
                         <i aria-hidden="true" className="fa fa-eye-slash courseHidden" title="Click to show this course in the list."></i>
                         <span className="sr-only">Show {props.courseName} in your course list.</span>
                     </button>
+                    <span id={`visibility-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm"></span>
                     <p id={`hide-status-${props.courseId}`} hidden>This course is currently hidden in your course list.</p>
                 </React.Fragment>;
     }
 
     return <React.Fragment>
-               <button onClick={props.handleHideCourse} className="rvt-button rvt-button--plain" aria-describedby={`hide-status-${props.courseId}`}>
+               <button id={`visibility-${props.courseId}`} onClick={props.handleHideCourse} className="rvt-button rvt-button--plain" aria-describedby={`hide-status-${props.courseId}`}>
                  <i aria-hidden="true" className="fa fa-eye" title="Click to hide this course in the list."></i>
                  <span className="sr-only">Hide {props.courseName} in your course list.</span>
                </button>
+               <span id={`visibility-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm"></span>
                <p id={`hide-status-${props.courseId}`} hidden>This course is currently included in your course list.</p>
            </React.Fragment>;
 }
@@ -147,20 +177,22 @@ function FavoriteStatus(props) {
     if (props.isFavoritable) {
         if (isFavorite) {
             return <React.Fragment>
-                        <button onClick={props.handleUnfavoriteCourse} className="rvt-button rvt-button--plain" aria-describedby={`fav-status-${props.courseId}`}>
+                        <button id={`fav-${props.courseId}`} onClick={props.handleUnfavoriteCourse} className="rvt-button rvt-button--plain icon-btn" aria-describedby={`fav-status-${props.courseId}`}>
                             <RvtSvg aria-hidden="true" title="Click to remove from the Courses menu." icon="rvt-icon-star-solid"
                                 className="rvt-color-yellow" />
                             <span className="sr-only">Remove {props.courseName} from the Courses menu.</span>
                         </button>
+                        <span id={`fav-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm"></span>
                         <p id={`fav-status-${props.courseId}`} hidden>This course is currently set as a favorite.</p>
                    </React.Fragment>;
         }
 
         return <React.Fragment>
-                    <button onClick={props.handleFavoriteCourse} className="rvt-button rvt-button--plain" aria-describedby={`fav-status-${props.courseId}`}>
+                    <button id={`fav-${props.courseId}`} onClick={props.handleFavoriteCourse} className="rvt-button rvt-button--plain icon-btn" aria-describedby={`fav-status-${props.courseId}`}>
                         <RvtSvg aria-hidden="true" title="Click to add to the Courses menu." icon="rvt-icon-star"/>
                         <span className="sr-only">Add {props.courseName} to the Courses menu.</span>
                     </button>
+                    <span id={`fav-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm"></span>
                     <p id={`fav-status-${props.courseId}`} hidden>This course is not currently a favorite.</p>
                 </React.Fragment>;
     }

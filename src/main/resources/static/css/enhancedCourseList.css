@@ -103,3 +103,8 @@
     text-decoration: none;
     color: black;
 }
+
+.loading-spinner {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.6rem !important;
+}

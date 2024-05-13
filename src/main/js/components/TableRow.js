@@ -152,7 +152,7 @@ function HiddenStatus(props) {
     if (isHidden) {
         return <React.Fragment>
                     <button id={`visibility-${props.courseId}`} onClick={props.handleShowCourse} className="rvt-button rvt-button--plain" aria-describedby={`hide-status-${props.courseId}`}>
-                        <i aria-hidden="true" className="fa fa-eye-slash courseHidden" title="Click to show this course in the list."></i>
+                        <RvtSvg aria-hidden="true" icon="rvt-icon-eye-off" className="courseHidden" title="Click to show this course in the list." />
                         <span className="rvt-sr-only">Show {props.courseName} in your course list.</span>
                     </button>
                     <span id={`visibility-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm loading-spinner"></span>
@@ -162,7 +162,7 @@ function HiddenStatus(props) {
 
     return <React.Fragment>
                <button id={`visibility-${props.courseId}`} onClick={props.handleHideCourse} className="rvt-button rvt-button--plain" aria-describedby={`hide-status-${props.courseId}`}>
-                 <i aria-hidden="true" className="fa fa-eye" title="Click to hide this course in the list."></i>
+                 <RvtSvg aria-hidden="true" icon="rvt-icon-eye" title="Click to hide this course in the list." />
                  <span className="rvt-sr-only">Hide {props.courseName} in your course list.</span>
                </button>
                <span id={`visibility-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm loading-spinner"></span>

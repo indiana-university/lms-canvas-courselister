@@ -486,7 +486,7 @@ function ActionBar(props) {
                                 <input type="checkbox" id="visibleCourses" name="hiddenStatusCheckboxes" className="filter-input"
                                         value="visibleCourses" onChange={props.handleFilter}
                                         checked={props.filters.filteredVisibility.includes(false)} />
-                                <label htmlFor="visibleCourses" className="rvt-m-right-sm rvt-text-nobr">Visible (<RvtSvg aria-hidden="true" title="Visible icon" icon="rvt-icon-eye" />)</label>
+                                <label htmlFor="visibleCourses" className="rvt-m-right-sm rvt-text-nobr">Visible (<RvtSvg aria-hidden="true" icon="rvt-icon-eye" title="Visible icon" />)</label>
                             </div>
                         </li>
                         <li>
@@ -494,7 +494,7 @@ function ActionBar(props) {
                                 <input type="checkbox" id="hiddenCourses" name="hiddenStatusCheckboxes" className="filter-input"
                                         value="hiddenCourses" onChange={props.handleFilter}
                                         checked={props.filters.filteredVisibility.includes(true)} />
-                                <label htmlFor="hiddenCourses" className="rvt-m-right-sm rvt-text-nobr">Hidden (<RvtSvg aria-hidden="true" title="Hidden icon" icon="rvt-icon-eye-off" />)</label>
+                                <label htmlFor="hiddenCourses" className="rvt-m-right-sm rvt-text-nobr">Hidden (<RvtSvg aria-hidden="true" icon="rvt-icon-eye-off" className="courseHidden" title="Hidden icon" />)</label>
                             </div>
                         </li>
                     </ul>

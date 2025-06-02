@@ -13,8 +13,8 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
-        temp:
-          use_jdbc_metadata_defaults: false
+        boot:
+          allow_jdbc_metadata_access: false
       jadira:
         usertype:
           autoRegisterUserTypes: true
@@ -74,7 +74,7 @@ spring:
   cloud.vault:
     enabled: true
     config:
-      lifecycle.lease-endpoints: sysleases
+      lifecycle.lease-endpoints: leases
     generic:
       enabled: false
     kv:

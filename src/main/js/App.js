@@ -271,7 +271,7 @@ class App extends React.Component {
                     <MainTable loading={this.state.loading} groupedCourses={groupedCourses} orderKey={this.state.orderKey}
                         handleOrdering={this.handleOrdering} updateCourseInState={this.updateCourseInState} selectedGroup={this.state.grouping}/>
                 </div>
-                <scroll-to-top rivetpath="/jsrivet" focusid="main-header"></scroll-to-top>
+                <scroll-to-top rivetpath="/jsrivet/rivet-core" focusid="main-header"></scroll-to-top>
             </div>
         );
     }
@@ -486,7 +486,7 @@ function ActionBar(props) {
                                 <input type="checkbox" id="visibleCourses" name="hiddenStatusCheckboxes" className="filter-input"
                                         value="visibleCourses" onChange={props.handleFilter}
                                         checked={props.filters.filteredVisibility.includes(false)} />
-                                <label htmlFor="visibleCourses" className="rvt-m-right-sm rvt-text-nobr">Visible (<RvtSvg aria-hidden="true" icon="rvt-icon-eye" title="Visible icon" />)</label>
+                                <label htmlFor="visibleCourses" className="rvt-m-right-sm rvt-text-nobr">Visible (<RvtSvg aria-hidden="true" icon="eye" title="Visible icon" />)</label>
                             </div>
                         </li>
                         <li>
@@ -494,7 +494,7 @@ function ActionBar(props) {
                                 <input type="checkbox" id="hiddenCourses" name="hiddenStatusCheckboxes" className="filter-input"
                                         value="hiddenCourses" onChange={props.handleFilter}
                                         checked={props.filters.filteredVisibility.includes(true)} />
-                                <label htmlFor="hiddenCourses" className="rvt-m-right-sm rvt-text-nobr">Hidden (<RvtSvg aria-hidden="true" icon="rvt-icon-eye-off" className="courseHidden" title="Hidden icon" />)</label>
+                                <label htmlFor="hiddenCourses" className="rvt-m-right-sm rvt-text-nobr">Hidden (<RvtSvg aria-hidden="true" icon="eye-off" className="courseHidden" title="Hidden icon" />)</label>
                             </div>
                         </li>
                     </ul>
@@ -685,7 +685,7 @@ function LinkHeader(props) {
                 <React.Fragment>
                     <a href="#" className="rvt-link-bold iconPointer" onClick={props.onClick} title={`Click to sort by ${props.anchorValue}, descending`}
                         new-sort-value={props.newSortValue}>{props.anchorValue}</a>
-                    <RvtSvg icon="rvt-icon-arrow-up" />
+                    <RvtSvg icon="arrow-up" />
                 </React.Fragment>
             );
         } else {
@@ -693,7 +693,7 @@ function LinkHeader(props) {
                 <React.Fragment>
                     <a href="#" className="rvt-link-bold iconPointer" onClick={props.onClick} title={`Click to sort by ${props.anchorValue}, ascending`}
                         new-sort-value={props.newSortValue}>{props.anchorValue}</a>
-                    <RvtSvg icon="rvt-icon-arrow-down" />
+                    <RvtSvg icon="arrow-down" />
                 </React.Fragment>
             );
         }

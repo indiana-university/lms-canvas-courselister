@@ -33,21 +33,19 @@ package edu.iu.uits.lms.courselist.config;
  * #L%
  */
 
-import edu.iu.uits.lms.common.it12logging.LmsFilterSecurityInterceptorObjectPostProcessor;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import uk.ac.ox.ctl.lti13.Lti13Configurer;
 
-import static edu.iu.uits.lms.lti.LTIConstants.BASE_USER_ROLE;
+import static edu.iu.uits.lms.lti.LTIConstants.BASE_USER_AUTHORITY;
 import static edu.iu.uits.lms.lti.LTIConstants.WELL_KNOWN_ALL;
 
 @Configuration
@@ -55,42 +53,69 @@ import static edu.iu.uits.lms.lti.LTIConstants.WELL_KNOWN_ALL;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Configuration
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 3)
-    public static class CourseListWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+    @Autowired
+    private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
 
-        @Autowired
-        private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
+    @Bean
+    public SecurityFilterChain catchallFilterChain(HttpSecurity http) throws Exception {
+        //Setup the LTI handshake
+        http.with(new Lti13Configurer(), lti ->
+                lti.setSecurityContextRepository(new HttpSessionSecurityContextRepository())
+                        .grantedAuthoritiesMapper(lmsDefaultGrantedAuthoritiesMapper));
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http
-                    .requestMatchers()
-                    .and()
-                    .authorizeRequests()
-                    .antMatchers(WELL_KNOWN_ALL, "/error").permitAll()
-                    .antMatchers("/**").hasRole(BASE_USER_ROLE)
-                    .withObjectPostProcessor(new LmsFilterSecurityInterceptorObjectPostProcessor())
-                    .and()
-                    .headers()
-                    .contentSecurityPolicy("style-src 'self' 'unsafe-inline'; form-action 'self'; frame-ancestors 'self' https://*.instructure.com")
-                    .and()
-                    .referrerPolicy(referrer -> referrer
-                            .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN));
+        http.securityMatcher("/**")
+                .authorizeHttpRequests((authz) -> authz
+//                        .anyRequest().authenticated()
+                        .requestMatchers(WELL_KNOWN_ALL, "/error").permitAll()
+                        .requestMatchers("/templates/**", "/jsreact/**", "/static/**", "/webjars/**",
+                                "/resources/**", "/css/**", "/js/**", "/jsrivet/**").permitAll()
+                        .requestMatchers("/**").hasAuthority(BASE_USER_AUTHORITY))
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp ->
+                                csp.policyDirectives("style-src 'self' 'unsafe-inline'; form-action 'self'; frame-ancestors 'self' https://*.instructure.com"))
+                        .referrerPolicy(referrer -> referrer
+                                .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN))
+                );
 
-            //Setup the LTI handshake
-            Lti13Configurer lti13Configurer = new Lti13Configurer()
-                    .grantedAuthoritiesMapper(lmsDefaultGrantedAuthoritiesMapper);
-
-            http.apply(lti13Configurer);
-        }
-
-        @Override
-        public void configure(WebSecurity web) throws Exception {
-            // ignore everything except paths specified
-            web.ignoring().antMatchers("/templates/**", "/jsreact/**", "/static/**", "/webjars/**",
-                  "/resources/**", "/css/**", "/js/**", "/jsrivet/**");
-        }
-
+        return http.build();
     }
+
+//    @Configuration
+//    @Order(SecurityProperties.BASIC_AUTH_ORDER - 3)
+//    public static class CourseListWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+//
+//        @Autowired
+//        private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
+//
+//        @Override
+//        protected void configure(HttpSecurity http) throws Exception {
+//            http
+//                    .requestMatchers()
+//                    .and()
+//                    .authorizeRequests()
+//                    .antMatchers(WELL_KNOWN_ALL, "/error").permitAll()
+//                    .antMatchers("/**").hasRole(BASE_USER_AUTHORITY)
+//                    .withObjectPostProcessor(new LmsFilterSecurityInterceptorObjectPostProcessor())
+//                    .and()
+//                    .headers()
+//                    .contentSecurityPolicy("style-src 'self' 'unsafe-inline'; form-action 'self'; frame-ancestors 'self' https://*.instructure.com")
+//                    .and()
+//                    .referrerPolicy(referrer -> referrer
+//                            .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN));
+//
+//            //Setup the LTI handshake
+//            Lti13Configurer lti13Configurer = new Lti13Configurer()
+//                    .grantedAuthoritiesMapper(lmsDefaultGrantedAuthoritiesMapper);
+//
+//            http.apply(lti13Configurer);
+//        }
+//
+//        @Override
+//        public void configure(WebSecurity web) throws Exception {
+//            // ignore everything except paths specified
+//            web.ignoring().antMatchers("/templates/**", "/jsreact/**", "/static/**", "/webjars/**",
+//                  "/resources/**", "/css/**", "/js/**", "/jsrivet/**");
+//        }
+//
+//    }
 }

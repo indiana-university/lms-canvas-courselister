@@ -151,8 +151,9 @@ function HiddenStatus(props) {
     const isHidden = props.isHidden;
     if (isHidden) {
         return <React.Fragment>
-                    <button id={`visibility-${props.courseId}`} onClick={props.handleShowCourse} className="rvt-button rvt-button--plain" aria-describedby={`hide-status-${props.courseId}`}>
-                        <RvtSvg aria-hidden="true" icon="rvt-icon-eye-off" className="courseHidden" title="Click to show this course in the list." />
+                    <button id={`visibility-${props.courseId}`} onClick={props.handleShowCourse} className="rvt-button rvt-button--plain"
+                        aria-describedby={`hide-status-${props.courseId}`} aria-pressed="true">
+                        <RvtSvg aria-hidden="true" icon="eye-off" className="courseHidden" title="Show this course in the list." />
                         <span className="rvt-sr-only">Show {props.courseName} in your course list.</span>
                     </button>
                     <span id={`visibility-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm loading-spinner"></span>
@@ -161,8 +162,9 @@ function HiddenStatus(props) {
     }
 
     return <React.Fragment>
-               <button id={`visibility-${props.courseId}`} onClick={props.handleHideCourse} className="rvt-button rvt-button--plain" aria-describedby={`hide-status-${props.courseId}`}>
-                 <RvtSvg aria-hidden="true" icon="rvt-icon-eye" title="Click to hide this course in the list." />
+               <button id={`visibility-${props.courseId}`} onClick={props.handleHideCourse} className="rvt-button rvt-button--plain"
+                    aria-describedby={`hide-status-${props.courseId}`}>
+                 <RvtSvg aria-hidden="true" icon="eye" title="Hide this course in the list." />
                  <span className="rvt-sr-only">Hide {props.courseName} in your course list.</span>
                </button>
                <span id={`visibility-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm loading-spinner"></span>
@@ -177,9 +179,9 @@ function FavoriteStatus(props) {
     if (props.isFavoritable) {
         if (isFavorite) {
             return <React.Fragment>
-                        <button id={`fav-${props.courseId}`} onClick={props.handleUnfavoriteCourse} className="rvt-button rvt-button--plain" aria-describedby={`fav-status-${props.courseId}`}>
-                            <RvtSvg aria-hidden="true" title="Click to remove from the Courses menu." icon="rvt-icon-star-solid"
-                                className="rvt-color-yellow" />
+                        <button id={`fav-${props.courseId}`} onClick={props.handleUnfavoriteCourse} className="rvt-button rvt-button--plain"
+                            aria-describedby={`fav-status-${props.courseId}`} aria-pressed="true">
+                            <RvtSvg aria-hidden="true" title="Remove from the Courses menu." icon="star-solid" className="rvt-color-gold" />
                             <span className="rvt-sr-only">Remove {props.courseName} from the Courses menu.</span>
                         </button>
                         <span id={`fav-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm loading-spinner"></span>
@@ -188,8 +190,9 @@ function FavoriteStatus(props) {
         }
 
         return <React.Fragment>
-                    <button id={`fav-${props.courseId}`} onClick={props.handleFavoriteCourse} className="rvt-button rvt-button--plain" aria-describedby={`fav-status-${props.courseId}`}>
-                        <RvtSvg aria-hidden="true" title="Click to add to the Courses menu." icon="rvt-icon-star"/>
+                    <button id={`fav-${props.courseId}`} onClick={props.handleFavoriteCourse} className="rvt-button rvt-button--plain"
+                        aria-describedby={`fav-status-${props.courseId}`}>
+                        <RvtSvg aria-hidden="true" title="Add to the Courses menu." icon="star"/>
                         <span className="rvt-sr-only">Add {props.courseName} to the Courses menu.</span>
                     </button>
                     <span id={`fav-loader-${props.courseId}`} className="rvt-loader rvt-loader--xxs rvt-display-none rvt-m-left-sm loading-spinner"></span>

@@ -163,7 +163,7 @@ function HiddenStatus(props) {
 
     return <React.Fragment>
                <button id={`visibility-${props.courseId}`} onClick={props.handleHideCourse} className="rvt-button rvt-button--plain"
-                    aria-describedby={`hide-status-${props.courseId}`}>
+                    aria-describedby={`hide-status-${props.courseId}`} aria-pressed="false">
                  <RvtSvg aria-hidden="true" icon="eye" title="Hide this course in the list." />
                  <span className="rvt-sr-only">Hide {props.courseName} in your course list.</span>
                </button>
@@ -191,7 +191,7 @@ function FavoriteStatus(props) {
 
         return <React.Fragment>
                     <button id={`fav-${props.courseId}`} onClick={props.handleFavoriteCourse} className="rvt-button rvt-button--plain"
-                        aria-describedby={`fav-status-${props.courseId}`}>
+                        aria-describedby={`fav-status-${props.courseId}`} aria-pressed="false">
                         <RvtSvg aria-hidden="true" title="Add to the Courses menu." icon="star"/>
                         <span className="rvt-sr-only">Add {props.courseName} to the Courses menu.</span>
                     </button>

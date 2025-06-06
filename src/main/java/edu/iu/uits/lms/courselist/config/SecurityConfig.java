@@ -65,7 +65,6 @@ public class SecurityConfig {
 
         http.securityMatcher("/**")
                 .authorizeHttpRequests((authz) -> authz
-//                        .anyRequest().authenticated()
                         .requestMatchers(WELL_KNOWN_ALL, "/error").permitAll()
                         .requestMatchers("/templates/**", "/jsreact/**", "/static/**", "/webjars/**",
                                 "/resources/**", "/css/**", "/js/**", "/jsrivet/**").permitAll()
@@ -80,42 +79,4 @@ public class SecurityConfig {
         return http.build();
     }
 
-//    @Configuration
-//    @Order(SecurityProperties.BASIC_AUTH_ORDER - 3)
-//    public static class CourseListWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-//
-//        @Autowired
-//        private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
-//
-//        @Override
-//        protected void configure(HttpSecurity http) throws Exception {
-//            http
-//                    .requestMatchers()
-//                    .and()
-//                    .authorizeRequests()
-//                    .antMatchers(WELL_KNOWN_ALL, "/error").permitAll()
-//                    .antMatchers("/**").hasRole(BASE_USER_AUTHORITY)
-//                    .withObjectPostProcessor(new LmsFilterSecurityInterceptorObjectPostProcessor())
-//                    .and()
-//                    .headers()
-//                    .contentSecurityPolicy("style-src 'self' 'unsafe-inline'; form-action 'self'; frame-ancestors 'self' https://*.instructure.com")
-//                    .and()
-//                    .referrerPolicy(referrer -> referrer
-//                            .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN));
-//
-//            //Setup the LTI handshake
-//            Lti13Configurer lti13Configurer = new Lti13Configurer()
-//                    .grantedAuthoritiesMapper(lmsDefaultGrantedAuthoritiesMapper);
-//
-//            http.apply(lti13Configurer);
-//        }
-//
-//        @Override
-//        public void configure(WebSecurity web) throws Exception {
-//            // ignore everything except paths specified
-//            web.ignoring().antMatchers("/templates/**", "/jsreact/**", "/static/**", "/webjars/**",
-//                  "/resources/**", "/css/**", "/js/**", "/jsrivet/**");
-//        }
-//
-//    }
 }

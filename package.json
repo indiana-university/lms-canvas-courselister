@@ -3,33 +3,32 @@
   "private": true,
   "scripts": {},
   "devDependencies": {
-    "@babel/core": "7.24.5",
+    "@babel/core": "7.27.4",
     "@babel/plugin-proposal-class-properties": "^7.18.6",
-    "@babel/preset-env": "7.24.5",
-    "@babel/preset-react": "7.24.1",
-    "autoprefixer": "10.4.19",
-    "babel-loader": "9.1.3",
-    "css-loader": "7.1.1",
+    "@babel/preset-env": "7.27.2",
+    "@babel/preset-react": "7.27.1",
+    "autoprefixer": "10.4.21",
+    "babel-loader": "10.0.0",
+    "css-loader": "7.1.2",
     "file-loader": "6.2.0",
     "lodash": "^4.17.21",
     "mark.js": "^8.11.1",
     "path": "0.12.7",
-    "react-is": "18.3.1",
-    "standard": "17.1.0",
+    "react-is": "19.1.0",
+    "standard": "17.1.2",
     "style-loader": "^4.0.0",
-    "webpack": "5.91.0",
-    "webpack-cli": "5.1.4"
+    "webpack": "5.99.9",
+    "webpack-cli": "6.0.1"
   },
   "dependencies": {
-    "axios": "^1.6.8",
+    "axios": "^1.9.0",
     "classnames": "2.5.1",
-    "core-js": "^3.37.0",
+    "core-js": "^3.42.0",
     "dateformat": "5.0.3",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "regenerator-runtime": "0.14.1",
     "rivet-clearable-input": "maurercw/rivet-clearable-input#v0.4.0",
-    "rivet-icons": "2.0.0",
-    "styled-components": "^6.1.11"
+    "styled-components": "^6.1.18"
   }
 }

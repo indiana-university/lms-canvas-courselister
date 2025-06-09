@@ -51,11 +51,11 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -63,7 +63,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@WebMvcTest(properties = {"oauth.tokenprovider.url=http://foo"})
+@SpringBootTest(classes = {EnrollmentClassificationService.class, CourseListService.class},
+        properties = {"oauth.tokenprovider.url=http://foo"})
 @Import({ToolConfig.class})
 public class EnrollmentClassificationServiceTest {
 
@@ -76,7 +77,7 @@ public class EnrollmentClassificationServiceTest {
    protected Course publishedFutureCourse;
    protected Course publishedPastCourse;
 
-   @MockBean
+   @MockitoBean
    private DateService dateService = null;
 
    @Autowired
@@ -85,16 +86,16 @@ public class EnrollmentClassificationServiceTest {
    @Autowired
    private CourseListService courseListService = null;
 
-   @MockBean
+   @MockitoBean
    private CourseService courseService = null;
 
-   @MockBean
+   @MockitoBean
    private TermService termService = null;
 
-   @MockBean
+   @MockitoBean
    private UserService userService = null;
 
-   @MockBean
+   @MockitoBean
    private CanvasService canvasService = null;
 
    @BeforeEach

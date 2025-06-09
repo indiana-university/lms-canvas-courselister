@@ -40,16 +40,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <div th:replace="~{commonFragments/favicon :: favicon}" ></div>
     <link media="all" rel="stylesheet" type="text/css" th:href="@{/css/enhancedCourseList.css}"/>
-    <link media="all" rel="stylesheet" type="text/css" th:href="@{/jsrivet/rivet.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/jsrivet/rivet-core/rivet.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/jsrivet/rivet-icons/rivet-icon-element.css}"/>
 </head>
 <body>
 
 <div id="root"></div>
 
-<footer class="rvt-ts-12 rvt-container-xl rvt-m-top-lg">
-    <div id="footer" th:text="${@serverInfo}"></div>
-</footer>
+<div th:replace="~{commonFragments/layouts :: footer(${hideFooter}, ${@serverInfo.elements})}" ></div>
 
 <script th:inline="javascript">
       /*<![CDATA[*/
@@ -65,7 +65,8 @@
 
 <script type="text/javascript" th:src="@{/jsreact/lms-lti-courselist/lms-lti-courselist.js}"></script>
 <script type="text/javascript" defer th:src="@{/jsrivet/scrolltotop/scrolltotop.js}"></script>
-<script type="text/javascript" th:src="@{/jsrivet/rivet.min.js}"></script>
+<script type="text/javascript" th:src="@{/jsrivet/rivet-core/rivet.min.js}"></script>
+<script type="module" th:src="@{/jsrivet/rivet-icons/rivet-icons.js}"></script>
 <script>
   Rivet.init();
 </script>

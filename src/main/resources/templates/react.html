@@ -54,7 +54,7 @@
     <div th:replace="~{commonFragments/layouts :: footer(${hideFooter}, ${siElements})}"></div>
 </th:block>
 
-<script>
+<script th:inline="javascript">
       /*<![CDATA[*/
          const rvtSvgBase = /*[[@{/jsreact/lms-lti-courselist/rivet-icons.svg}]]*/;
          const browseCoursesUrl = /*[[${browseCoursesUrl}]]*/

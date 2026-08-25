@@ -31,7 +31,6 @@
  * #L%
  */
 import React from 'react'
-import styled from 'styled-components'
 import axios from 'axios'
 
 import DataGrouping from 'components/DataGrouping'
@@ -39,10 +38,6 @@ import Loading from 'components/Loading'
 import RvtSvg from 'components/RvtSvg'
 import FilterTermOptions from 'components/FilterTermOptions'
 
-import { chain, groupBy, sortBy } from 'lodash';
-
-import 'rivet-clearable-input/dist/css/rivet-clearable-input.min.css';
-import ClearableInput from 'rivet-clearable-input/dist/js/rivet-clearable-input.js';
 import Mark from 'mark.js/dist/mark.es6.min.js'
 
 class App extends React.Component {
@@ -126,9 +121,6 @@ class App extends React.Component {
                 alert(error);
             });
 
-        //Initialize the clearable input
-        ClearableInput.init()
-        //Setup the listener for when the text is cleared
         window.addEventListener('inputCleared', this.handleSearch);
     }
 

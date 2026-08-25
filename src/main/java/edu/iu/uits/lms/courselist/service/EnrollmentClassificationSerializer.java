@@ -33,12 +33,10 @@ package edu.iu.uits.lms.courselist.service;
  * #L%
  */
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import edu.iu.uits.lms.courselist.model.DecoratedCourse;
-
-import java.io.IOException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 
 public class EnrollmentClassificationSerializer extends StdSerializer<DecoratedCourse.CLASSIFICATION> {
 
@@ -51,14 +49,13 @@ public class EnrollmentClassificationSerializer extends StdSerializer<DecoratedC
    }
 
    public void serialize(DecoratedCourse.CLASSIFICATION classification, JsonGenerator generator,
-                         SerializerProvider provider)
-         throws IOException {
+                         SerializationContext provider) {
       generator.writeStartObject();
-      generator.writeFieldName("name");
+      generator.writeName("name");
       generator.writeString(classification.name());
-      generator.writeFieldName("text");
+      generator.writeName("text");
       generator.writeString(classification.getText());
-      generator.writeFieldName("order");
+      generator.writeName("order");
       generator.writeNumber(classification.getOrder());
       generator.writeEndObject();
    }

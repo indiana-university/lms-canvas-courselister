@@ -1,23 +1,11 @@
 spring:
   application:
     name: lms-lti-courselist
-  session:
-    store-type: none
   config.import: optional:${app.fullFilePath}/${app.overridesFileName}, optional:${app.fullFilePath}/security.properties, classpath:canvas.properties, optional:classpath:git.properties, classpath:lti-registrations.properties
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    properties:
-      hibernate:
-        jdbc:
-          lob:
-            non_contextual_creation: true
-        boot:
-          allow_jdbc_metadata_access: false
-      jadira:
-        usertype:
-          autoRegisterUserTypes: true
   datasource:
     url: ${lms.db.url}
     username: ${lms.db.user}
@@ -33,15 +21,13 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${oauth.tokenprovider.url}/.well-known/jwks.json
+  web.error.whitelabel.enabled: false
 courselist:
   version: @app.version@
   env: ${app.env}
   startANewCourseUrl: /users/self/external_tools/437553
 
 server:
-  error:
-    whitelabel:
-      enabled: false
   servlet:
     session:
       timeout: 30m
@@ -61,8 +47,9 @@ management:
 spring:
   config.activate.on-profile: redis-session
   session:
-    store-type: redis
-    redis.namespace: courselist-@app.version@:session
+    data:
+      redis:
+        namespace: courselist-@app.version@:session
 management.health.redis.enabled: true
 
 ---

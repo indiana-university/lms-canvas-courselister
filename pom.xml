@@ -9,11 +9,11 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.6</version>
+        <version>4.0.8</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
-    <version>6.1.1-SNAPSHOT</version>
+    <version>7.0.0-SNAPSHOT</version>
     <description>Search, Filter, and Manage Courses app offers a powerful alternative to the All Courses tool in Canvas.</description>
     <url>https://github.com/indiana-university/lms-canvas-courselister</url>
     <inceptionYear>2015</inceptionYear>
@@ -54,26 +54,24 @@
 
     <properties>
         <app.version>${project.version}</app.version>
-        <commons-io.version>2.19.0</commons-io.version>
-        <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
-        <git-commit-id-maven-plugin.version>9.0.2</git-commit-id-maven-plugin.version>
-        <hibernate6-ddl-maven-plugin.version>1.0.2</hibernate6-ddl-maven-plugin.version>
-        <java.version>21</java.version>
-        <jdk.source>21</jdk.source>
-        <jdk.target>21</jdk.target>
+        <commons-io.version>2.22.0</commons-io.version>
+        <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
+        <git-commit-id-maven-plugin.version>10.0.0</git-commit-id-maven-plugin.version>
+        <hibernate-jpa-schemagen.version>7.2.2</hibernate-jpa-schemagen.version>
+        <java.version>25</java.version>
+        <jdk.source>25</jdk.source>
+        <jdk.target>25</jdk.target>
         <jquery.version>3.7.1</jquery.version>
-        <lms-embedded-services.version>6.2.5</lms-embedded-services.version>
-        <lms-team-spring-boot-it12>6.5.1_1</lms-team-spring-boot-it12>
+        <lms-embedded-services.version>7.0.5</lms-embedded-services.version>
+        <lms-team-spring-boot-it12>7.6.0_0</lms-team-spring-boot-it12>
 
-        <lms-canvas-rivet.version>6.2.9.0</lms-canvas-rivet.version>
-        <nodejs.version>v22.15.0</nodejs.version>
-        <npm.version>10.9.2</npm.version>
-        <spring-cloud.version>2024.0.1</spring-cloud.version>
-        <webjars-locator.version>0.52</webjars-locator.version>
+        <lms-canvas-rivet.version>7.2.9.1_0</lms-canvas-rivet.version>
+        <nodejs.version>v24.19.0</nodejs.version>
+        <spring-cloud.version>2025.1.3</spring-cloud.version>
 
-        <plugins.compiler.version>3.14.0</plugins.compiler.version>
-        <plugins.license.version>2.5.0</plugins.license.version>
-        <plugins.release.version>3.1.1</plugins.release.version>
+        <plugins.compiler.version>3.15.0</plugins.compiler.version>
+        <plugins.license.version>2.7.1</plugins.license.version>
+        <plugins.release.version>3.3.1</plugins.release.version>
     </properties>
 
     <dependencyManagement>
@@ -91,7 +89,7 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -99,11 +97,11 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+            <artifactId>spring-boot-starter-security-oauth2-resource-server</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+            <artifactId>spring-boot-starter-security-oauth2-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -153,8 +151,8 @@
             <version>${lms-canvas-rivet.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.session</groupId>
-            <artifactId>spring-session-data-redis</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-session-data-redis</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -183,8 +181,7 @@
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
-            <artifactId>webjars-locator</artifactId>
-            <version>${webjars-locator.version}</version>
+            <artifactId>webjars-locator-lite</artifactId>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -239,26 +236,46 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>de.jpdigital</groupId>
-                <artifactId>hibernate65-ddl-maven-plugin</artifactId>
-                <version>${hibernate6-ddl-maven-plugin.version}</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>copy-schemagen-jars</id>
+                        <phase>process-resources</phase>
                         <goals>
-                            <goal>gen-ddl</goal>
+                            <goal>copy</goal>
                         </goals>
-                        <phase>process-classes</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/schemagen-jars</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>edu.iu.uits.lms</groupId>
+                                    <artifactId>lms-canvas-lti-framework</artifactId>
+                                    <destFileName>lms-canvas-lti-framework.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <dialects>
-                        <param>h2</param>
-                        <param>postgresql</param>
-                    </dialects>
-                    <packages>
-                        <param>edu.iu.uits.lms.courselist</param>
-                    </packages>
-                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.dellroad</groupId>
+                <artifactId>hibernate-jpa-schemagen-maven-plugin</artifactId>
+                <version>${hibernate-jpa-schemagen.version}</version>
+                <executions>
+                    <execution>
+                        <id>gen-ddl-postgresql</id>
+                        <goals>
+                            <goal>export-jpa-schema</goal>
+                        </goals>
+                        <configuration>
+                            <jpaUnit>postgresql</jpaUnit>
+                            <outputFile>${project.build.directory}/generated-resources/postgresql.sql</outputFile>
+                            <verifyFile>NONE</verifyFile>
+                            <removePersistenceXml>true</removePersistenceXml>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -266,6 +283,12 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
@@ -298,7 +321,6 @@
                 <version>${frontend-maven-plugin.version}</version>
                 <configuration>
                     <nodeVersion>${nodejs.version}</nodeVersion>
-                    <npmVersion>${npm.version}</npmVersion>
                     <installDirectory>${project.build.directory}/js</installDirectory>
                 </configuration>
                 <executions>
@@ -345,6 +367,48 @@
 
     <profiles>
         <profile>
+            <!--
+                The following configurations need to be set in your Maven settings.xml file before invoking this profile:
+                    docker.publish.username The username to authenticate with the registry
+                    docker.publish.password The password to authenticate with the registry
+            -->
+            <id>build-image</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>build-image-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <docker>
+                                <publishRegistry>
+                                    <username>${docker.publish.username}</username>
+                                    <password>${docker.publish.password}</password>
+                                    <url>https://registry.docker.iu.edu</url>
+                                </publishRegistry>
+                            </docker>
+                            <publish>true</publish>
+                            <image>
+                                <env>
+                                    <HTTP_PROXY>${http.proxy}</HTTP_PROXY>
+                                    <HTTPS_PROXY>${https.proxy}</HTTPS_PROXY>
+                                    <NO_PROXY>${http.nonProxyHosts}</NO_PROXY>
+                                    <TZ>America/Indiana/Indianapolis</TZ>
+                                </env>
+                            </image>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>it12</id>
             <dependencies>
                 <dependency>
@@ -352,11 +416,6 @@
                     <artifactId>lms-team-spring-boot-it12</artifactId>
                     <version>${lms-team-spring-boot-it12}</version>
                 </dependency>
-                <!--                <dependency>-->
-                <!--                    <groupId>edu.iu.es.esi.audit</groupId>-->
-                <!--                    <artifactId>spring-boot-it12</artifactId>-->
-                <!--                    <version>${spring-boot-it12}</version>-->
-                <!--                </dependency>-->
             </dependencies>
             <repositories>
                 <repository>

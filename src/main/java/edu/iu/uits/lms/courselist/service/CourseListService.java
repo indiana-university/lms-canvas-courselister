@@ -44,7 +44,6 @@ import edu.iu.uits.lms.canvas.model.Favorite;
 import edu.iu.uits.lms.canvas.model.UserCustomDataRequest;
 import edu.iu.uits.lms.canvas.services.CanvasService;
 import edu.iu.uits.lms.canvas.services.CourseService;
-import edu.iu.uits.lms.canvas.services.TermService;
 import edu.iu.uits.lms.canvas.services.UserService;
 import edu.iu.uits.lms.courselist.model.DecoratedCourse;
 import lombok.extern.slf4j.Slf4j;
@@ -60,8 +59,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -71,9 +68,6 @@ public class CourseListService {
 
    @Autowired
    private CourseService courseService = null;
-
-   @Autowired
-   private TermService termService = null;
 
    @Autowired
    private UserService userService = null;
@@ -95,8 +89,9 @@ public class CourseListService {
       List<String> workflowStates = Arrays.asList(CourseHelper.WORKFLOW_STATE.AVAILABLE.getText(),
             CourseHelper.WORKFLOW_STATE.UNPUBLISHED.getText(), CourseHelper.WORKFLOW_STATE.COMPLETED.getText());
 
-      //Not including the term since it won't have the overrides in it.
-      List<Course> courses = courseService.getCoursesForUser(userLoginId, false, false,
+      //Canvas resolves the term's start/end dates for the calling enrollment's role when
+      //included this way, so no separate account-level term/overrides lookup is needed.
+      List<Course> courses = courseService.getCoursesForUser(userLoginId, false, true,
             false, workflowStates);
 
       Set<String> hidden = getHiddenCourseIds(userLoginId);
@@ -116,8 +111,6 @@ public class CourseListService {
    private List<DecoratedCourse> decorateCourses(List<Course> courses, Set<String> hidden) {
       List<DecoratedCourse> decoratedCourses = new ArrayList<>();
 
-      Map<String, CanvasTerm> termMap = getTerms();
-
       for (Course course : courses) {
          List<Enrollment> enrollments = course.getEnrollments();
 
@@ -128,7 +121,7 @@ public class CourseListService {
             for (Enrollment enrollment : enrollments) {
                //In case the user is in more than one section with the same role, we don't need to see multiples of that
                if (!seenRoles.contains(enrollment.getRole())) {
-                  CanvasTerm term = termMap.get(course.getEnrollmentTermId());
+                  CanvasTerm term = course.getTerm();
                   DecoratedCourse dc = new DecoratedCourse(course, course.isFavorite(), hidden.contains(course.getId()),
                         enrollment, term);
 
@@ -189,11 +182,6 @@ public class CourseListService {
    public boolean hasClickableLink(Course course, Enrollment enrollment) {
       final List<String> rolesForUrls = Arrays.asList("teacher", "ta", "designer");
       return CourseHelper.isPublished(course) || rolesForUrls.contains(enrollment.getType());
-   }
-
-   private Map<String, CanvasTerm> getTerms() {
-      List<CanvasTerm> terms =  termService.getEnrollmentTerms();
-      return terms.stream().collect(Collectors.toMap(CanvasTerm::getId, Function.identity()));
    }
 
    private Set<String> getHiddenCourseIds(String asUserLogin) {

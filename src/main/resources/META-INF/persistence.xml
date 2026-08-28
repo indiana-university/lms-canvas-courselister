@@ -38,6 +38,7 @@
     <persistence-unit name="postgresql" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <jar-file>file:@project.build.directory@/schemagen-jars/lms-canvas-lti-framework.jar</jar-file>
+        <jar-file>file:@project.build.directory@/schemagen-jars/lms-canvas-oauth2-client.jar</jar-file>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>

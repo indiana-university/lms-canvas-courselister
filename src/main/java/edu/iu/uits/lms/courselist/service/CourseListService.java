@@ -33,7 +33,6 @@ package edu.iu.uits.lms.courselist.service;
  * #L%
  */
 
-import edu.iu.uits.lms.canvas.helpers.CanvasConstants;
 import edu.iu.uits.lms.canvas.helpers.CourseHelper;
 import edu.iu.uits.lms.canvas.helpers.EnrollmentHelper;
 import edu.iu.uits.lms.canvas.helpers.TermHelper;
@@ -48,8 +47,10 @@ import edu.iu.uits.lms.canvas.services.UserService;
 import edu.iu.uits.lms.courselist.model.DecoratedCourse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,7 +79,11 @@ public class CourseListService {
    @Autowired
    private EnrollmentClassificationService enrollmentClassificationService = null;
 
-   public List<DecoratedCourse> getCourses(String userLoginId) {
+   @Autowired
+   @Qualifier("CanvasRestTemplateAsUser")
+   private RestTemplate canvasRestTemplateAsUser = null;
+
+   public List<DecoratedCourse> getCourses(String canvasUserId) {
       //List<Course> getCoursesForUser(String iuNetworkId, boolean includeSections, boolean includeTerm, boolean excludeBlueprint,
       //            List<Course.WORKFLOW_STATE> states, List<Enrollment.STATE> enrollmentStates)
 
@@ -89,12 +94,15 @@ public class CourseListService {
       List<String> workflowStates = Arrays.asList(CourseHelper.WORKFLOW_STATE.AVAILABLE.getText(),
             CourseHelper.WORKFLOW_STATE.UNPUBLISHED.getText(), CourseHelper.WORKFLOW_STATE.COMPLETED.getText());
 
+      //Uses the launching user's own Canvas OAuth2 token, not the shared admin token - this endpoint
+      //is inherently self-scoped, so no masquerade is needed or possible here.
+      //
       //Canvas resolves the term's start/end dates for the calling enrollment's role when
       //included this way, so no separate account-level term/overrides lookup is needed.
-      List<Course> courses = courseService.getCoursesForUser(userLoginId, false, true,
-            false, workflowStates);
+      List<Course> courses = courseService.getCoursesForUser(false, true, false, workflowStates,
+            canvasRestTemplateAsUser);
 
-      Set<String> hidden = getHiddenCourseIds(userLoginId);
+      Set<String> hidden = getHiddenCourseIds(canvasUserId);
       return decorateCourses(courses, hidden);
    }
 
@@ -184,15 +192,16 @@ public class CourseListService {
       return CourseHelper.isPublished(course) || rolesForUrls.contains(enrollment.getType());
    }
 
-   private Set<String> getHiddenCourseIds(String asUserLogin) {
+   //canvasUserId still required here: Canvas's custom_data endpoint addresses users by ID rather
+   //than via masquerade, unlike the favorites/course-list calls above.
+   private Set<String> getHiddenCourseIds(String canvasUserId) {
       Set<String> hiddenCourseIds = new HashSet<>();
       List<String> pathParts = Collections.singletonList(CUSTOM_USER_DATA_KEY);
       UserCustomDataRequest customDataRequest = new UserCustomDataRequest();
-      customDataRequest.setUserId(asUserLogin);
-      customDataRequest.setField(CanvasConstants.API_FIELD_SIS_LOGIN_ID);
+      customDataRequest.setUserId(canvasUserId);
       customDataRequest.setPathParts(pathParts);
       try {
-         Map<String, Map<String, String>> data = (Map) userService.getUserCustomData(customDataRequest);
+         Map<String, Map<String, String>> data = (Map) userService.getUserCustomData(customDataRequest, canvasRestTemplateAsUser);
 
          if (data != null) {
             hiddenCourseIds = data.get("data").keySet();
@@ -203,33 +212,31 @@ public class CourseListService {
       return hiddenCourseIds;
    }
 
-   public boolean setCourseAsHidden(String asUserLogin, String courseId) {
+   public boolean setCourseAsHidden(String canvasUserId, String courseId) {
       List<String> pathParts = Arrays.asList(CUSTOM_USER_DATA_KEY, courseId);
       UserCustomDataRequest customDataRequest = new UserCustomDataRequest();
-      customDataRequest.setUserId(asUserLogin);
-      customDataRequest.setField(CanvasConstants.API_FIELD_SIS_LOGIN_ID);
+      customDataRequest.setUserId(canvasUserId);
       customDataRequest.setPathParts(pathParts);
       customDataRequest.setData(courseId);
-      Object results = userService.setUserCustomData(customDataRequest);
+      Object results = userService.setUserCustomData(customDataRequest, canvasRestTemplateAsUser);
       return results != null;
    }
 
-   public boolean setCourseAsShown(String asUserLogin, String courseId) {
+   public boolean setCourseAsShown(String canvasUserId, String courseId) {
       List<String> pathParts = Arrays.asList(CUSTOM_USER_DATA_KEY, courseId);
       UserCustomDataRequest customDataRequest = new UserCustomDataRequest();
-      customDataRequest.setUserId(asUserLogin);
-      customDataRequest.setField(CanvasConstants.API_FIELD_SIS_LOGIN_ID);
+      customDataRequest.setUserId(canvasUserId);
       customDataRequest.setPathParts(pathParts);
-      Object results = userService.deleteUserCustomData(customDataRequest);
+      Object results = userService.deleteUserCustomData(customDataRequest, canvasRestTemplateAsUser);
       return results != null;
    }
 
-   public Favorite setCourseAsFavorite(String asUserLogin, String courseId) {
-      return courseService.addCourseToFavorites(asUserLogin, courseId);
+   public Favorite setCourseAsFavorite(String courseId) {
+      return courseService.addCourseToFavorites(courseId, canvasRestTemplateAsUser);
    }
 
-   public Favorite removeCourseAsFavorite(String asUserLogin, String courseId) {
-      return courseService.removeCourseAsFavorite(asUserLogin, courseId);
+   public Favorite removeCourseAsFavorite(String courseId) {
+      return courseService.removeCourseAsFavorite(courseId, canvasRestTemplateAsUser);
    }
 
    /**

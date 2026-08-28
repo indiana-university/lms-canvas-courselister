@@ -6,6 +6,16 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
+    # Two separate JPA modules are now on the classpath (lti-framework's LtiClientConfig and
+    # canvas-oauth2-client's CanvasOAuth2ClientConfig), each with its own EntityManagerFactory bean
+    # and neither marked @Primary - courselist has no JPA config/entities of its own to break the
+    # tie the way other tool's local @Primary-annotated PostgresDBConfig does. Spring Boot's
+    # open-in-view interceptor autoconfiguration needs exactly one EntityManagerFactory bean to
+    # autowire and fails to start otherwise ("... required a single bean, but 2 were found").
+    # courselist never renders JPA entities in a view (its own models are plain POJOs; all data
+    # goes out as REST JSON), so open-in-view has no purpose here - disabling it removes the
+    # ambiguous injection point entirely rather than adding a bean just to satisfy it.
+    open-in-view: false
   datasource:
     url: ${lms.db.url}
     username: ${lms.db.user}
@@ -21,7 +31,47 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${oauth.tokenprovider.url}/.well-known/jwks.json
+      client:
+        registration:
+          lms_canvas_oauth2_courselist:
+            client-id: ${canvas.oauth2.clientId}
+            client-secret: ${canvas.oauth2.clientSecret}
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - url:GET|/api/v1/courses
+              - url:POST|/api/v1/users/self/favorites/courses/:id
+              - url:DELETE|/api/v1/users/self/favorites/courses/:id
+              - url:GET|/api/v1/users/:user_id/custom_data(/*scope)
+              - url:PUT|/api/v1/users/:user_id/custom_data(/*scope)
+              - url:DELETE|/api/v1/users/:user_id/custom_data(/*scope)
+        provider:
+          lms_canvas_oauth2_courselist:
+            authorization-uri: ${canvas.baseUrl}/login/oauth2/auth
+            token-uri: ${canvas.baseUrl}/login/oauth2/token
   web.error.whitelabel.enabled: false
+# NOTE on canvas.oauth2.*: despite the name, `enabled` below does NOT gate everything that
+# @EnableCanvasOAuth2Client (on WebApplication) turns on. It only gates the CanvasRestTemplateAsUser
+# bean in canvas-services (@ConditionalOnProperty(prefix = "canvas.oauth2", name = "enabled")).
+# The rest of CanvasOAuth2ClientConfig's component scan - including CanvasOAuth2AuthorizedClientRepository,
+# which needs canvas.oauth2.encryptionPassword/encryptionSalt to construct its at-rest TextEncryptor
+# (Encryptors.delux) - is @Import'ed unconditionally the moment @EnableCanvasOAuth2Client is present,
+# regardless of this flag.
+#
+# canvas.oauth2.encryptionPassword / canvas.oauth2.encryptionSalt are therefore REQUIRED as soon as
+# @EnableCanvasOAuth2Client is active. They are deliberately NOT given a value (or a placeholder) here -
+# same convention as canvas.token and lms.db.password elsewhere in this file: real secret values are
+# never committed to a tracked file. They must be supplied externally, per-environment, via
+# security.properties (see the spring.config.import line above) - locally, via the protected.properties
+# file documented in this repo's CLAUDE.md. Encryptors.delux(password, salt) requires encryptionSalt to
+# be a valid hex string (e.g. "deadbeef"); if either property is missing, the app fails to start.
+canvas:
+  oauth2:
+    enabled: true
+    clientId: ${canvas.oauth2.clientId.courselist}
+    clientSecret: ${canvas.oauth2.clientSecret.courselist}
+
 courselist:
   version: @app.version@
   env: ${app.env}

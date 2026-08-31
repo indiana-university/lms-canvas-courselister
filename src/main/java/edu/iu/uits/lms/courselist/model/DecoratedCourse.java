@@ -51,15 +51,13 @@ public class DecoratedCourse {
    @NonNull
    private Course course;
 
-   @NonNull
-   private boolean isFavorited;
+   private final boolean isFavorited;
 
    private boolean isFavoritable;
 
    private boolean isPublished;
 
-   @NonNull
-   private boolean isHidden;
+   private final boolean isHidden;
 
    @NonNull
    private Enrollment enrollment;

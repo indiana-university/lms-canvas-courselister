@@ -43,13 +43,16 @@
     <div th:replace="~{commonFragments/favicon :: favicon}" ></div>
     <link media="all" rel="stylesheet" type="text/css" th:href="@{/css/enhancedCourseList.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/jsrivet/rivet-core/rivet.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/jsrivet/rivet-clearable-input/rivet-clearable-input.css}" />
     <link rel="stylesheet" type="text/css" th:href="@{/jsrivet/rivet-icons/rivet-icon-element.css}"/>
 </head>
 <body>
 
 <div id="root"></div>
 
-<div th:replace="~{commonFragments/layouts :: footer(${hideFooter}, ${@serverInfo.elements})}" ></div>
+<th:block th:with="siElements=${@serverInfo.elements}">
+    <div th:replace="~{commonFragments/layouts :: footer(${hideFooter}, ${siElements})}"></div>
+</th:block>
 
 <script th:inline="javascript">
       /*<![CDATA[*/
@@ -65,10 +68,12 @@
 
 <script type="text/javascript" th:src="@{/jsreact/lms-lti-courselist/lms-lti-courselist.js}"></script>
 <script type="text/javascript" defer th:src="@{/jsrivet/scrolltotop/scrolltotop.js}"></script>
+<script type="text/javascript" th:src="@{/jsrivet/rivet-clearable-input/rivet-clearable-input.js}"></script>
 <script type="text/javascript" th:src="@{/jsrivet/rivet-core/rivet.min.js}"></script>
 <script type="module" th:src="@{/jsrivet/rivet-icons/rivet-icons.js}"></script>
 <script>
   Rivet.init();
+  ClearableInput.init();
 </script>
 
 </body>

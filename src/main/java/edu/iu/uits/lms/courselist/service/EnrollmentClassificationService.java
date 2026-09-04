@@ -36,14 +36,12 @@ package edu.iu.uits.lms.courselist.service;
 import edu.iu.uits.lms.canvas.helpers.CourseHelper;
 import edu.iu.uits.lms.canvas.helpers.EnrollmentHelper;
 import edu.iu.uits.lms.canvas.helpers.TermHelper;
-import edu.iu.uits.lms.canvas.model.CanvasTerm;
 import edu.iu.uits.lms.courselist.model.DecoratedCourse;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.Map;
 
 @Service
 public class EnrollmentClassificationService {
@@ -132,22 +130,13 @@ public class EnrollmentClassificationService {
 
    /**
     * Override course start date:  Start date set in Course Settings with the “Students can only participate in the course between these dates” box checked (“restrict_enrollments_to_course_dates": true”)
-    * Role-specific term start date: the term start date that applies to a specific role (observers use same dates as students)
-    * Term Start Date
+    * Term Start Date: fetched with the course's term already resolved to the calling enrollment's role-specific
+    * dates by Canvas (observers use same dates as students), so no separate override lookup is needed here.
     * @param decoratedCourse
     * @return
     */
    public Date getEffectiveStartDate(DecoratedCourse decoratedCourse) {
       Date date = TermHelper.getStartDate(decoratedCourse.getTerm());
-
-      String role = typeTranslater(decoratedCourse.getEnrollment().getType());
-      Map<String, CanvasTerm.TermOverride> roleOverrides = decoratedCourse.getTerm().getOverrides();
-      if (roleOverrides != null && roleOverrides.containsKey(role)) {
-         Date roleDate = TermHelper.getStartDate(roleOverrides.get(role));
-         if (roleDate != null) {
-            date = roleDate;
-         }
-      }
 
       if (decoratedCourse.getCourse().isRestrictEnrollmentsToCourseDates()) {
          Date courseDate = CourseHelper.getStartDate(decoratedCourse.getCourse());
@@ -161,15 +150,6 @@ public class EnrollmentClassificationService {
 
    public Date getEffectiveEndDate(DecoratedCourse decoratedCourse) {
       Date date = TermHelper.getEndDate(decoratedCourse.getTerm());
-
-      String role = typeTranslater(decoratedCourse.getEnrollment().getType());
-      Map<String, CanvasTerm.TermOverride> roleOverrides = decoratedCourse.getTerm().getOverrides();
-      if (roleOverrides != null && roleOverrides.containsKey(role)) {
-         Date roleDate = TermHelper.getEndDate(roleOverrides.get(role));
-         if (roleDate != null) {
-            date = roleDate;
-         }
-      }
 
       if (decoratedCourse.getCourse().isRestrictEnrollmentsToCourseDates()) {
          Date courseDate = CourseHelper.getEndDate(decoratedCourse.getCourse());
@@ -194,37 +174,5 @@ public class EnrollmentClassificationService {
    public boolean isPastDate(@NonNull Date date) {
       Date now = dateService.getCurrentDate();
       return (date.getTime() < now.getTime());
-   }
-
-   /**
-    * Translate the enrollment type into the base role type
-    * @param input
-    * @return
-    */
-   private String typeTranslater(String input) {
-      EnrollmentHelper.TYPE type = EnrollmentHelper.TYPE.valueOf(input);
-      String roleName;
-      switch (type) {
-         case teacher:
-            roleName = EnrollmentHelper.TYPE_TEACHER;
-            break;
-         case student:
-            roleName = EnrollmentHelper.TYPE_STUDENT;
-            break;
-         case ta:
-            roleName = EnrollmentHelper.TYPE_TA;
-            break;
-         case designer:
-         roleName = EnrollmentHelper.TYPE_DESIGNER;
-            break;
-         case observer:
-            roleName = EnrollmentHelper.TYPE_OBSERVER;
-            break;
-         default:
-            roleName = input;
-            break;
-      }
-
-      return roleName;
    }
 }

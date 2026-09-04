@@ -40,7 +40,6 @@ import edu.iu.uits.lms.canvas.model.Course;
 import edu.iu.uits.lms.canvas.model.Enrollment;
 import edu.iu.uits.lms.canvas.services.CanvasService;
 import edu.iu.uits.lms.canvas.services.CourseService;
-import edu.iu.uits.lms.canvas.services.TermService;
 import edu.iu.uits.lms.canvas.services.UserService;
 import edu.iu.uits.lms.courselist.config.ToolConfig;
 import edu.iu.uits.lms.courselist.model.DecoratedCourse;
@@ -59,8 +58,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @SpringBootTest(classes = {EnrollmentClassificationService.class, CourseListService.class},
@@ -69,6 +66,7 @@ import java.util.Map;
 public class EnrollmentClassificationServiceTest {
 
    protected CanvasTerm fa19Term;
+   protected CanvasTerm fa19TermAsDesigner;
    protected CanvasTerm su19Term;
    protected CanvasTerm sp19Term;
 
@@ -90,9 +88,6 @@ public class EnrollmentClassificationServiceTest {
    private CourseService courseService = null;
 
    @MockitoBean
-   private TermService termService = null;
-
-   @MockitoBean
    private UserService userService = null;
 
    @MockitoBean
@@ -108,12 +103,16 @@ public class EnrollmentClassificationServiceTest {
       fa19Term.setStartAt("2019-07-03T04:00:00Z");
       fa19Term.setEndAt("2019-12-30T05:00:00Z");
 
-      Map<String, CanvasTerm.TermOverride> overridesA = new HashMap<>();
-      overridesA.put("StudentEnrollment", newOverride("2019-08-01T04:00:00Z", "2019-12-30T05:00:00Z"));
-      overridesA.put("TeacherEnrollment", newOverride("2019-07-03T04:00:00Z", null));
-      overridesA.put("TaEnrollment", newOverride("2019-07-03T04:00:00Z", "2019-12-30T05:00:00Z"));
-      overridesA.put("DesignerEnrollment", newOverride("2019-06-01T04:00:00Z", "2019-06-27T04:00:00Z"));
-      fa19Term.setOverrides(overridesA);
+      //Canvas resolves a role's own access window server-side and returns it directly as the
+      //course's embedded term dates, so a designer-scoped call for this same term comes back
+      //with the designer's own (earlier) effective start/end already applied.
+      fa19TermAsDesigner = new CanvasTerm();
+      fa19TermAsDesigner.setId(fa19Term.getId());
+      fa19TermAsDesigner.setName(fa19Term.getName());
+      fa19TermAsDesigner.setSisTermId(fa19Term.getSisTermId());
+      fa19TermAsDesigner.setWorkflowState(fa19Term.getWorkflowState());
+      fa19TermAsDesigner.setStartAt("2019-06-01T04:00:00Z");
+      fa19TermAsDesigner.setEndAt("2019-06-27T04:00:00Z");
 
       su19Term = new CanvasTerm();
       su19Term.setId("6461");
@@ -141,13 +140,6 @@ public class EnrollmentClassificationServiceTest {
       publishedFutureCourse = newCourse("2019-07-03T04:00:00Z", "2020-06-30T04:00:00Z", true, CourseHelper.WORKFLOW_STATE.AVAILABLE);
       publishedPastCourse = newCourse("2019-04-04T04:00:00Z", "2019-06-30T04:00:00Z", true, CourseHelper.WORKFLOW_STATE.AVAILABLE);
 
-   }
-
-   private CanvasTerm.TermOverride newOverride(String start, String end) {
-      CanvasTerm.TermOverride override = new CanvasTerm.TermOverride();
-      override.setStartAt(start);
-      override.setEndAt(end);
-      return override;
    }
 
    private Course newCourse(String startDate, String endDate, boolean restrict, CourseHelper.WORKFLOW_STATE workflowState) {
@@ -221,7 +213,7 @@ public class EnrollmentClassificationServiceTest {
    @Test
    public void testCourseF() {
       Enrollment enrollment = newEnrollment(EnrollmentHelper.TYPE.designer.name(), "Designer", EnrollmentHelper.STATE.active.name());
-      DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, fa19Term);
+      DecoratedCourse dc = new DecoratedCourse(unpublishedCourse, false, false, enrollment, fa19TermAsDesigner);
       DecoratedCourse.CLASSIFICATION classification = enrollmentClassificationService.classifyCourse(dc);
       dc.setEnrollmentClassification(classification);
 

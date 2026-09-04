@@ -61,8 +61,7 @@
         <java.version>25</java.version>
         <jdk.source>25</jdk.source>
         <jdk.target>25</jdk.target>
-        <jquery.version>3.7.1</jquery.version>
-        <lms-embedded-services.version>7.0.5</lms-embedded-services.version>
+        <lms-embedded-services.version>7.0.6-SNAPSHOT</lms-embedded-services.version>
         <lms-team-spring-boot-it12>7.6.0_0</lms-team-spring-boot-it12>
 
         <lms-canvas-rivet.version>7.2.9.1_0</lms-canvas-rivet.version>
@@ -110,6 +109,11 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         <dependency>
@@ -143,6 +147,11 @@
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-canvas-common-configuration</artifactId>
+            <version>${lms-embedded-services.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.iu.uits.lms</groupId>
+            <artifactId>lms-canvas-oauth2-client</artifactId>
             <version>${lms-embedded-services.version}</version>
         </dependency>
         <dependency>
@@ -182,11 +191,6 @@
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>webjars-locator-lite</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>jquery</artifactId>
-            <version>${jquery.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -252,6 +256,11 @@
                                     <groupId>edu.iu.uits.lms</groupId>
                                     <artifactId>lms-canvas-lti-framework</artifactId>
                                     <destFileName>lms-canvas-lti-framework.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>edu.iu.uits.lms</groupId>
+                                    <artifactId>lms-canvas-oauth2-client</artifactId>
+                                    <destFileName>lms-canvas-oauth2-client.jar</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

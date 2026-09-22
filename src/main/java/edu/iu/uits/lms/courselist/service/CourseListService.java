@@ -95,11 +95,12 @@ public class CourseListService {
             CourseHelper.WORKFLOW_STATE.UNPUBLISHED.getText(), CourseHelper.WORKFLOW_STATE.COMPLETED.getText());
 
       //Uses the launching user's own Canvas OAuth2 token, not the shared admin token - this endpoint
-      //is inherently self-scoped, so no masquerade is needed or possible here.
+      //is inherently self-scoped, so no masquerade is needed or possible here (a per-user OAuth2
+      //token has no become_user privilege).
       //
       //Canvas resolves the term's start/end dates for the calling enrollment's role when
       //included this way, so no separate account-level term/overrides lookup is needed.
-      List<Course> courses = courseService.getCoursesForUser(false, true, false, workflowStates,
+      List<Course> courses = courseService.getCoursesForUser(null, false, true, false, workflowStates,
             canvasRestTemplateAsUser);
 
       Set<String> hidden = getHiddenCourseIds(canvasUserId);

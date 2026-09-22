@@ -22,6 +22,7 @@
   "public_jwk_url": "http://localhost:8080/.well-known/jwks.json",
   "custom_fields": {
     "instructure_membership_roles": "$com.Instructure.membership.roles",
-    "canvas_user_login_id": "$Canvas.user.loginId"
+    "canvas_user_login_id": "$Canvas.user.loginId",
+    "canvas_user_id": "$Canvas.user.id"
   }
 }

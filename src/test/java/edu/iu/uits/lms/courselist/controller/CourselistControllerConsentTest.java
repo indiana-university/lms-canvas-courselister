@@ -52,12 +52,8 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.ClientAuthorizationRequiredException;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -65,12 +61,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
-import java.time.Instant;
 import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
@@ -145,7 +142,8 @@ public class CourselistControllerConsentTest {
 
     @Test
     public void listRequiresCanvasOAuth2ConsentWhenNoAuthorizedClient() throws Exception {
-        when(canvasOAuth2AuthorizedClientRepository.loadAuthorizedClient(eq(REGISTRATION_ID), any(), any())).thenReturn(null);
+        doThrow(new ClientAuthorizationRequiredException(REGISTRATION_ID))
+                .when(canvasOAuth2AuthorizedClientRepository).ensureAuthorized(eq(REGISTRATION_ID), any(), any());
 
         OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.BASE_USER_AUTHORITY,
                 new HashMap<>(), new HashMap<>());
@@ -163,21 +161,6 @@ public class CourselistControllerConsentTest {
 
     @Test
     public void listRendersWhenAuthorizedClientExists() throws Exception {
-        ClientRegistration clientRegistration = ClientRegistration.withRegistrationId(REGISTRATION_ID)
-                .clientId("test-client")
-                .clientSecret("test-secret")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}")
-                .authorizationUri("https://canvas.test/login/oauth2/auth")
-                .tokenUri("https://canvas.test/login/oauth2/token")
-                .build();
-
-        OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,
-                "test-access-token", Instant.now(), Instant.now().plusSeconds(3600));
-        OAuth2AuthorizedClient authorizedClient = new OAuth2AuthorizedClient(clientRegistration, "userId", accessToken);
-        when(canvasOAuth2AuthorizedClientRepository.loadAuthorizedClient(eq(REGISTRATION_ID), any(), any()))
-                .thenReturn(authorizedClient);
         when(canvasService.getBaseUrl()).thenReturn("https://canvas.test");
 
         OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.BASE_USER_AUTHORITY,
@@ -189,5 +172,7 @@ public class CourselistControllerConsentTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("react"));
+
+        verify(canvasOAuth2AuthorizedClientRepository).ensureAuthorized(eq(REGISTRATION_ID), any(), any());
     }
 }

@@ -34,20 +34,16 @@ package edu.iu.uits.lms.courselist.controller;
  */
 
 import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
+import edu.iu.uits.lms.canvasoauth2.security.CanvasOAuth2AuthorizedClientRepository;
 import edu.iu.uits.lms.courselist.config.ToolConfig;
 import edu.iu.uits.lms.courselist.service.CourseListService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.controller.OidcTokenAwareController;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.ClientAuthorizationRequiredException;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -65,7 +61,7 @@ public class CourselistController extends OidcTokenAwareController {
     private CourseListService courseListService = null;
 
     @Autowired
-    private OAuth2AuthorizedClientRepository canvasOAuth2AuthorizedClientRepository = null;
+    private CanvasOAuth2AuthorizedClientRepository canvasOAuth2AuthorizedClientRepository = null;
 
     @Autowired
     private CanvasOAuth2Registration canvasOAuth2Registration = null;
@@ -79,8 +75,10 @@ public class CourselistController extends OidcTokenAwareController {
         // Course listing, favoriting, and hide/show all run as the launching user's own Canvas OAuth2
         // token now (see CourseListService) - require that token to exist before rendering the SPA
         // shell, since the REST endpoints it calls afterward return JSON and have no way to render
-        // the HTML consent breakout page themselves.
-        ensureCanvasOAuth2Consent(SecurityContextHolder.getContext().getAuthentication(), request);
+        // the HTML consent breakout page themselves. When canvas.oauth2.enabled is off, this is a
+        // dark-launch no-op (see CanvasOAuth2AuthorizedClientRepository#ensureAuthorized).
+        canvasOAuth2AuthorizedClientRepository.ensureAuthorized(
+                canvasOAuth2Registration.getRegistrationId(), SecurityContextHolder.getContext().getAuthentication(), request);
 
         String canvasBaseUrl = courseListService.getCanvasBaseUrl();
         model.addAttribute("browseCoursesUrl", canvasBaseUrl + "/search/all_courses/");
@@ -90,23 +88,5 @@ public class CourselistController extends OidcTokenAwareController {
         //For session tracking
         model.addAttribute("customId", httpSession.getId());
         return new ModelAndView("react");
-    }
-
-    /**
-     * Makes sure the current user has an authorized Canvas OAuth2 client on file before letting the
-     * course-list page render (every per-user Canvas call it and its REST endpoints make depends on
-     * it). If no authorized client exists yet, throws the same exception the vendored
-     * {@code @RegisteredOAuth2AuthorizedClient} resolver would have thrown;
-     * {@code OAuth2ConsentControllerAdvice} catches it and renders the "connect your Canvas account"
-     * consent breakout page instead of an error.
-     * @param principal the current authentication
-     * @param request the current request
-     */
-    private void ensureCanvasOAuth2Consent(Authentication principal, HttpServletRequest request) {
-        OAuth2AuthorizedClient authorizedClient = canvasOAuth2AuthorizedClientRepository
-                .loadAuthorizedClient(canvasOAuth2Registration.getRegistrationId(), principal, request);
-        if (authorizedClient == null) {
-            throw new ClientAuthorizationRequiredException(canvasOAuth2Registration.getRegistrationId());
-        }
     }
 }

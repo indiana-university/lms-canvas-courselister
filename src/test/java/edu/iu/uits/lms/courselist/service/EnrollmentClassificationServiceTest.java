@@ -55,6 +55,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -92,6 +93,14 @@ public class EnrollmentClassificationServiceTest {
 
    @MockitoBean
    private CanvasService canvasService = null;
+
+   //Stands in for the CanvasOAuth2ClientConfig-provided "CanvasRestTemplateAsUser" bean, which isn't
+   //present in this slice context (only EnrollmentClassificationService/CourseListService are loaded).
+   //Registering the mock under that bean name satisfies CourseListService's @Qualifier("CanvasRestTemplateAsUser")
+   //field via Spring's by-name qualifier fallback; none of these tests exercise the Canvas-calling methods
+   //that actually use it.
+   @MockitoBean(name = "CanvasRestTemplateAsUser")
+   private RestTemplate canvasRestTemplateAsUser = null;
 
    @BeforeEach
    public void setUp() throws Exception {

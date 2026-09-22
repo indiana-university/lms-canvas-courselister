@@ -40,6 +40,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
@@ -56,6 +58,9 @@ public class SecurityConfig {
     @Autowired
     private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
 
+    @Autowired
+    private OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> canvasOAuth2AccessTokenResponseClient;
+
     @Bean
     public SecurityFilterChain catchallFilterChain(HttpSecurity http) throws Exception {
         //Setup the LTI handshake
@@ -69,6 +74,9 @@ public class SecurityConfig {
                         .requestMatchers("/templates/**", "/jsreact/**", "/static/**", "/webjars/**",
                                 "/resources/**", "/css/**", "/js/**", "/jsrivet/**").permitAll()
                         .requestMatchers("/**").hasAuthority(BASE_USER_AUTHORITY))
+                .oauth2Client(oauth2 -> oauth2
+                        .authorizationCodeGrant(codeGrant -> codeGrant
+                                .accessTokenResponseClient(canvasOAuth2AccessTokenResponseClient)))
                 .headers(headers -> headers
                         .contentSecurityPolicy(csp ->
                                 csp.policyDirectives("style-src 'self' 'unsafe-inline'; form-action 'self'; frame-ancestors 'self' https://*.instructure.com"))

@@ -56,6 +56,21 @@ class App extends React.Component {
 //            return request
 //        })
 
+        // If Canvas access is revoked mid-session, /app/* calls start returning 401 (see
+        // ToolRestController#handleCanvasOAuth2Failure). Reload the top-level page so the LTI
+        // launch's consent gate (CourselistController#list) re-runs and re-triggers the Canvas OAuth2
+        // breakout flow if needed - there is no in-page recovery from this state.
+        axios.interceptors.response.use(
+            response => response,
+            error => {
+                if (error.response && error.response.status === 401) {
+                    window.top.location.reload();
+                    return new Promise(() => {});
+                }
+                return Promise.reject(error);
+            }
+        )
+
         this.state = {
             courses: [],
             allTerms: [],

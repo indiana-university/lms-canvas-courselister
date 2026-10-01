@@ -34,6 +34,7 @@ package edu.iu.uits.lms.courselist;
  */
 
 import edu.iu.uits.lms.canvas.config.EnableCanvasClient;
+import edu.iu.uits.lms.canvasoauth2.config.EnableCanvasOAuth2Client;
 import edu.iu.uits.lms.common.samesite.EnableCookieFilter;
 import edu.iu.uits.lms.common.samesite.EnableCookieValve;
 import edu.iu.uits.lms.common.server.GitRepositoryState;
@@ -59,6 +60,7 @@ import java.util.Date;
 @EnableCookieFilter(ignoredRequestPatterns = "/app/**")
 @EnableCookieValve
 @EnableCanvasClient
+@EnableCanvasOAuth2Client(registrationIdSuffix = "courselist", rivetCssPathPrefix = "/jsrivet")
 @EnableConfigurationProperties(GitRepositoryState.class)
 public class WebApplication {
 

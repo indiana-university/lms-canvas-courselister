@@ -59,17 +59,33 @@ You may use `security.properties`, `overrides.properties`, or set the `APP_OVERR
 The following properties need to be set to configure the communication with Canvas and Canvas Catalog.
 They can be set in a properties file, or overridden as environment variables.
 
-| Property             | Default Value               | Description                                               |
-|----------------------|-----------------------------|-----------------------------------------------------------|
-| `canvas.host`        |                             | Hostname of the Canvas instance                           |
-| `canvas.sso.host`    |                             | Hostname of the Canvas OIDC auth domain                   |
-| `canvas.baseUrl`     | https://`${canvas.host}`    | Base URL of the Canvas instance                           |
-| `canvas.baseApiUrl`  | `${canvas.baseUrl}`/api/v1  | Base URL for the Canvas API                               |
-| `canvas.token`       |                             | Token for access to Canvas instance                       |
-| `canvas.accountId`   |                             | Your institution's root accountId in your Canvas instance |
-| `catalog.baseUrl`    |                             | Base URL of the Canvas Catalog instance                   |
-| `catalog.baseApiUrl` | `${catalog.baseUrl}`/api/v1 | Base URL for the Canvas Catalog API                       |
-| `catalog.token`      |                             | Token for access to the Canvas Catalog instance           |
+| Property                                | Default Value               | Description                                                               |
+|-----------------------------------------|-----------------------------|---------------------------------------------------------------------------|
+| `canvas.host`                           |                             | Hostname of the Canvas instance                                           |
+| `canvas.sso.host`                       |                             | Hostname of the Canvas OIDC auth domain                                   |
+| `canvas.baseUrl`                        | https://`${canvas.host}`    | Base URL of the Canvas instance                                           |
+| `canvas.baseApiUrl`                     | `${canvas.baseUrl}`/api/v1  | Base URL for the Canvas API                                               |
+| `canvas.token`                          |                             | Token for access to Canvas instance                                       |
+| `canvas.accountId`                      |                             | Your institution's root accountId in your Canvas instance                 |
+| `catalog.baseUrl`                       |                             | Base URL of the Canvas Catalog instance                                   |
+| `catalog.baseApiUrl`                    | `${catalog.baseUrl}`/api/v1 | Base URL for the Canvas Catalog API                                       |
+| `catalog.token`                         |                             | Token for access to the Canvas Catalog instance                           |
+| `canvas.oauth2.clientId.courselist`     |                             | Client ID for the Canvas Developer Key used for OAuth2 authentication     |
+| `canvas.oauth2.clientSecret.courselist` |                             | Client secret for the Canvas Developer Key used for OAuth2 authentication |
+
+#### Dev Key Configuration
+Create an API Developer Key in Canvas, with the following scopes:
+```
+url:GET|/api/v1/courses
+url:POST|/api/v1/users/self/favorites/courses/:id
+url:DELETE|/api/v1/users/self/favorites/courses/:id
+url:GET|/api/v1/users/:user_id/custom_data(/*scope)
+url:PUT|/api/v1/users/:user_id/custom_data(/*scope)
+url:DELETE|/api/v1/users/:user_id/custom_data(/*scope)
+```
+Redirect URI should be `<host>/login/oauth2/code/lms_canvas_oauth2_courselist`
+
+And you'll need to check the box for "Allow Include Parameters"
 
 ### Database Configuration
 The following properties need to be set to configure the communication with a database.

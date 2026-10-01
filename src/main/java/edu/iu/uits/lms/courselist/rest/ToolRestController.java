@@ -42,6 +42,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.ClientAuthorizationRequiredException;
+import org.springframework.security.oauth2.core.OAuth2AuthorizationException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,7 +70,7 @@ public class ToolRestController extends CourselistController {
       OidcAuthenticationToken token = getTokenWithoutContext();
       OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
-      return courseListService.getCourses(oidcTokenUtils.getUserLoginId());
+      return courseListService.getCourses(oidcTokenUtils.getUserId());
    }
 
    @PostMapping("/hide/{courseId}")
@@ -74,7 +79,7 @@ public class ToolRestController extends CourselistController {
       OidcAuthenticationToken token = getTokenWithoutContext();
       OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
-      boolean success = courseListService.setCourseAsHidden(oidcTokenUtils.getUserLoginId(), courseId);
+      boolean success = courseListService.setCourseAsHidden(oidcTokenUtils.getUserId(), courseId);
       return new ReturnState(success, null);
    }
 
@@ -84,17 +89,14 @@ public class ToolRestController extends CourselistController {
       OidcAuthenticationToken token = getTokenWithoutContext();
       OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
-      boolean success = courseListService.setCourseAsShown(oidcTokenUtils.getUserLoginId(), courseId);
+      boolean success = courseListService.setCourseAsShown(oidcTokenUtils.getUserId(), courseId);
       return new ReturnState(!success, null);
    }
 
    @PostMapping("/favorite/{courseId}")
    public ReturnState favoriteCourse(@PathVariable String courseId) {
       log.debug("in /app/favorite/{}", courseId);
-      OidcAuthenticationToken token = getTokenWithoutContext();
-      OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
-
-      Favorite favorite = courseListService.setCourseAsFavorite(oidcTokenUtils.getUserLoginId(), courseId);
+      Favorite favorite = courseListService.setCourseAsFavorite(courseId);
       boolean success = favorite != null && courseId.equals(favorite.getContextId());
       return new ReturnState(null, success);
    }
@@ -102,12 +104,20 @@ public class ToolRestController extends CourselistController {
    @PostMapping("/unfavorite/{courseId}")
    public ReturnState unfavoriteCourse(@PathVariable String courseId) {
       log.debug("in /app/unfavorite/{}", courseId);
-      OidcAuthenticationToken token = getTokenWithoutContext();
-      OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
-
-      Favorite favorite = courseListService.removeCourseAsFavorite(oidcTokenUtils.getUserLoginId(), courseId);
+      Favorite favorite = courseListService.removeCourseAsFavorite(courseId);
       boolean success = favorite != null && courseId.equals(favorite.getContextId());
       return new ReturnState(null, !success);
+   }
+
+   @ExceptionHandler({ClientAuthorizationRequiredException.class, OAuth2AuthorizationException.class})
+   public ResponseEntity<ReturnState> handleCanvasOAuth2Failure(Exception exception) {
+      // Canvas access was revoked (or the token became otherwise unusable) after the page already
+      // loaded and consent was verified in CourselistController.list(). There is deliberately no
+      // fallback to the admin token here - the React frontend reacts to this 401 by reloading the
+      // top-level page, which re-runs the consent gate in list() and re-triggers the breakout flow if
+      // needed.
+      log.warn("Canvas OAuth2 authorization failed mid-session", exception);
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ReturnState(null, null));
    }
 
    @Data

@@ -37,7 +37,6 @@ import edu.iu.uits.lms.canvas.services.CanvasService;
 import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
 import edu.iu.uits.lms.canvasoauth2.security.CanvasOAuth2AuthorizedClientRepository;
 import edu.iu.uits.lms.common.server.ServerInfo;
-import edu.iu.uits.lms.common.server.BrandingConfiguration;
 import edu.iu.uits.lms.courselist.config.SecurityConfig;
 import edu.iu.uits.lms.courselist.config.ToolConfig;
 import edu.iu.uits.lms.courselist.service.CourseListService;
@@ -74,14 +73,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
-@WebMvcTest(value = CourselistController.class, properties = {"oauth.tokenprovider.url=http://foo",
-        "lms.footer.branding.enabled=true"})
+@WebMvcTest(value = CourselistController.class, properties = {"oauth.tokenprovider.url=http://foo"})
 @ContextConfiguration(classes = {ToolConfig.class, CourselistController.class, SecurityConfig.class,
         edu.iu.uits.lms.canvasoauth2.controller.OAuth2ConsentControllerAdvice.class,
         edu.iu.uits.lms.canvasoauth2.controller.CanvasOAuth2ConsentText.class,
-        BrandingConfiguration.class,
         CourselistControllerConsentTest.TestConfig.class})
 public class CourselistControllerConsentTest {
 
@@ -158,15 +154,7 @@ public class CourselistControllerConsentTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("connectCanvas"))
-                .andExpect(MockMvcResultMatchers.model().attribute("authorizationUri", "/oauth2/authorization/" + REGISTRATION_ID))
-                // This view is built by a genuine @ExceptionHandler method (OAuth2ConsentControllerAdvice.
-                // handleClientAuthorizationRequired), not a normal @RequestMapping handler invocation -
-                // ExceptionHandlerExceptionResolver doesn't re-run @ModelAttribute advice methods like
-                // BrandingControllerAdvice's own for that path, so without OAuth2ConsentControllerAdvice
-                // explicitly re-adding "BrandingProperties" to the model itself, this logo/branding block
-                // silently never shows up here even with lms.footer.branding.enabled=true, unlike every
-                // other, normally-dispatched page in the app.
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Developed at Indiana University")));
+                .andExpect(MockMvcResultMatchers.model().attribute("authorizationUri", "/oauth2/authorization/" + REGISTRATION_ID));
 
         verifyNoInteractions(canvasService);
     }

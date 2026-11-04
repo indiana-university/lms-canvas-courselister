@@ -37,6 +37,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import uk.ac.ox.ctl.lti13.ags.DeepLinkService;
+import uk.ac.ox.ctl.lti13.ags.LineItemService;
+import uk.ac.ox.ctl.lti13.ags.ResultService;
+import uk.ac.ox.ctl.lti13.ags.ScoreService;
 import uk.ac.ox.ctl.lti13.nrps.NamesRoleService;
 
 import javax.sql.DataSource;
@@ -88,6 +92,18 @@ class WebApplicationTests {
     // test needed for the same reason.
     @MockitoBean
     private NamesRoleService namesRoleService;
+
+    @MockitoBean
+    private LineItemService lineItemService;
+
+    @MockitoBean
+    private ScoreService scoreService;
+
+    @MockitoBean
+    private ResultService resultService;
+
+    @MockitoBean
+    private DeepLinkService deepLinkService;
 
     @Test
     void contextLoads() {

@@ -33,6 +33,8 @@ package edu.iu.uits.lms.courselist.controller;
  * #L%
  */
 
+import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
+import edu.iu.uits.lms.canvasoauth2.security.CanvasOAuth2AuthorizedClientRepository;
 import edu.iu.uits.lms.courselist.config.ToolConfig;
 import edu.iu.uits.lms.courselist.service.CourseListService;
 import edu.iu.uits.lms.lti.LTIConstants;
@@ -41,6 +43,8 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,11 +60,26 @@ public class CourselistController extends OidcTokenAwareController {
     @Autowired
     private CourseListService courseListService = null;
 
+    @Autowired
+    private CanvasOAuth2AuthorizedClientRepository canvasOAuth2AuthorizedClientRepository = null;
+
+    @Autowired
+    private CanvasOAuth2Registration canvasOAuth2Registration = null;
+
     @RequestMapping("/list")
     @Secured(LTIConstants.BASE_USER_AUTHORITY)
-    public ModelAndView list(Model model, HttpSession httpSession) {
+    public ModelAndView list(Model model, HttpSession httpSession, SecurityContextHolderAwareRequestWrapper request) {
         log.debug("in /list");
         getTokenWithoutContext();
+
+        // Course listing, favoriting, and hide/show all run as the launching user's own Canvas OAuth2
+        // token now (see CourseListService) - require that token to exist before rendering the SPA
+        // shell, since the REST endpoints it calls afterward return JSON and have no way to render
+        // the HTML consent breakout page themselves. When canvas.oauth2.enabled is off, this is a
+        // dark-launch no-op (see CanvasOAuth2AuthorizedClientRepository#ensureAuthorized).
+        canvasOAuth2AuthorizedClientRepository.ensureAuthorized(
+                canvasOAuth2Registration.getRegistrationId(), SecurityContextHolder.getContext().getAuthentication(), request);
+
         String canvasBaseUrl = courseListService.getCanvasBaseUrl();
         model.addAttribute("browseCoursesUrl", canvasBaseUrl + "/search/all_courses/");
         model.addAttribute("siteRequestUrl", canvasBaseUrl + toolConfig.getStartANewCourseUrl());

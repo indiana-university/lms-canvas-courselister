@@ -9,11 +9,11 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.8</version>
+        <version>4.1.2</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
-    <version>7.0.0-SNAPSHOT</version>
+    <version>7.1.0-SNAPSHOT</version>
     <description>Search, Filter, and Manage Courses app offers a powerful alternative to the All Courses tool in Canvas.</description>
     <url>https://github.com/indiana-university/lms-canvas-courselister</url>
     <inceptionYear>2015</inceptionYear>
@@ -56,20 +56,19 @@
         <app.version>${project.version}</app.version>
         <commons-io.version>2.22.0</commons-io.version>
         <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
-        <git-commit-id-maven-plugin.version>10.0.0</git-commit-id-maven-plugin.version>
+        <git-commit-id-maven-plugin.version>10.0.1</git-commit-id-maven-plugin.version>
         <hibernate-jpa-schemagen.version>7.2.2</hibernate-jpa-schemagen.version>
         <java.version>25</java.version>
         <jdk.source>25</jdk.source>
         <jdk.target>25</jdk.target>
-        <jquery.version>3.7.1</jquery.version>
-        <lms-embedded-services.version>7.0.5</lms-embedded-services.version>
-        <lms-team-spring-boot-it12>7.6.0_0</lms-team-spring-boot-it12>
+        <lms-embedded-services.version>7.1.4</lms-embedded-services.version>
+        <lms-team-spring-boot-it12>7.6.0_1</lms-team-spring-boot-it12>
 
-        <lms-canvas-rivet.version>7.2.9.1_0</lms-canvas-rivet.version>
+        <lms-canvas-rivet.version>7.2.9.1_1</lms-canvas-rivet.version>
         <nodejs.version>v24.19.0</nodejs.version>
-        <spring-cloud.version>2025.1.3</spring-cloud.version>
+        <spring-cloud.version>2025.1.4</spring-cloud.version>
 
-        <plugins.compiler.version>3.15.0</plugins.compiler.version>
+        <plugins.compiler.version>3.16.0</plugins.compiler.version>
         <plugins.license.version>2.7.1</plugins.license.version>
         <plugins.release.version>3.3.1</plugins.release.version>
     </properties>
@@ -106,6 +105,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-webmvc-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -147,6 +151,11 @@
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
+            <artifactId>lms-canvas-oauth2-client</artifactId>
+            <version>${lms-embedded-services.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-canvas-rivet</artifactId>
             <version>${lms-canvas-rivet.version}</version>
         </dependency>
@@ -182,11 +191,6 @@
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>webjars-locator-lite</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>jquery</artifactId>
-            <version>${jquery.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -252,6 +256,11 @@
                                     <groupId>edu.iu.uits.lms</groupId>
                                     <artifactId>lms-canvas-lti-framework</artifactId>
                                     <destFileName>lms-canvas-lti-framework.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>edu.iu.uits.lms</groupId>
+                                    <artifactId>lms-canvas-oauth2-client</artifactId>
+                                    <destFileName>lms-canvas-oauth2-client.jar</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -379,6 +388,12 @@
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <executions>
+                            <execution>
+                                <id>generate-build-info</id>
+                                <goals>
+                                    <goal>build-info</goal>
+                                </goals>
+                            </execution>
                             <execution>
                                 <phase>install</phase>
                                 <goals>
